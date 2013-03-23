@@ -1,13 +1,15 @@
-	typedef struct hashnode {
-	int code;
-	int type;
-	struct hashnode *next;
-} HASH_NODE;
-
-
-#define HASH_SIZE 997
-
+#include "hashtable.h"
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
 HASH_NODE* TABLE[HASH_SIZE];
+/*
+
+	TODO:
+		-funcoes hashFind() hashPrint() e hashInit()
+		-complementar analisador lexico
+
+*/
 
 
 
