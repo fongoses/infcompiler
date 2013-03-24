@@ -5,9 +5,9 @@ hashtable: hashtable.c
 
 lex: scanner.l
 	lex -o scanner.yy.c scanner.l
+	gcc -o scanner.obj -c scanner.yy.c
 
 main:  main.c lex hashtable
-	gcc -o scanner.obj -c scanner.yy.c
 	gcc -o etapa1 main.c scanner.obj hashtable.obj
 
 clean:
