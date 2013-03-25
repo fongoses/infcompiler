@@ -22,12 +22,30 @@ extern int running;
 
 int main(int argc , char ** argv){
 	
-	int tok=0;
-	while(tok != EOF){			
+	int tok = 0;
+
+	if(argc < 2) {
+		fprintf(stderr,"Error: No input file\n");
+		exit(1);
+	}	
+	
+	yyin=fopen(argv[1],"r"); //yyin: global var which stores the file pointer to the current input file of the lexycal analyzer
+	
+
+	if(yyin < 0) {
+		fprintf(stderr,"Error opening the file\n");
+		exit(1);
+	}
+        	
+	while(!feof(yyin)){			
 			
-		tok = yylex();		
+		tok = yylex();
+		
+		if(feof(yyin)) break;
 		
 		switch(tok){
+			
+			switch(tok){
 			case 0: break; //\n			
 			case KW_WORD : printf("KW_WORD at line: %d, and address: xxx\n",LineNumber);break;
 			case KW_BOOL : printf("KW_BOOL at line: %d\n",LineNumber);break;
@@ -42,5 +60,6 @@ int main(int argc , char ** argv){
 
 		}
 	}
+	hashPrint();
 	return 1;
 }

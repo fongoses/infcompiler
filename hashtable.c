@@ -44,6 +44,9 @@ int hashAddress(char *text) {
 HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash table 'Table', returning its pointer.
     HASH_NODE *node;
 
+    //if the token already exists , ignore its insertion
+    if (hashFind(text) == (void*)0) return (void*)0; 
+
     int address = hashAddress(text);
     
     // Calc the address and allocates the node
@@ -75,6 +78,39 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
     return node;
 }
 
+HASH_NODE *hashAdd(char *text, int type) { // Insert the node in the hash table 'Table', returning its pointer.
+    HASH_NODE *node;
+
+    int address = hashAddress(text);
+    
+    // Calc the address and allocates the node
+    node = (HASH_NODE *) malloc(sizeof(HASH_NODE));
+
+    node->text = (char *) calloc(strlen(text) + 1, sizeof(char));
+    strcpy(node->text, text);
+
+    node->type = type;
+
+    node->next = (void *) 0;
+
+    // Insert at the table
+    if(Table[address] == (void *) 0) {
+        // Normal insertion, no collision
+        Table[address] = node;
+    } else {
+        // With collision, creates a list
+        HASH_NODE *ptr;
+        ptr = Table[address];
+
+        // Searches for the last list node
+        while(ptr->next != (void *) 0) 
+            ptr = ptr->next;
+        
+        // Insert at the end of the list
+        ptr->next = node;
+    }
+    return node;
+}
 HASH_NODE *hashFind(char *text) { // Return the node that match with text, otherwise return 0
     HASH_NODE *node = (void *) 0;
 

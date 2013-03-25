@@ -1,15 +1,26 @@
 %{
+/**********************************************************************
+ *Scanner  
+ **********************************************************************
+ * This scanner represents the lexycal analyzer.
+ **********************************************************************
+ * Authors:
+ * Luiz Gustavo Frozi de Castro e Souza (fongoses@gmail.com)
+ * Mario Cesar Gasparoni Junior (mariogasparoni@gmail.com)
+ **********************************************************************/
+
+
 
 #include "hashtable.h"
 #include "tokens.h"
-
 int LineNumber = 1;
 int running = 1;
 
 
 %}
+%x COMMENT_LINE
 
-%x COMMENT
+%x COMMENT_MULTIPLE_LINES
 
 %%
 
@@ -24,34 +35,53 @@ input	{ return KW_INPUT;}
 return	{ return KW_RETURN;}
 output	{ return KW_OUTPUT;}
 
-"<="	{ if(hashInsert(yytext,OPERATOR_LE) != (void*)0) return OPERATOR_LE;else return TOKEN_ERROR;}
-">="	{ if(hashInsert(yytext,OPERATOR_GE) != (void*)0) return OPERATOR_GE;else return TOKEN_ERROR;}
-"=="	{ hashInsert(yytext,OPERATOR_EQ);return OPERATOR_EQ;}
-"!="	{ hashInsert(yytext,OPERATOR_NE); return OPERATOR_NE;}
-"&&"	{ hashInsert(yytext,OPERATOR_AND);return OPERATOR_AND;}
-"||"	{ hashInsert(yytext,OPERATOR_OR); return OPERATOR_OR;}
-, | ; | : | ( | ) | [ | ] | { | } | + | - | * | / | < | > | = | ! | & | $ {hashInsert(yytext,yytext[0]); return yytext[0];} /* especiais */
+"=="	{ return OPERATOR_EQ;}
+"!="	{ return OPERATOR_NE;}
+"&&"	{ return OPERATOR_AND;}
+"||"	{ return OPERATOR_OR;}
 
-false			{ hashInsert(yytext,LIT_FALSE); return LIT_FALSE;}
-true			{ hashInsert(yytext,LIT_TRUE); return LIT_TRUE;}
-[a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,TK_IDENTIFIER);return TK_IDENTIFIER;}
-[0-9]+			{ hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;}
-['].[']			{ hashInsert(yytext,LIT_CHAR); return LIT_CHAR;} /* ? */
-["][^"\0]["]	{ hashInsert(yytext,LIT_STRING); return LIT_STRING;}     
+ /* especiais, incluindo alguns operadores */
+[,;:()[\]{}\+\-*<>=!&$]+ { return yytext[0];} 
+"/"			{ return yytext[0];}
 
 
+ /* literais e restantes */
 
-"\n"			{ ++LineNumber; } 
-"/*"	{ BEGIN(COMMENT);} //parses comments in a different lexycal analyzer
-<COMMENT>"*/"	{ BEGIN(INITIAL);} //initial starts the main(initial) lexycal analyzer again 
-<COMMENT>. 	{}
-<COMMENT>"\n"	{++LineNumber;}
+false			{ return LIT_FALSE;}
+true			{ return LIT_TRUE;}
+[a-zA-Z_][a-zA-Z0-9_]*	{ return TK_IDENTIFIER;}
+[0-9]+			{ return LIT_INTEGER;}
+\'.\'			{ return LIT_CHAR;} /* ok */
+\".+\"			{ return LIT_STRING;} /* ok */
+"\n"			{ ++LineNumber;return 0;} 
+
+"//"			{ BEGIN(COMMENT_LINE);}
+<COMMENT_LINE>. 	{}
+<COMMENT_LINE>"\n"	{++LineNumber;BEGIN(INITIAL);}
+
+
+
+
+"/*"	{ BEGIN(COMMENT_MULTIPLE_LINES);} //parses comments in a different lexycal analyzer
+<COMMENT_MULTIPLE_LINES>"*/"	{ BEGIN(INITIAL);} //initial starts the main(initial) lexycal analyzer again 
+<COMMENT_MULTIPLE_LINES>. 	{}
+<COMMENT_MULTIPLE_LINES><<EOF>> {return TOKEN_ERROR;} //?
+<COMMENT_MULTIPLE_LINES>"\n"	{++LineNumber;}
+
+"ç"				{return TOKEN_ERROR;}
+.				{return TOKEN_ERROR;}//if the token doesnt match any other rule, it is invalid
 
 %%
 
-
+int getLineNumber(){
+	return LineNumber;
+}
 
 
 yywrap(){
 	return 1;
-}
+	}
+
+
+
+
