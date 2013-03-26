@@ -36,20 +36,23 @@ input	{ return KW_INPUT;}
 return	{ return KW_RETURN;}
 output	{ return KW_OUTPUT;}
 
-"=="	{ hashInsert(yytext,OPERATOR_EQ);return OPERATOR_EQ;}
-"!="	{ hashInsert(yytext,OPERATOR_NE);return OPERATOR_NE;}
-"&&"	{ hashInsert(yytext,OPERATOR_AND);return OPERATOR_AND;}
-"||"	{ hashInsert(yytext,OPERATOR_OR);return OPERATOR_OR;}
+
+"<="	{ return OPERATOR_LE;}
+">="	{ return OPERATOR_GE;}
+"=="	{ return OPERATOR_EQ;}
+"!="	{ return OPERATOR_NE;}
+"&&"	{ return OPERATOR_AND;}
+"||"	{ return OPERATOR_OR;}
 
  /* especiais, incluindo alguns operadores */
-[,;:()[\]{}\+\-*<>=!&$]+ { hashInsert(yytext,yytext[0]);return yytext[0];} 
-"/"			{ hashInsert(yytext,yytext[0]);return yytext[0];}
+[,;:()[\]{}\+\-*<>=!&$]+ { return yytext[0];} 
+"/"			{ return yytext[0];}
 
 
- /* literais e restantes */
+ /* literais e restantes, sao inseridos na tab de simbolos */
 
-false			{ hashInsert(yytext,LIT_FALSE); return LIT_FALSE;}
-true			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
+FALSE			{ hashInsert(yytext,LIT_FALSE); return LIT_FALSE;}
+TRUE			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
 [a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,TK_IDENTIFIER);return TK_IDENTIFIER;}
 [0-9][a-fA-F0-9]*	{ hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;}
 \'.\'			{ hashInsert(yytext,LIT_CHAR);return LIT_CHAR;} /* ok */

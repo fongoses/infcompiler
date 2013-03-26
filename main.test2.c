@@ -39,6 +39,12 @@ int main(int argc , char ** argv){
 			case KW_INPUT: printf("KW_INPUT at line %d\n",LineNumber);break;
 			case KW_RETURN: printf("KW_RETURN at line %d\n",LineNumber);break;
 			case KW_OUTPUT: printf("KW_OUTPUT at line %d\n",LineNumber);break;
+			case OPERATOR_LE: printf("OPERATOR_LE at line %d\n",LineNumber);break;
+			case OPERATOR_GE: printf("OPERATOR_GE at line %d\n",LineNumber);break;
+			case OPERATOR_EQ: printf("OPERATOR_EQ at line %d\n",LineNumber);break;
+			case OPERATOR_NE: printf("OPERATOR_NE at line %d\n",LineNumber);break;
+			case OPERATOR_AND: printf("OPERATOR_AND at line %d\n",LineNumber);break;
+			case OPERATOR_OR: printf("OPERATOR_OR at line %d\n",LineNumber);break;
 			case TK_IDENTIFIER: printf("TK_IDENTIFIER at line %d\n",LineNumber);break;
 			case LIT_INTEGER: printf("LIT_INTEGER at line %d\n",LineNumber); break;
 			case LIT_FALSE: printf("LIT_FALSE at line %d\n",LineNumber); break;
