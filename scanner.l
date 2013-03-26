@@ -69,13 +69,10 @@ TRUE			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
 "/*"	{ BEGIN(COMMENT_MULTIPLE_LINES);} //parses comments in a different lexycal analyzer
 <COMMENT_MULTIPLE_LINES>"*/"	{ BEGIN(INITIAL);} //initial starts the main(initial) lexycal analyzer again 
 <COMMENT_MULTIPLE_LINES>. 	{}
-<COMMENT_MULTIPLE_LINES><<EOF>> {return TOKEN_ERROR;} //?
 <COMMENT_MULTIPLE_LINES>"\n"	{++LineNumber;}
 " "				{return 0;} //ignore whitespace?
-"ç"				{return TOKEN_ERROR;}
 .				{return TOKEN_ERROR;}//if the token doesnt match any other rule, it is invalid
 
-<<EOF>>			{running=0; return running;}
 %%
 
 int getLineNumber(){
@@ -84,8 +81,10 @@ int getLineNumber(){
 
 
 yywrap(){
+	
+	running=0;
 	return 1;
-	}
+}
 
 
 

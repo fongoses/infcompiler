@@ -18,4 +18,3 @@ clean:
 	rm scanner.yy.c	
 	rm *.obj
 	rm etapa1*
-	rm hashtable.test
