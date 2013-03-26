@@ -45,7 +45,7 @@ output	{ return KW_OUTPUT;}
 "||"	{ return OPERATOR_OR;}
 
  /* especiais, incluindo alguns operadores */
-[,;:()[\]{}\+\-*<>=!&$]+ { return yytext[0];} 
+[,;:()[\]{}\+\-*<>=!&$] { return yytext[0];} 
 "/"			{ return yytext[0];}
 
 
