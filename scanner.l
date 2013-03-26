@@ -80,7 +80,7 @@ int getLineNumber(){
 }
 
 
-yywrap(){
+int yywrap(){
 	
 	running=0;
 	return 1;
