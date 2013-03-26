@@ -1,0 +1,6 @@
+/*
+	colisoes  na tabela hash
+*/
+prova afeta
+999 888
+TRUE FALSE
