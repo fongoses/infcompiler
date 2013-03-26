@@ -1,0 +1,19 @@
+word
+bool
+byte
+teste
+<=
+>=
+>
+=
+false
+false false
+false
+1023190238
+haha
+int var
+val
+a + b = c;
+cccccccc;
+teste
+829890

@@ -45,7 +45,7 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
     HASH_NODE *node;
 
     //if the token already exists , ignore its insertion
-    if (hashFind(text) == (void*)0) return (void*)0; 
+    if (hashFind(text) != (void*)0) return (void*)0; 
 
     int address = hashAddress(text);
     
@@ -147,7 +147,7 @@ void hashPrint() {
         if(Table[i]) {
             printf("Table [%d]: ", i);
             for(node = Table[i]; node; node = node->next) {
-                printf("Node(%s, %d) ", node->text, node->type);
+                printf("Node(%s , %d) ", node->text, node->type);
             }
             printf("\n");
         }
