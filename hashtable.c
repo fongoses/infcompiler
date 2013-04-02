@@ -15,7 +15,7 @@
 // STANDARD LIBs
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 // HEADERS
 #include "hashtable.h"
@@ -50,7 +50,7 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
     int address = hashAddress(text);
     
     // Calc the address and allocates the node
-    node = (HASH_NODE *) malloc(sizeof(HASH_NODE));
+    node = (HASH_NODE *) calloc(sizeof(HASH_NODE),1);
 
     node->text = (char *) calloc(strlen(text) + 1, sizeof(char));
     strcpy(node->text, text);
@@ -84,7 +84,7 @@ HASH_NODE *hashAdd(char *text, int type) { // Insert the node in the hash table 
     int address = hashAddress(text);
     
     // Calc the address and allocates the node
-    node = (HASH_NODE *) malloc(sizeof(HASH_NODE));
+    node = (HASH_NODE *) calloc(sizeof(HASH_NODE),1);
 
     node->text = (char *) calloc(strlen(text) + 1, sizeof(char));
     strcpy(node->text, text);

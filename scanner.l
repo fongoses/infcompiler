@@ -57,7 +57,7 @@ TRUE			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
 [0-9][a-fA-F0-9]*	{ hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;}
 \'.\'			{ hashInsert(yytext,LIT_CHAR);return LIT_CHAR;} /* ok */
 \".+\"			{ hashInsert(yytext,LIT_STRING);return LIT_STRING;} /* ok */
-"\n"			{ ++LineNumber;return 0;}
+"\n"			{ ++LineNumber;} //corrigido 1
 
 "//"			{ BEGIN(COMMENT_LINE);}
 <COMMENT_LINE>. 	{}
@@ -70,7 +70,8 @@ TRUE			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
 <COMMENT_MULTIPLE_LINES>"*/"	{ BEGIN(INITIAL);} //initial starts the main(initial) lexycal analyzer again 
 <COMMENT_MULTIPLE_LINES>. 	{}
 <COMMENT_MULTIPLE_LINES>"\n"	{++LineNumber;}
-" "				{return 0;} //ignore whitespace?
+" "				{} //ignore whitespace? yes. Corrigido 2
+"\t"				{}
 .				{return TOKEN_ERROR;}//if the token doesnt match any other rule, it is invalid
 
 %%
@@ -86,6 +87,8 @@ int yywrap(){
 	return 1;
 }
 
-
+void initMe(){
+	hashInit();	
+}
 
 
