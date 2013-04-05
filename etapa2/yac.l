@@ -39,18 +39,20 @@
 
 %%
 
-program: /* empty program */ 
+ /*
+program:  empty program 
 	| dec program
 	;
+*/
 
 dec: vardec
 	;
  /* declaracao de variaveis*/
-vardec : KW_INT IDENTIFIER '=' SYMBOL_LIT_INTEGER { fprintf(stdout,"Declaracao de var\n"); };
+vardec: SYMBOL_LIT_INTEGER SYMBOL_IDENTIFIER '=' SYMBOL_LIT_INTEGER { fprintf(stdout,"Declaracao de var\n"); };
 
 
 
-//fundec : KW_INT IDENTIFIER '(' ')' '{' body '}' ; 
+ /* fundec : KW_INT IDENTIFIER '(' ')' '{' body '}' ; */
 
 %%
 

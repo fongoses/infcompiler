@@ -17,13 +17,13 @@ extern FILE * yyin;
 extern int LineNumber;
 extern int running;
 
-
+/*
 int lexycalAnalyzer(){
-	/*
+	
 		This function reads the data coming from the stdin untill finds an EOF.
 		The data is parsed and inserted into the Symbol Table (Hash Table).
 	
-	*/	
+		
 
 
 	int tok=0;
@@ -64,7 +64,7 @@ int lexycalAnalyzer(){
 
 
 }
-
+*/
 int syntaxAnalyzer(){
 	/*
 		This functions parses all the tokens given by the lexycal analyzer.	
@@ -82,19 +82,15 @@ int syntaxAnalyzer(){
 
 int main(int argc , char ** argv){
 	
-	//Lexycal Analyzer
-	if(lexycalAnalyzer() <0) {
-		fprintf(stderr,"Invalid symbol at line %d\n",LineNumber);
-		exit(1);	
-	}
 	
+	fprintf(stdout,"%d\n",yyparse());
 	//Syntax Analyzer
-	if(syntaxAnalyzer() < 0){
+/*	if(yyparse() < 0){
 		
 		fprintf(stderr,"Compilation Error\n");
 		exit(1);	
 
-	}
-	
+	}*/
+	fprintf(stdout,"Compilation successfull\n");	
 	return 1;
 }
