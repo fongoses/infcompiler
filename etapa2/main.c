@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "tokens.h"
+#include "y.tab.h"
 
 extern char * yytext;
 extern FILE * yyin;
@@ -30,13 +30,15 @@ int main(int argc , char ** argv){
 	}	
 	
 	yyin=fopen(argv[1],"r"); //yyin: global var which stores the file pointer to the current input file of the lexycal analyzer
-	
+
+		
 
 	if(yyin <= 0) {
 		fprintf(stderr,"Error opening the file\n");
 		exit(1);
 	}
-        	
+        
+	initMe();	
 	while(running){			
 			
 		tok = yylex();
