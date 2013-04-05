@@ -18,41 +18,25 @@ extern int LineNumber;
 extern int running;
 
 
-
-
-int main(int argc , char ** argv){
+int lexycalAnalyzer(){
+	/*
+		This function reads the data coming from the stdin untill finds an EOF.
+		The data is parsed and inserted into the Symbol Table (Hash Table).
 	
-	int tok = 0;
+	*/	
 
-	if(argc < 2) {
-		fprintf(stderr,"Error: No input file\n");
-		exit(1);
-	}	
-	
-	yyin=fopen(argv[1],"r"); //yyin: global var which stores the file pointer to the current input file of the lexycal analyzer
 
-		
-
-	if(yyin <= 0) {
-		fprintf(stderr,"Error opening the file\n");
-		exit(1);
-	}
-        
-	initMe();	
-	while(running){			
+	int tok=0;
+	while(tok != EOF){			
 			
-		tok = yylex();
-		
-		if(!running) break;
+		tok = yylex();		
 		
 		switch(tok){
-			
 			case 0: break; //\n			
 			case KW_WORD : printf("KW_WORD at line: %d, and address: xxx\n",LineNumber);break;
 			case KW_BOOL : printf("KW_BOOL at line: %d\n",LineNumber);break;
 			case KW_BYTE : printf("KW_BYTE at line: %d\n",LineNumber);break;
-			case KW_IF: printf("KW_IF at line: %d\n",LineNumber);break;
-			
+			case KW_IF: printf("KW_IF at line: %d\n",LineNumber);break;			
 			case KW_THEN: printf("KW_THEN at line %d\n",LineNumber);break;
 			case KW_ELSE: printf("KW_ELSE at line %d\n",LineNumber);break;
 			case KW_LOOP: printf("KW_LOOP at line %d\n",LineNumber);break;
@@ -71,12 +55,46 @@ int main(int argc , char ** argv){
 			case SYMBOL_LIT_TRUE: printf("SYMBOL_LIT_TRUE at line %d\n",LineNumber); break;
 			case SYMBOL_LIT_CHAR: printf("SYMBOL_LIT_CHAR at line %d\n",LineNumber); break;	
 			case SYMBOL_LIT_STRING: printf("SYMBOL_LIT_STRING at line %d\n",LineNumber); break;
-			case TOKEN_ERROR: printf("TOKEN_ERROR at line %d\n",LineNumber); break;
-			default: printf("Tok: %s at line %d\n", yytext,LineNumber);			
+			case TOKEN_ERROR: printf("TOKEN_ERROR at line %d\n",LineNumber); return -1; //Invalid symbol. Compilation error!
+			default: printf("Tok: %s at line %d\n", yytext,LineNumber);
 		}
 	}
+
+	return 1;
+
+
+}
+
+int syntaxAnalyzer(){
+	/*
+		This functions parses all the tokens given by the lexycal analyzer.	
+	*/	
 	
-	printf("\n>Symbol Table:\n\n");
-	hashPrint();
+	yyparse();
+	
+	return 1;	
+
+
+
+}
+
+
+
+int main(int argc , char ** argv){
+	
+	//Lexycal Analyzer
+	if(lexycalAnalyzer() <0) {
+		fprintf(stderr,"Invalid symbol at line %d\n",LineNumber);
+		exit(1);	
+	}
+	
+	//Syntax Analyzer
+	if(syntaxAnalyzer() < 0){
+		
+		fprintf(stderr,"Compilation Error\n");
+		exit(1);	
+
+	}
+	
 	return 1;
 }

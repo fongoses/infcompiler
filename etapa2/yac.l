@@ -8,7 +8,6 @@
  * Mario Cesar Gasparoni Junior (mariogasparoni@gmail.com)
  **********************************************************************/
 
-/* Should we put the following code in  y.tab.h?*/
 
 %token KW_WORD     
 %token KW_BOOL
@@ -28,35 +27,26 @@
 %token OPERATOR_AND   
 %token OPERATOR_OR    
 
-%token TK_IDENTIFIER  
-%token LIT_INTEGER    
-%token LIT_FALSE      
-%token LIT_TRUE	     
-%token LIT_CHAR       
-%token LIT_STRING     
+%token SYMBOL_LIT_INTEGER /*todo1: floating too? */   
+%token SYMBOL_LIT_FALSE      
+%token SYMBOL_LIT_TRUE	     
+%token SYMBOL_LIT_CHAR       
+%token SYMBOL_LIT_STRING
+%token SYMBOL_IDENTIFIER  
 
 %token TOKEN_ERROR    
 
 
-
-
-%token KW_WORD
-%token KW_IF
-%token KW_LOOP
-%token KW_INT
-%token IDENTIFIER
-%token LIT_INTEGER
-
 %%
 
-program: dec program
-	|
+program: /* empty program */ 
+	| dec program
 	;
 
 dec: vardec
 	;
  /* declaracao de variaveis*/
-vardec : KW_INT IDENTIFIER '=' LIT_INTEGER { fprintf(stderr,""); };
+vardec : KW_INT IDENTIFIER '=' SYMBOL_LIT_INTEGER { fprintf(stdout,"Declaracao de var\n"); };
 
 
 
@@ -67,9 +57,11 @@ vardec : KW_INT IDENTIFIER '=' LIT_INTEGER { fprintf(stderr,""); };
 #include <stdio.h>
 #include <stdlib.h>
 
-int yylval=0;
+
 
 int yyerror(){
-	fprintf(stderr, "Syntax Error\n");
-	exit(1);
+	//fprintf(stderr, "Syntax Error\n");
+	//exit(1);	
+	return -1;
+	
 }
