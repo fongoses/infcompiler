@@ -39,17 +39,20 @@
 
 %%
 
- /*
-program:  empty program 
+
+program:  /*empty program*/ 
 	| dec program
 	;
-*/
 
-dec: vardec
-	;
+
+dec: vardec;
+
+
+intdec : SYMBOL_LIT_INTEGER { fprintf(stdout,"Inteiro!\n"); };
+	
  /* declaracao de variaveis*/
-vardec: SYMBOL_LIT_INTEGER SYMBOL_IDENTIFIER '=' SYMBOL_LIT_INTEGER { fprintf(stdout,"Declaracao de var\n"); };
-
+vardec: KW_WORD SYMBOL_IDENTIFIER '=' SYMBOL_LIT_INTEGER { fprintf(stdout,"Declaracao de var\n"); };
+ 
 
 
  /* fundec : KW_INT IDENTIFIER '(' ')' '{' body '}' ; */
@@ -61,9 +64,23 @@ vardec: SYMBOL_LIT_INTEGER SYMBOL_IDENTIFIER '=' SYMBOL_LIT_INTEGER { fprintf(st
 
 
 
-int yyerror(){
+int yyerror(char *s){
 	//fprintf(stderr, "Syntax Error\n");
 	//exit(1);	
 	return -1;
 	
 }
+
+
+int main(){
+
+	return yyparse();
+	if (yyparse() < 0) {
+		fprintf(stderr,"Failed to compile the file.\n");
+	}else	fprintf(stdout,"Compilation Successfull.\n");
+	
+	
+
+
+}
+

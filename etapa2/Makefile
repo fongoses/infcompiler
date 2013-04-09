@@ -1,4 +1,5 @@
-target: main main2
+#target: main main2
+target: main2
 
 #-d gera o arquivo y.tab.h, com os tokens
 yacc: yac.l
@@ -13,13 +14,13 @@ lex: scanner.l
 	gcc -o scanner.obj -c scanner.yy.c
 
 #funcao main depende agora, tambem, do analisador sintatico(yac.obj)
-main: yacc lex hashtable main.c
-	gcc -o etapa2 main.c scanner.obj yac.obj hashtable.obj
+#main: yacc lex hashtable main.c
+#	gcc -o etapa2 main.c scanner.obj yac.obj hashtable.obj
 
 
 #testes: diferentes versoes da main.c
-main2:	yacc lex hashtable main.test2.c 
-	gcc -o etapa2.test2 main.test2.c yac.obj scanner.obj hashtable.obj
+main2:	yacc lex hashtable 
+	gcc -o etapa2.test2 yac.obj scanner.obj hashtable.obj
 
 clean:
 	rm scanner.yy.c

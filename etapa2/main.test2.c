@@ -79,7 +79,7 @@ int syntaxAnalyzer(){
 }
 
 
-
+/*
 int main(int argc , char ** argv){
 	
 	
@@ -91,6 +91,6 @@ int main(int argc , char ** argv){
 		exit(1);	
 
 	}*/
-	fprintf(stdout,"Compilation successfull\n");	
+/*	fprintf(stdout,"Compilation successfull\n");	
 	return 1;
-}
+}*/
