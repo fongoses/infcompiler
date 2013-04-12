@@ -15,7 +15,7 @@
 #include "y.tab.h" //definicoes do analisador sintatico (nao utilizamos mais tokens.h)
 int LineNumber = 1;
 int running = 1;
-extern int yyval; //store the value of currnet token. this is used by the syntax analyzer
+//extern union yylval; //store the value of currnet token. this is used by the syntax analyzer //nao necessario: ja presente no y.tab.h gerado
 
 %}
 %x COMMENT_LINE
@@ -25,11 +25,11 @@ extern int yyval; //store the value of currnet token. this is used by the syntax
 %%
 
 
-word	{ yyval=KW_WORD; return KW_WORD;}
-bool	{ yyval=KW_BOOL;return KW_BOOL;}
-byte	{ yyval=KW_BYTE;return KW_BYTE;}
-if	{ yyval=KW_IF; return KW_IF;}
-then	{ yyval=KW_THEN;return KW_THEN;}
+word	{ yylval.number=KW_WORD; return KW_WORD;}
+bool	{ yylval.number=KW_BOOL;return KW_BOOL;}
+byte	{ yylval.number=KW_BYTE;return KW_BYTE;}
+if	{ yylval.number=KW_IF; return KW_IF;}
+then	{ yylval.number=KW_THEN;return KW_THEN;}
 else	{ return KW_ELSE;}
 loop	{ return KW_LOOP;}
 input	{ return KW_INPUT;}
@@ -37,8 +37,8 @@ return	{ return KW_RETURN;}
 output	{ return KW_OUTPUT;}
 
 
-"<="	{ yyval=OPERATOR_LE;return OPERATOR_LE;}
-">="	{ yyval=OPERATOR_GE;return OPERATOR_GE;}
+"<="	{ yylval.number=OPERATOR_LE;return OPERATOR_LE;}
+">="	{ yylval.number=OPERATOR_GE;return OPERATOR_GE;}
 "=="	{ return OPERATOR_EQ;}
 "!="	{ return OPERATOR_NE;}
 "&&"	{ return OPERATOR_AND;}
@@ -53,8 +53,8 @@ output	{ return KW_OUTPUT;}
 
 FALSE			{ hashInsert(yytext,SYMBOL_LIT_FALSE); return SYMBOL_LIT_FALSE;}
 TRUE			{ hashInsert(yytext,SYMBOL_LIT_TRUE);return SYMBOL_LIT_TRUE;}
-[a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,SYMBOL_IDENTIFIER);yyval=SYMBOL_IDENTIFIER;return SYMBOL_IDENTIFIER;}
-[0-9][a-fA-F0-9]*	{ hashInsert(yytext,SYMBOL_LIT_INTEGER);yyval=SYMBOL_LIT_INTEGER;return SYMBOL_LIT_INTEGER;}
+[a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,SYMBOL_IDENTIFIER);yylval.text = yytext;return SYMBOL_IDENTIFIER;}
+[0-9][a-fA-F0-9]*	{ hashInsert(yytext,SYMBOL_LIT_INTEGER);yylval.number = atoi(yytext);return SYMBOL_LIT_INTEGER;}
 \'.\'			{ hashInsert(yytext,SYMBOL_LIT_CHAR);return SYMBOL_LIT_CHAR;} /* ok */
 \".+\"			{ hashInsert(yytext,SYMBOL_LIT_STRING);return SYMBOL_LIT_STRING;} /* ok */
 "\n"			{ ++LineNumber;} //corrigido 1

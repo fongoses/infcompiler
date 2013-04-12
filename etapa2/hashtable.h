@@ -4,6 +4,11 @@ typedef struct hash_node {
     struct hash_node *next;
 } HASH_NODE;
 
+//alteracao professor aula 09/04
+#ifndef HASH_HEADER
+#define HASH_HEADER
+#endif
+
 // Tamanho maximo da tabela hash
 #define HASH_SIZE 997 
 
