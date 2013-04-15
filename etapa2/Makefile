@@ -2,8 +2,8 @@
 target: main2
 
 #-d gera o arquivo y.tab.h, com os tokens
-yacc: yac.l
-	yacc -d yac.l
+yacc: yacc.y
+	yacc -d yacc.y
 	gcc -o yac.obj -c y.tab.c
 
 hashtable: hashtable.c

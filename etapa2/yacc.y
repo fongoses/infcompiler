@@ -8,9 +8,9 @@
  * Mario Cesar Gasparoni Junior (mariogasparoni@gmail.com)
  **********************************************************************/
 
-%token KW_WORD     
-%token KW_BOOL
-%token KW_BYTE
+%token KW_WORD  /* tipo 'int' */   
+%token KW_BOOL /* tipo 'boolean' */
+%token KW_BYTE /* tipo 'char' */
 %token KW_IF
 %token KW_THEN
 %token KW_ELSE
@@ -28,10 +28,10 @@
 %token OPERATOR_OR    
 
 %token <number> SYMBOL_LIT_INTEGER /*todo1: floating too? */   
-%token SYMBOL_LIT_FALSE      
-%token SYMBOL_LIT_TRUE	     
-%token SYMBOL_LIT_CHAR       
-%token SYMBOL_LIT_STRING
+%token <boolean> SYMBOL_LIT_FALSE      
+%token <boolean> SYMBOL_LIT_TRUE	     
+%token <text> SYMBOL_LIT_CHAR       
+%token <text> SYMBOL_LIT_STRING
 %token <node> SYMBOL_IDENTIFIER  
 %token TOKEN_ERROR    
 
@@ -46,6 +46,7 @@
 	int number;
 	HASH_NODE * node;
 	char * text;
+	char boolean; /* we are associating our boolean type to C's char type. */
 }
 	
 
@@ -58,16 +59,32 @@ program: dec program
 
 
 dec: 	vardec
+	| varassign
 	| fundec
 	;
 
 
 intdec : SYMBOL_LIT_INTEGER { fprintf(stdout,"Inteiro!\n"); };
-	
- /* var declaration*/
+
+/* var declaration*/
  // $2 corresponde a KW_WORD e %4 corresponde a SYMBOL_LIT_INTEGER recebido em yyval pelo analisador lexico
- vardec: KW_WORD SYMBOL_IDENTIFIER '=' SYMBOL_LIT_INTEGER ';' { fprintf(stdout,"Var %s recebe %d\n",(char*)$2, $4); };
- 
+ vardec: KW_WORD SYMBOL_IDENTIFIER ':' SYMBOL_LIT_INTEGER ';' { fprintf(stdout,"Var %s inicializada com %d\n",(char*)$2, $4); }
+	 | KW_BOOL SYMBOL_IDENTIFIER ':' SYMBOL_LIT_FALSE ';' { fprintf(stdout,"Var %s inicializada com %d\n",(char*)$2, $4); }
+	 | KW_BOOL SYMBOL_IDENTIFIER ':' SYMBOL_LIT_TRUE ';' { fprintf(stdout,"Var %s inicializada com %d\n",(char*)$2, $4); }
+	 | KW_BYTE SYMBOL_IDENTIFIER ':' SYMBOL_LIT_CHAR ';' { fprintf(stdout,"Var %s inicializada com um char\n",(char*)$2); }
+	 | KW_BYTE '$' SYMBOL_IDENTIFIER ':' SYMBOL_LIT_STRING ';' { fprintf(stdout,"Var %s inicializada com uma string\n",(char*)$3); };
+	 /* cifrao colado ? */
+	
+ /* var assignment*/
+ // $1 corresponde a KW_WORD e %3 corresponde a SYMBOL_LIT_INTEGER recebido em yyval pelo analisador lexico
+ varassign: SYMBOL_IDENTIFIER '=' SYMBOL_LIT_INTEGER ';' { fprintf(stdout,"Var %s recebe %d\n",(char*)$1, $3); }
+	 |  SYMBOL_IDENTIFIER '=' SYMBOL_LIT_FALSE ';' { fprintf(stdout,"Var %s recebe %d\n",(char*)$1, $3); }
+	 |  SYMBOL_IDENTIFIER '=' SYMBOL_LIT_TRUE ';' { fprintf(stdout,"Var %s recebe %d\n",(char*)$1, $3); }
+	 |  SYMBOL_IDENTIFIER '=' SYMBOL_LIT_CHAR ';' { fprintf(stdout,"Var %s recebe um char",(char*)$1); }
+	 |  '$' SYMBOL_IDENTIFIER '=' SYMBOL_LIT_STRING ';' { fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); };
+	 /* cifrao colado ? */
+		
+	
 
  /* function declaration */
  fundec : KW_WORD SYMBOL_IDENTIFIER '(' funparam ')' '{' body '}'	{ fprintf(stdout,"funcao:\n > %s \n",(char*)$2); };
