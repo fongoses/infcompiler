@@ -11,13 +11,13 @@
 %token <tipo> KW_WORD  /* tipo 'int' */   
 %token <tipo> KW_BOOL /* tipo 'boolean' */
 %token <tipo> KW_BYTE /* tipo 'char' */
-%token KW_IF
-%token KW_THEN
-%token KW_ELSE
-%token KW_LOOP
-%token KW_INPUT        
-%token KW_RETURN      
-%token KW_OUTPUT      
+%token <exp> KW_IF
+%token <exp> KW_THEN
+%token <exp> KW_ELSE
+%token <exp> KW_LOOP
+%token <exp> KW_INPUT        
+%token <exp> KW_RETURN      
+%token <exp> KW_OUTPUT      
 
 
 %token OPERATOR_LE    
@@ -60,6 +60,8 @@
 	char * text;
 	char boolean; /* we are associating our boolean type to C's char type. */
 	int tipo;
+	int exp;
+	
 }
 	
 
@@ -75,6 +77,8 @@ dec: 	vardec
 	| vetordec
 	| varassign
 	| fundec
+	| input
+	| output
 	;
 
 literal : 
@@ -90,7 +94,8 @@ tipos:  KW_WORD
 	| KW_BYTE
 	;
  
-
+expressao: LIT_INTEGER ;
+	
 
 
 /* var declaration*/
@@ -116,7 +121,10 @@ tipos:  KW_WORD
  /* var assignment*/
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  varassign: TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
-	   | '$' TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); };
+	   | '$' TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
+		| TK_IDENTIFIER '['LIT_INTEGER ']' '=' literal ';' { fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
+		;
+	 
 		//totest3
 	
 
@@ -128,12 +136,25 @@ tipos:  KW_WORD
 		| tipos '$' TK_IDENTIFIER //totest4			 
 		| tipos TK_IDENTIFIER ',' funparam 
 		| tipos '$' TK_IDENTIFIER ',' funparam
-		;
+		; //vetor nao eh parametro
 
  /* function's body declaration */
  //function's body is basically a block.
  body:  /* empty body/block */ 
 	| dec; // or contains declarations. Todo: bodydec (body's declarations is not the same as the program declarations 
+
+ input:
+	KW_INPUT TK_IDENTIFIER ';' {fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) $2);}
+	;
+
+ outputexp: LIT_STRING
+	| LIT_STRING ',' outputexp
+	| expressao
+	| expressao ',' outputexp
+	; 
+
+ output: KW_OUTPUT outputexp ';' {fprintf(stdout,"Valor escrito na saida padrao\n");}
+	; 
 	
 
 %%
@@ -152,7 +173,7 @@ int yyerror(char *s){
 
 int main(){
 
-	
+	initMe();	
 	yyparse(); //if something goes wrong, then yyerror will be called and the program dies here.
 		
 	fprintf(stdout,"Compilation Successfull.\n");

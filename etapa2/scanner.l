@@ -28,13 +28,13 @@ int running = 1;
 word	{ yylval.tipo=KW_WORD; return KW_WORD;}
 bool	{ yylval.tipo=KW_BOOL;return KW_BOOL;}
 byte	{ yylval.tipo=KW_BYTE;return KW_BYTE;}
-if	{ yylval.number=KW_IF; return KW_IF;}
-then	{ yylval.number=KW_THEN;return KW_THEN;}
-else	{ return KW_ELSE;}
-loop	{ return KW_LOOP;}
-input	{ return KW_INPUT;}
-return	{ return KW_RETURN;}
-output	{ return KW_OUTPUT;}
+if	{ yylval.exp=KW_IF; return KW_IF;}
+then	{ yylval.exp=KW_THEN;return KW_THEN;}
+else	{ yylval.exp=KW_ELSE;return KW_ELSE;}
+loop	{ yylval.exp=KW_LOOP;return KW_LOOP;}
+input	{ yylval.exp=KW_INPUT;return KW_INPUT;}
+return	{ yylval.exp=KW_RETURN;return KW_RETURN;}
+output	{ yylval.exp=KW_OUTPUT;return KW_OUTPUT;}
 
 
 "<="	{ yylval.number=OPERATOR_LE;return OPERATOR_LE;}
