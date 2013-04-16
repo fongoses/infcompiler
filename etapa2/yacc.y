@@ -8,9 +8,9 @@
  * Mario Cesar Gasparoni Junior (mariogasparoni@gmail.com)
  **********************************************************************/
 
-%token KW_WORD  /* tipo 'int' */   
-%token KW_BOOL /* tipo 'boolean' */
-%token KW_BYTE /* tipo 'char' */
+%token <tipo> KW_WORD  /* tipo 'int' */   
+%token <tipo> KW_BOOL /* tipo 'boolean' */
+%token <tipo> KW_BYTE /* tipo 'char' */
 %token KW_IF
 %token KW_THEN
 %token KW_ELSE
@@ -59,6 +59,7 @@
 	HASH_NODE * node;
 	char * text;
 	char boolean; /* we are associating our boolean type to C's char type. */
+	int tipo;
 }
 	
 
@@ -71,6 +72,7 @@ program: dec program
 
 
 dec: 	vardec
+	| vetordec
 	| varassign
 	| fundec
 	;
@@ -81,10 +83,9 @@ literal :
 	| LIT_TRUE
 	| LIT_CHAR	
 	| LIT_STRING
-	;
+	; 
 
-tipos :  
-	  KW_WORD
+tipos:  KW_WORD 
 	| KW_BOOL
 	| KW_BYTE
 	;
@@ -95,54 +96,38 @@ tipos :
 /* var declaration*/
  // $2 corresponde a KW_WORD e %4 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  vardec:
-	  tipos TK_IDENTIFIER ':' literal ';' { fprintf(stdout,"Var %s inicializada\n",(char*)$2); };
-	
-
-	/*
-	 | KW_WORD TK_IDENTIFIER ':' LIT_INTEGER ';' { fprintf(stdout,"Var %s inicializada com %d\n",(char*)$2, $4); }
-	 | KW_BOOL TK_IDENTIFIER ':' LIT_FALSE ';' { fprintf(stdout,"Var %s inicializada com %d\n",(char*)$2, $4); }
-	 | KW_BOOL TK_IDENTIFIER ':' LIT_TRUE ';' { fprintf(stdout,"Var %s inicializada com %d\n",(char*)$2, $4); }
-	 | KW_BYTE TK_IDENTIFIER ':' LIT_CHAR ';' { fprintf(stdout,"Var %s inicializada com um char\n",(char*)$2); }
-	 | KW_BYTE '$' TK_IDENTIFIER ':' LIT_STRING ';' { fprintf(stdout,"Var %s inicializada com uma string\n",(char*)$3);}
-	 | vetordec
-         ;
-	*/
-	/* cifrao colado ? */
+	 tipos TK_IDENTIFIER ':' literal ';' { fprintf(stdout,"Var %s inicializada\n",(char*)$2); }
+	 | tipos '$' TK_IDENTIFIER ':' literal ';'  { fprintf(stdout,"Var %s inicializada\n",(char*)$3); }
+	 ; //totest6 
+	/*  ponteiro */
 
  /* inicializador de vetor */
   vetorini: literal
-	| literal ',' vetorini
+	| literal vetorini //totest1
 	;
 
- vetordec: 
-	 tipo TK_IDENTIFIER '[' LIT_INTEGER ']' ':' vetorini ';' {fprintf(stdout,"Vetor %s inicializado corretamente\n",(char*)$2); }
-	;
-
-	/*
-	 KW_WORD TK_IDENTIFIER '[' LIT_INTEGER ']' ':' LIT_INTEGER ';' {fprintf(stdout,"Vetor %s inicializado corretamente\n",(char*)$2); }
-	|KW_BOOL TK_IDENTIFIER '[' LIT_INTEGER ']' ':' literal_bool ';' {fprintf(stdout,"Vetor %s inicializado corretamente com booleanos\n",(char*)$2); }
-	|KW_BYTE TK_IDENTIFIER '[' LIT_INTEGER ']' ':' LIT_CHAR ';' {fprintf(stdout,"Vetor %s inicializado corretamente com char\n",(char*)$2); }
-	|KW_BYTE '$' TK_IDENTIFIER '[' LIT_INTEGER ']' ':' LIT_STRING ';' {fprintf(stdout,"Vetor %s inicializado corretamente com string\n",(char*)$3);}
-	;*/
+ vetordec:
+	 tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';'  {fprintf(stdout,"Vetor %s declarado sem inicializacao\n",(char*)$2); }
+	| tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' vetorini ';' {fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
+	; //totest2
 
 
 
  /* var assignment*/
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
- varassign: TK_IDENTIFIER '=' LIT_INTEGER ';' { fprintf(stdout,"Var %s recebe %d\n",(char*)$1, $3); }
-	 |  TK_IDENTIFIER '=' LIT_FALSE ';' { fprintf(stdout,"Var %s recebe %d\n",(char*)$1, $3); }
-	 |  TK_IDENTIFIER '=' LIT_TRUE ';' { fprintf(stdout,"Var %s recebe %d\n",(char*)$1, $3); }
-	 |  TK_IDENTIFIER '=' LIT_CHAR ';' { fprintf(stdout,"Var %s recebe um char",(char*)$1); }
-	 |  '$' TK_IDENTIFIER '=' LIT_STRING ';' { fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); };
-		
+ varassign: TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
+	   | '$' TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); };
+		//totest3
 	
 
  /* function declaration */
- fundec : KW_WORD TK_IDENTIFIER '(' funparam ')' '{' body '}'	{ fprintf(stdout,"funcao:\n > %s \n",(char*)$2); };
+ fundec : tipos TK_IDENTIFIER '(' funparam ')' '{' body '}'	{ fprintf(stdout,"funcao:\n > %s \n",(char*)$2); };
 
  funparam: 	/* empty params */
-		| KW_WORD TK_IDENTIFIER 
-		| KW_WORD TK_IDENTIFIER ',' funparam 
+		| tipos TK_IDENTIFIER
+		| tipos '$' TK_IDENTIFIER //totest4			 
+		| tipos TK_IDENTIFIER ',' funparam 
+		| tipos '$' TK_IDENTIFIER ',' funparam
 		;
 
  /* function's body declaration */

@@ -27,7 +27,7 @@ clean:
 	rm y.tab.c
 	rm y.tab.h
 	rm *.obj
-	rm etapa2
 	rm etapa2.test2
+	rm etapa2
 		
 

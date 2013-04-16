@@ -25,9 +25,9 @@ int running = 1;
 %%
 
 
-word	{ yylval.number=KW_WORD; return KW_WORD;}
-bool	{ yylval.number=KW_BOOL;return KW_BOOL;}
-byte	{ yylval.number=KW_BYTE;return KW_BYTE;}
+word	{ yylval.tipo=KW_WORD; return KW_WORD;}
+bool	{ yylval.tipo=KW_BOOL;return KW_BOOL;}
+byte	{ yylval.tipo=KW_BYTE;return KW_BYTE;}
 if	{ yylval.number=KW_IF; return KW_IF;}
 then	{ yylval.number=KW_THEN;return KW_THEN;}
 else	{ return KW_ELSE;}
