@@ -52,6 +52,7 @@
 
 	#include "hashtable.h" //pega tipo 'node'
 	#define DEBUG 1	
+	#define TESTE_MANUAL 0
 %}
 
 
@@ -85,14 +86,18 @@ blocodec:
 	;
 
 comando:
-	 /* comando vazio*/
-	| varassign
+	 varassign
 	| vetorassign
 	| controlefluxo
 	| input
 	| output
 	| return
 	;
+
+comandos:
+	/* comando vazio*/
+	| comando
+	| comando comandos;
 
 literal : 
 	 LIT_INTEGER
@@ -157,7 +162,7 @@ controlefluxo: condif
  /* function's body declaration */
  //function's body is basically a block.
  bloco:  /* empty body/block */ 
-	| blocodec
+	| comandos
 	;
 
  body: '{' bloco '}' ';'
@@ -199,21 +204,23 @@ expressao:
 
 /* FLUXO */
 
-condif: KW_IF '(' expressao ')' KW_THEN comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
-	| KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
-	;
+
+condif: KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+       | KW_IF '(' expressao ')' KW_THEN body {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+       | KW_IF '(' expressao ')' KW_THEN body KW_ELSE body {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+       ;
 
 loop : KW_LOOP '(' expressao ')' body {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
-	;
-
-
+   | KW_LOOP '(' expressao ')' comando {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
+   ;
 
 %%
+
 
 #include <stdio.h>
 #include <stdlib.h>
 
-
+extern int yyin;
 
 int yyerror(char *s){
 	fprintf(stderr, "Failed to compilate the code\n");
@@ -222,14 +229,34 @@ int yyerror(char *s){
 }
 
 
-int main(){
+int main(int argc , char ** argv){
 
-	initMe();	
-	yyparse(); //if something goes wrong, then yyerror will be called and the program dies here.
+
+	if(TESTE_MANUAL){
+
+		if(argc < 2) {
+                	fprintf(stderr,"Error: No input file\n");
+                	exit(1);
+       	 	}
+
+        	yyin=fopen(argv[1],"r"); //yyin: global var which stores the file pointer to the current input file of the lexycal analyzer
+
+        	if(yyin <= 0) {
+                	fprintf(stderr,"Error opening the file\n");
+                	exit(1);
+        	}
+		initMe();
+		yyparse();
+
+
+	}else{
+
+		initMe();	
+		yyparse(); //if something goes wrong, then yyerror will be called and the program dies here.
 		
-	fprintf(stdout,"Compilation Successfull.\n");
-	exit(0); //successfull compilation: exits with 0
-	
+		fprintf(stdout,"Compilation Successfull.\n");
+		exit(0); //successfull compilation: exits with 0
+	}	
 
 
 }
