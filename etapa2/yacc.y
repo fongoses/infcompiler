@@ -81,6 +81,8 @@ dec: 	vardec
 	| expressao ';'  {fprintf(stdout,"Expressao!\n");}
 	| input
 	| output
+	| controlefluxo 
+	
 ;
 
 literal : 
@@ -96,12 +98,7 @@ tipos:  KW_WORD
 	| KW_BYTE
 	;
  
-expressao:	 
-	 literal operador expressao
- 	| '(' expressao ')' operador '(' expressao ')'
-	| '(' expressao ')'
-	| LIT_INTEGER | LIT_FALSE | LIT_TRUE | LIT_CHAR | LIT_STRING  	 
-	;	
+
 
 operador: OPERATOR_LE
 	| OPERATOR_GE
@@ -113,6 +110,9 @@ operador: OPERATOR_LE
 	;	
 	
 	
+controlefluxo: condif
+	| loop
+	;
 
 
 /* var declaration*/
@@ -170,8 +170,21 @@ operador: OPERATOR_LE
 	; 
 
  output: KW_OUTPUT outputexp ';' {fprintf(stdout,"Valor escrito na saida padrao\n");}
-	; 
-	
+	;
+ 
+expressao:	 
+	 literal operador expressao
+ 	| '(' expressao ')' operador '(' expressao ')'
+	| '(' expressao ')'
+	| LIT_INTEGER | LIT_FALSE | LIT_TRUE | LIT_CHAR | LIT_STRING  	 
+	;	
+
+condif: KW_IF expressao KW_THEN bloco
+	;
+loop : expressao bloco
+	;
+
+
 
 %%
 
