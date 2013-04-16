@@ -51,7 +51,7 @@
 %{
 
 	#include "hashtable.h" //pega tipo 'node'
-
+	#define DEBUG 1	
 %}
 
 
@@ -73,17 +73,26 @@ program: dec program
 	| /* empty program */
 	;
 
-
-dec: 	vardec
+dec: blocodec
 	| vetordec
-	| varassign
+	;
+
+blocodec:
+	 vardec
 	| fundec
-	| expressao ';'  {fprintf(stdout,"Expressao!\n");}
+	| expressao ';'  { if(DEBUG) if(DEBUG) fprintf(stdout,"Expressao!\n");}
+	| comando
+	;
+
+comando:
+	 /* comando vazio*/
+	| varassign
+	| vetorassign
+	| controlefluxo
 	| input
 	| output
-	| controlefluxo 
-	
-;
+	| return
+	;
 
 literal : 
 	 LIT_INTEGER
@@ -97,18 +106,6 @@ tipos:  KW_WORD
 	| KW_BOOL
 	| KW_BYTE
 	;
- 
-
-
-operador: OPERATOR_LE
-	| OPERATOR_GE
-	| OPERATOR_EQ
-	| OPERATOR_NE
-	| OPERATOR_AND
-	| OPERATOR_OR
-	| '+' | '-' | '*' | '\\' | '<' | '>' | '!' | '&' | '/'
-	;	
-	
 	
 controlefluxo: condif
 	| loop
@@ -118,8 +115,8 @@ controlefluxo: condif
 /* var declaration*/
  // $2 corresponde a KW_WORD e %4 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  vardec:
-	 tipos TK_IDENTIFIER ':' literal ';' { fprintf(stdout,"Var %s inicializada\n",(char*)$2); }
-	 | tipos '$' TK_IDENTIFIER ':' literal ';'  { fprintf(stdout,"Var %s inicializada\n",(char*)$3); }
+	 tipos TK_IDENTIFIER ':' literal ';' { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$2); }
+	 | tipos '$' TK_IDENTIFIER ':' literal ';'  { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$3); }
 	 ; //totest6 
 	/*  ponteiro */
 
@@ -129,24 +126,26 @@ controlefluxo: condif
 	;
 
  vetordec:
-	 tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';'  {fprintf(stdout,"Vetor %s declarado sem inicializacao\n",(char*)$2); }
-	| tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' vetorini ';' {fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
+	 tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';'  {if(DEBUG) fprintf(stdout,"Vetor %s declarado sem inicializacao\n",(char*)$2); }
+	| tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' vetorini ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
 	; //totest2
 
 
 
  /* var assignment*/
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
- varassign: TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
-	   | '$' TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
-		| TK_IDENTIFIER '[' expressao ']' '=' literal ';' { fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
+ varassign: TK_IDENTIFIER '=' literal ';' { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
+	   | '$' TK_IDENTIFIER '=' literal ';' { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
+	;
+
+ vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal ';' { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
 		;
 	 
 		//totest3
 	
 
  /* function declaration */
- fundec : tipos TK_IDENTIFIER '(' funparam ')' '{' body '}'	{ fprintf(stdout,"funcao:\n > %s \n",(char*)$2); };
+ fundec : tipos TK_IDENTIFIER '(' funparam ')'  body	{ if(DEBUG) fprintf(stdout,"funcao:\n > %s \n",(char*)$2); };
 
  funparam: 	/* empty params */
 		| tipos TK_IDENTIFIER
@@ -157,33 +156,54 @@ controlefluxo: condif
 
  /* function's body declaration */
  //function's body is basically a block.
- body:  /* empty body/block */ 
-	| expressao | vardec |varassign | input | output | controlefluxo
-	; // or contains declarations. Todo: bodydec (body's declarations is not the same as the program declarations 
-
- input:
-	KW_INPUT TK_IDENTIFIER ';' {fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) $2);}
+ bloco:  /* empty body/block */ 
+	| blocodec
 	;
 
- outputexp:
+ body: '{' bloco '}' ';'
+	;
+	
+ input:
+	KW_INPUT TK_IDENTIFIER ';' {if(DEBUG) fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) $2);}
+	;
+
+ outputexp: /* expressao da clausula output */
 	| expressao
 	| expressao ',' outputexp
 	; 
 
- output: KW_OUTPUT outputexp ';' {fprintf(stdout,"Valor escrito na saida padrao\n");}
+ output: KW_OUTPUT outputexp ';' {if(DEBUG) fprintf(stdout,"Valor escrito na saida padrao\n");}
 	;
- 
-expressao:	
-	literal 
-	| '(' expressao ')'
-	|expressao operador expressao
+
+ return: KW_RETURN expressao ';'
+	;
+
+ operador: OPERATOR_LE
+	| OPERATOR_GE
+	| OPERATOR_EQ
+	| OPERATOR_NE
+	| OPERATOR_AND
+	| OPERATOR_OR
+	| '+' | '-' | '*' | '\\' | '<' | '>' | '!' | '&' | '/'
+	;	
+	
+expressao:
+	 literal
+	| TK_IDENTIFIER
+	| TK_IDENTIFIER '[' LIT_INTEGER ']' 
 	| '&' TK_IDENTIFIER 
 	| '*' TK_IDENTIFIER	
-	;	
-
-condif: KW_IF '(' expressao ')' KW_THEN bloco
+	| '(' expressao ')'
+	| expressao operador expressao
 	;
-loop : '(' expressao ')' bloco
+
+/* FLUXO */
+
+condif: KW_IF '(' expressao ')' KW_THEN comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+	| KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+	;
+
+loop : KW_LOOP '(' expressao ')' body {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
 	;
 
 
