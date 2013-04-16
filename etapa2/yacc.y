@@ -139,7 +139,7 @@ controlefluxo: condif
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  varassign: TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
 	   | '$' TK_IDENTIFIER '=' literal ';' { fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
-		| TK_IDENTIFIER '['LIT_INTEGER ']' '=' literal ';' { fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
+		| TK_IDENTIFIER '[' expressao ']' '=' literal ';' { fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
 		;
 	 
 		//totest3
@@ -158,7 +158,8 @@ controlefluxo: condif
  /* function's body declaration */
  //function's body is basically a block.
  body:  /* empty body/block */ 
-	| dec; // or contains declarations. Todo: bodydec (body's declarations is not the same as the program declarations 
+	| expressao | vardec |varassign | input | output | controlefluxo
+	; // or contains declarations. Todo: bodydec (body's declarations is not the same as the program declarations 
 
  input:
 	KW_INPUT TK_IDENTIFIER ';' {fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) $2);}
@@ -176,12 +177,13 @@ expressao:
 	literal 
 	| '(' expressao ')'
 	|expressao operador expressao
-	
+	| '&' TK_IDENTIFIER 
+	| '*' TK_IDENTIFIER	
 	;	
 
-condif: KW_IF expressao KW_THEN bloco
+condif: KW_IF '(' expressao ')' KW_THEN bloco
 	;
-loop : expressao bloco
+loop : '(' expressao ')' bloco
 	;
 
 
@@ -195,7 +197,7 @@ loop : expressao bloco
 
 int yyerror(char *s){
 	fprintf(stderr, "Failed to compilate the code\n");
-	exit(1); //Todo: exit with value 1 on error ?
+	exit(3); 
 	
 }
 
