@@ -20,12 +20,13 @@
 %token <exp> KW_OUTPUT      
 
 
-%token OPERATOR_LE    
-%token OPERATOR_GE    
-%token OPERATOR_EQ    
-%token OPERATOR_NE    
-%token OPERATOR_AND   
-%token OPERATOR_OR    
+%token <operator> OPERATOR_LE 
+%token <operator> OPERATOR_GE    
+%token <operator> OPERATOR_EQ    
+%token <operator> OPERATOR_NE    
+%token <operator> OPERATOR_AND   
+%token <operator> OPERATOR_OR    
+
 
 %token <number> LIT_INTEGER /*todo1: floating too? */   
 %token <boolean> LIT_FALSE      
@@ -61,7 +62,7 @@
 	char boolean; /* we are associating our boolean type to C's char type. */
 	int tipo;
 	int exp;
-	
+	int operator;
 }
 	
 
@@ -77,9 +78,10 @@ dec: 	vardec
 	| vetordec
 	| varassign
 	| fundec
+	| expressao ';'  {fprintf(stdout,"Expressao!\n");}
 	| input
 	| output
-	;
+;
 
 literal : 
 	 LIT_INTEGER
@@ -94,7 +96,22 @@ tipos:  KW_WORD
 	| KW_BYTE
 	;
  
-expressao: LIT_INTEGER ;
+expressao:	 
+	 literal operador expressao
+ 	| '(' expressao ')' operador '(' expressao ')'
+	| '(' expressao ')'
+	| LIT_INTEGER | LIT_FALSE | LIT_TRUE | LIT_CHAR | LIT_STRING  	 
+	;	
+
+operador: OPERATOR_LE
+	| OPERATOR_GE
+	| OPERATOR_EQ
+	| OPERATOR_NE
+	| OPERATOR_AND
+	| OPERATOR_OR
+	| '+' | '-' | '*' | '\\' | '<' | '>' | '!' | '&' | '/'
+	;	
+	
 	
 
 
@@ -107,7 +124,7 @@ expressao: LIT_INTEGER ;
 	/*  ponteiro */
 
  /* inicializador de vetor */
-  vetorini: literal
+  vetorini:// literal
 	| literal vetorini //totest1
 	;
 
@@ -147,8 +164,7 @@ expressao: LIT_INTEGER ;
 	KW_INPUT TK_IDENTIFIER ';' {fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) $2);}
 	;
 
- outputexp: LIT_STRING
-	| LIT_STRING ',' outputexp
+ outputexp:
 	| expressao
 	| expressao ',' outputexp
 	; 

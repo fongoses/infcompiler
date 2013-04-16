@@ -37,12 +37,12 @@ return	{ yylval.exp=KW_RETURN;return KW_RETURN;}
 output	{ yylval.exp=KW_OUTPUT;return KW_OUTPUT;}
 
 
-"<="	{ yylval.number=OPERATOR_LE;return OPERATOR_LE;}
-">="	{ yylval.number=OPERATOR_GE;return OPERATOR_GE;}
-"=="	{ return OPERATOR_EQ;}
-"!="	{ return OPERATOR_NE;}
-"&&"	{ return OPERATOR_AND;}
-"||"	{ return OPERATOR_OR;}
+"<="	{ yylval.operator=OPERATOR_LE;return OPERATOR_LE;}
+">="	{ yylval.operator=OPERATOR_GE;return OPERATOR_GE;}
+"=="	{ yylval.operator=OPERATOR_EQ;return OPERATOR_EQ;}
+"!="	{ yylval.operator=OPERATOR_NE;return OPERATOR_NE;}
+"&&"	{ yylval.operator=OPERATOR_AND;return OPERATOR_AND;}
+"||"	{ yylval.operator=OPERATOR_OR;return OPERATOR_OR;}
 
  /* especiais, incluindo alguns operadores */
 [,;:()[\]{}\+\-*<>=!&$] { return yytext[0];} 
