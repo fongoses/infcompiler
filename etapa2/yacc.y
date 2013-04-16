@@ -172,11 +172,11 @@ controlefluxo: condif
  output: KW_OUTPUT outputexp ';' {fprintf(stdout,"Valor escrito na saida padrao\n");}
 	;
  
-expressao:	 
-	 literal operador expressao
- 	| '(' expressao ')' operador '(' expressao ')'
+expressao:	
+	literal 
 	| '(' expressao ')'
-	| LIT_INTEGER | LIT_FALSE | LIT_TRUE | LIT_CHAR | LIT_STRING  	 
+	|expressao operador expressao
+	
 	;	
 
 condif: KW_IF expressao KW_THEN bloco
