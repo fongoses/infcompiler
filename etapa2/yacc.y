@@ -70,19 +70,18 @@
 %%
 
 
-program: dec program
-	| /* empty program */
+program: 
+	/* empty program */
+	| globaldec program
+	| fundec program
 	;
 
-dec: blocodec
-	| vetordec
+globaldec: localdec //declaracoes locais
+	| vetordec //declaracao de vetor
 	;
 
-blocodec:
+localdec: //declaracoes permitidas em um bloco (declaracao de vetor e funcao nao sao permitidas aqui)
 	 vardec
-	| fundec
-	| expressao ';'  { if(DEBUG) if(DEBUG) fprintf(stdout,"Expressao!\n");}
-	| comando
 	;
 
 comando:
@@ -123,16 +122,15 @@ controlefluxo: condif
 	 tipos TK_IDENTIFIER ':' literal ';' { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$2); }
 	 | tipos '$' TK_IDENTIFIER ':' literal ';'  { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$3); }
 	 ; //totest6 
-	/*  ponteiro */
 
  /* inicializador de vetor */
-  vetorini:// literal
-	| literal vetorini //totest1
+ vetorini: //rever essa regra
+	/* declaracao vazia(opcional segundo a espec) */
+	 literal
+	 | literal vetorini //totest1
 	;
-
  vetordec:
-	 tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';'  {if(DEBUG) fprintf(stdout,"Vetor %s declarado sem inicializacao\n",(char*)$2); }
-	| tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' vetorini ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
+	tipos TK_IDENTIFIER '[' LIT_INTEGER ']' vetorini ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
 	; //totest2
 
 
@@ -147,25 +145,27 @@ controlefluxo: condif
 		;
 	 
 		//totest3
-	
 
- /* function declaration */
- fundec : tipos TK_IDENTIFIER '(' funparam ')'  body	{ if(DEBUG) fprintf(stdout,"funcao:\n > %s \n",(char*)$2); };
-
+/* functions */	
  funparam: 	/* empty params */
 		| tipos TK_IDENTIFIER
 		| tipos '$' TK_IDENTIFIER //totest4			 
 		| tipos TK_IDENTIFIER ',' funparam 
 		| tipos '$' TK_IDENTIFIER ',' funparam
-		; //vetor nao eh parametro
+		; //vetor nao eh parametro, porem ponteiros sao
 
- /* function's body declaration */
+
+ cabecalho : tipos TK_IDENTIFIER '(' funparam ')';  
+
+ fundec :  cabecalho localdec body { if(DEBUG) fprintf(stdout,"funcao:\n"); };
+
+  /* function's body declaration */
  //function's body is basically a block.
  bloco:  /* empty body/block */ 
 	| comandos
 	;
 
- body: '{' bloco '}' ';'
+ body: '{' bloco '}' 
 	;
 	
  input:
@@ -173,8 +173,10 @@ controlefluxo: condif
 	;
 
  outputexp: /* expressao da clausula output */
-	| expressao
+	  expressao
+	| LIT_STRING
 	| expressao ',' outputexp
+	| LIT_STRING ',' outputexp
 	; 
 
  output: KW_OUTPUT outputexp ';' {if(DEBUG) fprintf(stdout,"Valor escrito na saida padrao\n");}
@@ -192,10 +194,12 @@ controlefluxo: condif
 	| '+' | '-' | '*' | '\\' | '<' | '>' | '!' | '&' | '/'
 	;	
 	
-expressao:
-	 literal
-	| TK_IDENTIFIER
-	| TK_IDENTIFIER '[' LIT_INTEGER ']' 
+ expressao:
+	  TK_IDENTIFIER
+	| TK_IDENTIFIER '[' LIT_INTEGER ']'
+	| LIT_INTEGER
+	| LIT_TRUE
+	| LIT_FALSE 	
 	| '&' TK_IDENTIFIER 
 	| '*' TK_IDENTIFIER	
 	| '(' expressao ')'
@@ -203,16 +207,14 @@ expressao:
 	;
 
 /* FLUXO */
-
-
-condif: KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+ condif: KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
        | KW_IF '(' expressao ')' KW_THEN body {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
        | KW_IF '(' expressao ')' KW_THEN body KW_ELSE body {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
        ;
 
-loop : KW_LOOP '(' expressao ')' body {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
-   | KW_LOOP '(' expressao ')' comando {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
-   ;
+ loop : KW_LOOP '(' expressao ')' body {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
+   	| KW_LOOP '(' expressao ')' comando {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
+   	;
 
 %%
 
@@ -229,34 +231,16 @@ int yyerror(char *s){
 }
 
 
-int main(int argc , char ** argv){
+int main(){
 
 
-	if(TESTE_MANUAL){
-
-		if(argc < 2) {
-                	fprintf(stderr,"Error: No input file\n");
-                	exit(1);
-       	 	}
-
-        	yyin=fopen(argv[1],"r"); //yyin: global var which stores the file pointer to the current input file of the lexycal analyzer
-
-        	if(yyin <= 0) {
-                	fprintf(stderr,"Error opening the file\n");
-                	exit(1);
-        	}
-		initMe();
-		yyparse();
-
-
-	}else{
 
 		initMe();	
 		yyparse(); //if something goes wrong, then yyerror will be called and the program dies here.
 		
 		fprintf(stdout,"Compilation Successfull.\n");
 		exit(0); //successfull compilation: exits with 0
-	}	
+	
 
 
 }
