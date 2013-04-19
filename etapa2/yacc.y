@@ -75,10 +75,6 @@ program:
 	| dec program
 	;
 
-	// professor dec program soh
-	
-	//dec: vardec | vecdec | funcdec;
-
 dec: 	vardec 
 	| vetordec //declaracao de vetor
 	| fundec
