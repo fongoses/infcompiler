@@ -112,13 +112,14 @@ literal :
 	| LIT_FALSE
 	| LIT_TRUE
 	| LIT_CHAR	
- //	| LIT_STRING //rever: no do professor , string nao eh literal
-	
+ //	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
 	;
 
-litseq: literal
-	| litseq literal //reducao a esquerda
-	; 
+ litseq : //sequencia de literais
+	literal //sequencia de literais nao pode ser vazia por causa da clausula vetordec  (que adiciona ':').
+	| literal litseq //rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
+	;
+ 
 
 tipos:  KW_WORD 
 	| KW_BOOL
@@ -137,11 +138,6 @@ controlefluxo: condif
 	 | tipos '$' TK_IDENTIFIER ':' literal ';'  { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$3); }
 	 ; //totest6 
 
- /* inicializador de vetor */
- litseq : //sequencia de literais
-	literal //sequencia de literais nao pode ser vazia por causa da clausula vetordec  (que adiciona ':').
-	| literal litseq //rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
-	;
  
  vetordec:
 	tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
@@ -154,6 +150,7 @@ controlefluxo: condif
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  varassign: TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
 	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
+	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); } //rever: pode essa atribuicao?
 	;
 
  vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
@@ -202,18 +199,23 @@ controlefluxo: condif
 	;	
 
 
-//sequencia de argumentos para chamada de funcao
- argseq:
+//sequencia de argumentos para chamada de funcao: Rever: uma expressao pode ser expressa na chamada de funcao?
+/* argseq:
 	| literal
 	| TK_IDENTIFIER
 	| argseq ',' literal 	
 	| argseq ',' TK_IDENTIFIER
 	;
+*/
+ argseq: //rever: argumentos de chamada de funcao eh uma lista de expressoes 
+	| expressao
+	| argseq ',' expressao
+	;
 
  expressao: literal
 	|  TK_IDENTIFIER
-	| TK_IDENTIFIER '[' expressao  ']'
- 	| TK_IDENTIFIER '(' argseq')' // Chamada de funcao . adicionado pelo professor
+	| TK_IDENTIFIER '[' expressao  ']' //chamada de campo vetor
+ 	| TK_IDENTIFIER '(' argseq')' // Chamada de funcao
 	| '&' TK_IDENTIFIER 
 	| '*' TK_IDENTIFIER	
 	| '(' expressao ')'
