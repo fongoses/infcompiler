@@ -19,6 +19,7 @@ clean:
 	rm y.tab.c
 	rm y.tab.h
 	rm *.obj
+	rm y.output
 	rm etapa2
 		
 
