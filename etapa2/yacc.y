@@ -72,16 +72,20 @@
 
 program: 
 	/* empty program */
-	| globaldec program
-	| fundec program
+	| dec program
 	;
 
-globaldec: localdec //declaracoes locais
+	// professor dec program soh
+	
+	//dec: vardec | vecdec | funcdec;
+
+dec: 	vardec 
 	| vetordec //declaracao de vetor
+	| fundec
 	;
 
-localdec: //declaracoes permitidas em um bloco (declaracao de vetor e funcao nao sao permitidas aqui)
-	 vardec
+localdecseq: //lista de declaracoes locais :declaracoes permitidas antes de um bloco (declaracao de vetor e funcao nao sao permitidas aqui)
+	| vardec localdecseq
 	;
 
 comando:
@@ -91,19 +95,29 @@ comando:
 	| input
 	| output
 	| return
+	| blococomandos
 	;
 
-comandos:
-	/* comando vazio*/
-	| comando
-	| comando comandos;
+
+comandosseq:
+	/* sequencia de comandos vazia : comando vazio*/	
+	| comando ';' comandosseq //recursao a esquerda
+
+blococomandos:
+	'{' comandosseq '}'
+	;
 
 literal : 
 	 LIT_INTEGER
 	| LIT_FALSE
 	| LIT_TRUE
 	| LIT_CHAR	
-	| LIT_STRING
+ //	| LIT_STRING //rever: no do professor , string nao eh literal
+	
+	;
+
+litseq: literal
+	| litseq literal //reducao a esquerda
 	; 
 
 tipos:  KW_WORD 
@@ -124,52 +138,45 @@ controlefluxo: condif
 	 ; //totest6 
 
  /* inicializador de vetor */
- vetorini: //rever essa regra
-	/* declaracao vazia(opcional segundo a espec) */
-	 literal
-	 | literal vetorini //totest1
+ litseq : //sequencia de literais
+	literal //sequencia de literais nao pode ser vazia por causa da clausula vetordec  (que adiciona ':').
+	| literal litseq //rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
 	;
+ 
  vetordec:
-	tipos TK_IDENTIFIER '[' LIT_INTEGER ']' vetorini ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
+	tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
+	| tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' litseq ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
 	; //totest2
 
 
 
  /* var assignment*/
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
- varassign: TK_IDENTIFIER '=' literal ';' { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
-	   | '$' TK_IDENTIFIER '=' literal ';' { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
+ varassign: TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
+	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
 	;
 
- vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal ';' { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
+ vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
 		;
 	 
-		//totest3
+		//totest //rever: no do professor , string nao eh literal3
 
 /* functions */	
- funparam: 	/* empty params */
+ paramseq: 	/* empty params */
 		| tipos TK_IDENTIFIER
 		| tipos '$' TK_IDENTIFIER //totest4			 
-		| tipos TK_IDENTIFIER ',' funparam 
-		| tipos '$' TK_IDENTIFIER ',' funparam
+		| tipos TK_IDENTIFIER ',' paramseq 
+		| tipos '$' TK_IDENTIFIER ',' paramseq
 		; //vetor nao eh parametro, porem ponteiros sao
 
 
- cabecalho : tipos TK_IDENTIFIER '(' funparam ')';  
-
- fundec :  cabecalho localdec body { if(DEBUG) fprintf(stdout,"funcao:\n"); };
+ fundec :  tipos TK_IDENTIFIER '(' paramseq ')'  localdecseq blococomandos { if(DEBUG) fprintf(stdout,"funcao %s:\n",(char*)$2); };
 
   /* function's body declaration */
  //function's body is basically a block.
- bloco:  /* empty body/block */ 
-	| comandos
-	;
 
- body: '{' bloco '}' 
-	;
-	
  input:
-	KW_INPUT TK_IDENTIFIER ';' {if(DEBUG) fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) $2);}
+	KW_INPUT TK_IDENTIFIER  {if(DEBUG) fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) $2);}
 	;
 
  outputexp: /* expressao da clausula output */
@@ -179,10 +186,10 @@ controlefluxo: condif
 	| LIT_STRING ',' outputexp
 	; 
 
- output: KW_OUTPUT outputexp ';' {if(DEBUG) fprintf(stdout,"Valor escrito na saida padrao\n");}
+ output: KW_OUTPUT outputexp  {if(DEBUG) fprintf(stdout,"Valor escrito na saida padrao\n");}
 	;
 
- return: KW_RETURN expressao ';'
+ return: KW_RETURN expressao 
 	;
 
  operador: OPERATOR_LE
@@ -193,28 +200,34 @@ controlefluxo: condif
 	| OPERATOR_OR
 	| '+' | '-' | '*' | '\\' | '<' | '>' | '!' | '&' | '/'
 	;	
-	
- expressao:
-	  TK_IDENTIFIER
-	| TK_IDENTIFIER '[' LIT_INTEGER ']'
-	| LIT_INTEGER
-	| LIT_TRUE
-	| LIT_FALSE 	
+
+
+//sequencia de argumentos para chamada de funcao
+ argseq:
+	| literal
+	| TK_IDENTIFIER
+	| argseq ',' literal 	
+	| argseq ',' TK_IDENTIFIER
+	;
+
+ expressao: literal
+	|  TK_IDENTIFIER
+	| TK_IDENTIFIER '[' expressao  ']'
+ 	| TK_IDENTIFIER '(' argseq')' // Chamada de funcao . adicionado pelo professor
 	| '&' TK_IDENTIFIER 
 	| '*' TK_IDENTIFIER	
 	| '(' expressao ')'
 	| expressao operador expressao
 	;
 
-/* FLUXO */
+ /* FLUXO */
+ //comando nao pode ter ';' por causa do if
  condif: KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
-       | KW_IF '(' expressao ')' KW_THEN body {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
-       | KW_IF '(' expressao ')' KW_THEN body KW_ELSE body {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+       | KW_IF '(' expressao ')' KW_THEN comando  {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
        ;
 
- loop : KW_LOOP '(' expressao ')' body {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
-   	| KW_LOOP '(' expressao ')' comando {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
-   	;
+ loop : KW_LOOP '(' expressao ')' comando {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
+   	; //obs: um bloco de comandos tb eh um comando
 
 %%
 

@@ -1,0 +1,1641 @@
+   0  $accept : program $end
+
+   1  program :
+   2          | dec program
+
+   3  dec : vardec
+   4      | vetordec
+   5      | fundec
+
+   6  localdecseq :
+   7              | vardec localdecseq
+
+   8  comando : varassign
+   9          | vetorassign
+  10          | controlefluxo
+  11          | input
+  12          | output
+  13          | return
+  14          | blococomandos
+
+  15  comandosseq :
+  16              | comando ';' comandosseq
+
+  17  blococomandos : '{' comandosseq '}'
+
+  18  literal : LIT_INTEGER
+  19          | LIT_FALSE
+  20          | LIT_TRUE
+  21          | LIT_CHAR
+
+  22  litseq : literal
+  23         | litseq literal
+
+  24  tipos : KW_WORD
+  25        | KW_BOOL
+  26        | KW_BYTE
+
+  27  controlefluxo : condif
+  28                | loop
+
+  29  vardec : tipos TK_IDENTIFIER ':' literal ';'
+  30         | tipos '$' TK_IDENTIFIER ':' literal ';'
+
+  31  litseq : literal
+  32         | literal litseq
+
+  33  vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';'
+  34           | tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' litseq ';'
+
+  35  varassign : TK_IDENTIFIER '=' expressao
+  36            | '$' TK_IDENTIFIER '=' expressao
+
+  37  vetorassign : TK_IDENTIFIER '[' expressao ']' '=' literal
+
+  38  paramseq :
+  39           | tipos TK_IDENTIFIER
+  40           | tipos '$' TK_IDENTIFIER
+  41           | tipos TK_IDENTIFIER ',' paramseq
+  42           | tipos '$' TK_IDENTIFIER ',' paramseq
+
+  43  fundec : tipos TK_IDENTIFIER '(' paramseq ')' localdecseq blococomandos
+
+  44  input : KW_INPUT TK_IDENTIFIER
+
+  45  outputexp : expressao
+  46            | LIT_STRING
+  47            | expressao ',' outputexp
+  48            | LIT_STRING ',' outputexp
+
+  49  output : KW_OUTPUT outputexp
+
+  50  return : KW_RETURN expressao
+
+  51  operador : OPERATOR_LE
+  52           | OPERATOR_GE
+  53           | OPERATOR_EQ
+  54           | OPERATOR_NE
+  55           | OPERATOR_AND
+  56           | OPERATOR_OR
+  57           | '+'
+  58           | '-'
+  59           | '*'
+  60           | '\\'
+  61           | '<'
+  62           | '>'
+  63           | '!'
+  64           | '&'
+  65           | '/'
+
+  66  argseq :
+  67         | literal
+  68         | TK_IDENTIFIER
+  69         | argseq ',' literal
+  70         | argseq ',' TK_IDENTIFIER
+
+  71  expressao : literal
+  72            | TK_IDENTIFIER
+  73            | TK_IDENTIFIER '[' expressao ']'
+  74            | TK_IDENTIFIER '(' argseq ')'
+  75            | '&' TK_IDENTIFIER
+  76            | '*' TK_IDENTIFIER
+  77            | '(' expressao ')'
+  78            | expressao operador expressao
+
+  79  condif : KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando
+  80         | KW_IF '(' expressao ')' KW_THEN comando
+
+  81  loop : KW_LOOP '(' expressao ')' comando
+
+state 0
+	$accept : . program $end  (0)
+	program : .  (1)
+
+	KW_WORD  shift 1
+	KW_BOOL  shift 2
+	KW_BYTE  shift 3
+	$end  reduce 1
+
+	program  goto 4
+	dec  goto 5
+	vardec  goto 6
+	vetordec  goto 7
+	fundec  goto 8
+	tipos  goto 9
+
+
+state 1
+	tipos : KW_WORD .  (24)
+
+	.  reduce 24
+
+
+state 2
+	tipos : KW_BOOL .  (25)
+
+	.  reduce 25
+
+
+state 3
+	tipos : KW_BYTE .  (26)
+
+	.  reduce 26
+
+
+state 4
+	$accept : program . $end  (0)
+
+	$end  accept
+
+
+state 5
+	program : dec . program  (2)
+	program : .  (1)
+
+	KW_WORD  shift 1
+	KW_BOOL  shift 2
+	KW_BYTE  shift 3
+	$end  reduce 1
+
+	program  goto 10
+	dec  goto 5
+	vardec  goto 6
+	vetordec  goto 7
+	fundec  goto 8
+	tipos  goto 9
+
+
+state 6
+	dec : vardec .  (3)
+
+	.  reduce 3
+
+
+state 7
+	dec : vetordec .  (4)
+
+	.  reduce 4
+
+
+state 8
+	dec : fundec .  (5)
+
+	.  reduce 5
+
+
+state 9
+	vardec : tipos . TK_IDENTIFIER ':' literal ';'  (29)
+	vardec : tipos . '$' TK_IDENTIFIER ':' literal ';'  (30)
+	vetordec : tipos . TK_IDENTIFIER '[' LIT_INTEGER ']' ';'  (33)
+	vetordec : tipos . TK_IDENTIFIER '[' LIT_INTEGER ']' ':' litseq ';'  (34)
+	fundec : tipos . TK_IDENTIFIER '(' paramseq ')' localdecseq blococomandos  (43)
+
+	TK_IDENTIFIER  shift 11
+	'$'  shift 12
+	.  error
+
+
+state 10
+	program : dec program .  (2)
+
+	.  reduce 2
+
+
+state 11
+	vardec : tipos TK_IDENTIFIER . ':' literal ';'  (29)
+	vetordec : tipos TK_IDENTIFIER . '[' LIT_INTEGER ']' ';'  (33)
+	vetordec : tipos TK_IDENTIFIER . '[' LIT_INTEGER ']' ':' litseq ';'  (34)
+	fundec : tipos TK_IDENTIFIER . '(' paramseq ')' localdecseq blococomandos  (43)
+
+	':'  shift 13
+	'['  shift 14
+	'('  shift 15
+	.  error
+
+
+state 12
+	vardec : tipos '$' . TK_IDENTIFIER ':' literal ';'  (30)
+
+	TK_IDENTIFIER  shift 16
+	.  error
+
+
+state 13
+	vardec : tipos TK_IDENTIFIER ':' . literal ';'  (29)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	.  error
+
+	literal  goto 21
+
+
+state 14
+	vetordec : tipos TK_IDENTIFIER '[' . LIT_INTEGER ']' ';'  (33)
+	vetordec : tipos TK_IDENTIFIER '[' . LIT_INTEGER ']' ':' litseq ';'  (34)
+
+	LIT_INTEGER  shift 22
+	.  error
+
+
+state 15
+	fundec : tipos TK_IDENTIFIER '(' . paramseq ')' localdecseq blococomandos  (43)
+	paramseq : .  (38)
+
+	KW_WORD  shift 1
+	KW_BOOL  shift 2
+	KW_BYTE  shift 3
+	')'  reduce 38
+
+	tipos  goto 23
+	paramseq  goto 24
+
+
+state 16
+	vardec : tipos '$' TK_IDENTIFIER . ':' literal ';'  (30)
+
+	':'  shift 25
+	.  error
+
+
+state 17
+	literal : LIT_INTEGER .  (18)
+
+	.  reduce 18
+
+
+state 18
+	literal : LIT_FALSE .  (19)
+
+	.  reduce 19
+
+
+state 19
+	literal : LIT_TRUE .  (20)
+
+	.  reduce 20
+
+
+state 20
+	literal : LIT_CHAR .  (21)
+
+	.  reduce 21
+
+
+state 21
+	vardec : tipos TK_IDENTIFIER ':' literal . ';'  (29)
+
+	';'  shift 26
+	.  error
+
+
+state 22
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER . ']' ';'  (33)
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER . ']' ':' litseq ';'  (34)
+
+	']'  shift 27
+	.  error
+
+
+state 23
+	paramseq : tipos . TK_IDENTIFIER  (39)
+	paramseq : tipos . '$' TK_IDENTIFIER  (40)
+	paramseq : tipos . TK_IDENTIFIER ',' paramseq  (41)
+	paramseq : tipos . '$' TK_IDENTIFIER ',' paramseq  (42)
+
+	TK_IDENTIFIER  shift 28
+	'$'  shift 29
+	.  error
+
+
+state 24
+	fundec : tipos TK_IDENTIFIER '(' paramseq . ')' localdecseq blococomandos  (43)
+
+	')'  shift 30
+	.  error
+
+
+state 25
+	vardec : tipos '$' TK_IDENTIFIER ':' . literal ';'  (30)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	.  error
+
+	literal  goto 31
+
+
+state 26
+	vardec : tipos TK_IDENTIFIER ':' literal ';' .  (29)
+
+	.  reduce 29
+
+
+state 27
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER ']' . ';'  (33)
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER ']' . ':' litseq ';'  (34)
+
+	';'  shift 32
+	':'  shift 33
+	.  error
+
+
+state 28
+	paramseq : tipos TK_IDENTIFIER .  (39)
+	paramseq : tipos TK_IDENTIFIER . ',' paramseq  (41)
+
+	','  shift 34
+	')'  reduce 39
+
+
+state 29
+	paramseq : tipos '$' . TK_IDENTIFIER  (40)
+	paramseq : tipos '$' . TK_IDENTIFIER ',' paramseq  (42)
+
+	TK_IDENTIFIER  shift 35
+	.  error
+
+
+state 30
+	fundec : tipos TK_IDENTIFIER '(' paramseq ')' . localdecseq blococomandos  (43)
+	localdecseq : .  (6)
+
+	KW_WORD  shift 1
+	KW_BOOL  shift 2
+	KW_BYTE  shift 3
+	'{'  reduce 6
+
+	vardec  goto 36
+	localdecseq  goto 37
+	tipos  goto 38
+
+
+state 31
+	vardec : tipos '$' TK_IDENTIFIER ':' literal . ';'  (30)
+
+	';'  shift 39
+	.  error
+
+
+state 32
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';' .  (33)
+
+	.  reduce 33
+
+
+state 33
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' . litseq ';'  (34)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	.  error
+
+	literal  goto 40
+	litseq  goto 41
+
+
+state 34
+	paramseq : tipos TK_IDENTIFIER ',' . paramseq  (41)
+	paramseq : .  (38)
+
+	KW_WORD  shift 1
+	KW_BOOL  shift 2
+	KW_BYTE  shift 3
+	')'  reduce 38
+
+	tipos  goto 23
+	paramseq  goto 42
+
+
+state 35
+	paramseq : tipos '$' TK_IDENTIFIER .  (40)
+	paramseq : tipos '$' TK_IDENTIFIER . ',' paramseq  (42)
+
+	','  shift 43
+	')'  reduce 40
+
+
+state 36
+	localdecseq : vardec . localdecseq  (7)
+	localdecseq : .  (6)
+
+	KW_WORD  shift 1
+	KW_BOOL  shift 2
+	KW_BYTE  shift 3
+	'{'  reduce 6
+
+	vardec  goto 36
+	localdecseq  goto 44
+	tipos  goto 38
+
+
+state 37
+	fundec : tipos TK_IDENTIFIER '(' paramseq ')' localdecseq . blococomandos  (43)
+
+	'{'  shift 45
+	.  error
+
+	blococomandos  goto 46
+
+
+state 38
+	vardec : tipos . TK_IDENTIFIER ':' literal ';'  (29)
+	vardec : tipos . '$' TK_IDENTIFIER ':' literal ';'  (30)
+
+	TK_IDENTIFIER  shift 47
+	'$'  shift 12
+	.  error
+
+
+state 39
+	vardec : tipos '$' TK_IDENTIFIER ':' literal ';' .  (30)
+
+	.  reduce 30
+
+
+40: shift/reduce conflict (shift 17, reduce 22) on LIT_INTEGER
+40: shift/reduce conflict (shift 17, reduce 31) on LIT_INTEGER
+40: shift/reduce conflict (shift 18, reduce 22) on LIT_FALSE
+40: shift/reduce conflict (shift 18, reduce 31) on LIT_FALSE
+40: shift/reduce conflict (shift 19, reduce 22) on LIT_TRUE
+40: shift/reduce conflict (shift 19, reduce 31) on LIT_TRUE
+40: shift/reduce conflict (shift 20, reduce 22) on LIT_CHAR
+40: shift/reduce conflict (shift 20, reduce 31) on LIT_CHAR
+40: reduce/reduce conflict (reduce 22, reduce 31) on ';'
+state 40
+	litseq : literal .  (22)
+	litseq : literal .  (31)
+	litseq : literal . litseq  (32)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	';'  reduce 22
+
+	literal  goto 40
+	litseq  goto 48
+
+
+state 41
+	litseq : litseq . literal  (23)
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' litseq . ';'  (34)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	';'  shift 49
+	.  error
+
+	literal  goto 50
+
+
+state 42
+	paramseq : tipos TK_IDENTIFIER ',' paramseq .  (41)
+
+	.  reduce 41
+
+
+state 43
+	paramseq : tipos '$' TK_IDENTIFIER ',' . paramseq  (42)
+	paramseq : .  (38)
+
+	KW_WORD  shift 1
+	KW_BOOL  shift 2
+	KW_BYTE  shift 3
+	')'  reduce 38
+
+	tipos  goto 23
+	paramseq  goto 51
+
+
+state 44
+	localdecseq : vardec localdecseq .  (7)
+
+	.  reduce 7
+
+
+state 45
+	blococomandos : '{' . comandosseq '}'  (17)
+	comandosseq : .  (15)
+
+	KW_IF  shift 52
+	KW_LOOP  shift 53
+	KW_INPUT  shift 54
+	KW_RETURN  shift 55
+	KW_OUTPUT  shift 56
+	TK_IDENTIFIER  shift 57
+	'{'  shift 45
+	'$'  shift 58
+	'}'  reduce 15
+
+	comando  goto 59
+	varassign  goto 60
+	vetorassign  goto 61
+	controlefluxo  goto 62
+	input  goto 63
+	output  goto 64
+	return  goto 65
+	blococomandos  goto 66
+	comandosseq  goto 67
+	condif  goto 68
+	loop  goto 69
+
+
+state 46
+	fundec : tipos TK_IDENTIFIER '(' paramseq ')' localdecseq blococomandos .  (43)
+
+	.  reduce 43
+
+
+state 47
+	vardec : tipos TK_IDENTIFIER . ':' literal ';'  (29)
+
+	':'  shift 13
+	.  error
+
+
+48: shift/reduce conflict (shift 17, reduce 32) on LIT_INTEGER
+48: shift/reduce conflict (shift 18, reduce 32) on LIT_FALSE
+48: shift/reduce conflict (shift 19, reduce 32) on LIT_TRUE
+48: shift/reduce conflict (shift 20, reduce 32) on LIT_CHAR
+state 48
+	litseq : litseq . literal  (23)
+	litseq : literal litseq .  (32)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	';'  reduce 32
+
+	literal  goto 50
+
+
+state 49
+	vetordec : tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' litseq ';' .  (34)
+
+	.  reduce 34
+
+
+state 50
+	litseq : litseq literal .  (23)
+
+	.  reduce 23
+
+
+state 51
+	paramseq : tipos '$' TK_IDENTIFIER ',' paramseq .  (42)
+
+	.  reduce 42
+
+
+state 52
+	condif : KW_IF . '(' expressao ')' KW_THEN comando KW_ELSE comando  (79)
+	condif : KW_IF . '(' expressao ')' KW_THEN comando  (80)
+
+	'('  shift 70
+	.  error
+
+
+state 53
+	loop : KW_LOOP . '(' expressao ')' comando  (81)
+
+	'('  shift 71
+	.  error
+
+
+state 54
+	input : KW_INPUT . TK_IDENTIFIER  (44)
+
+	TK_IDENTIFIER  shift 72
+	.  error
+
+
+state 55
+	return : KW_RETURN . expressao  (50)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 78
+
+
+state 56
+	output : KW_OUTPUT . outputexp  (49)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	LIT_STRING  shift 79
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 80
+	outputexp  goto 81
+
+
+state 57
+	varassign : TK_IDENTIFIER . '=' expressao  (35)
+	vetorassign : TK_IDENTIFIER . '[' expressao ']' '=' literal  (37)
+
+	'['  shift 82
+	'='  shift 83
+	.  error
+
+
+state 58
+	varassign : '$' . TK_IDENTIFIER '=' expressao  (36)
+
+	TK_IDENTIFIER  shift 84
+	.  error
+
+
+state 59
+	comandosseq : comando . ';' comandosseq  (16)
+
+	';'  shift 85
+	.  error
+
+
+state 60
+	comando : varassign .  (8)
+
+	.  reduce 8
+
+
+state 61
+	comando : vetorassign .  (9)
+
+	.  reduce 9
+
+
+state 62
+	comando : controlefluxo .  (10)
+
+	.  reduce 10
+
+
+state 63
+	comando : input .  (11)
+
+	.  reduce 11
+
+
+state 64
+	comando : output .  (12)
+
+	.  reduce 12
+
+
+state 65
+	comando : return .  (13)
+
+	.  reduce 13
+
+
+state 66
+	comando : blococomandos .  (14)
+
+	.  reduce 14
+
+
+state 67
+	blococomandos : '{' comandosseq . '}'  (17)
+
+	'}'  shift 86
+	.  error
+
+
+state 68
+	controlefluxo : condif .  (27)
+
+	.  reduce 27
+
+
+state 69
+	controlefluxo : loop .  (28)
+
+	.  reduce 28
+
+
+state 70
+	condif : KW_IF '(' . expressao ')' KW_THEN comando KW_ELSE comando  (79)
+	condif : KW_IF '(' . expressao ')' KW_THEN comando  (80)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 87
+
+
+state 71
+	loop : KW_LOOP '(' . expressao ')' comando  (81)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 88
+
+
+state 72
+	input : KW_INPUT TK_IDENTIFIER .  (44)
+
+	.  reduce 44
+
+
+state 73
+	expressao : TK_IDENTIFIER .  (72)
+	expressao : TK_IDENTIFIER . '[' expressao ']'  (73)
+	expressao : TK_IDENTIFIER . '(' argseq ')'  (74)
+
+	'['  shift 89
+	'('  shift 90
+	KW_ELSE  reduce 72
+	OPERATOR_LE  reduce 72
+	OPERATOR_GE  reduce 72
+	OPERATOR_EQ  reduce 72
+	OPERATOR_NE  reduce 72
+	OPERATOR_AND  reduce 72
+	OPERATOR_OR  reduce 72
+	';'  reduce 72
+	']'  reduce 72
+	','  reduce 72
+	')'  reduce 72
+	'+'  reduce 72
+	'-'  reduce 72
+	'*'  reduce 72
+	'\\'  reduce 72
+	'<'  reduce 72
+	'>'  reduce 72
+	'!'  reduce 72
+	'&'  reduce 72
+	'/'  reduce 72
+
+
+state 74
+	expressao : '(' . expressao ')'  (77)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 91
+
+
+state 75
+	expressao : '*' . TK_IDENTIFIER  (76)
+
+	TK_IDENTIFIER  shift 92
+	.  error
+
+
+state 76
+	expressao : '&' . TK_IDENTIFIER  (75)
+
+	TK_IDENTIFIER  shift 93
+	.  error
+
+
+state 77
+	expressao : literal .  (71)
+
+	.  reduce 71
+
+
+state 78
+	return : KW_RETURN expressao .  (50)
+	expressao : expressao . operador expressao  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	KW_ELSE  reduce 50
+	';'  reduce 50
+
+	operador  goto 109
+
+
+state 79
+	outputexp : LIT_STRING .  (46)
+	outputexp : LIT_STRING . ',' outputexp  (48)
+
+	','  shift 110
+	KW_ELSE  reduce 46
+	';'  reduce 46
+
+
+state 80
+	outputexp : expressao .  (45)
+	outputexp : expressao . ',' outputexp  (47)
+	expressao : expressao . operador expressao  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	','  shift 111
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	KW_ELSE  reduce 45
+	';'  reduce 45
+
+	operador  goto 109
+
+
+state 81
+	output : KW_OUTPUT outputexp .  (49)
+
+	.  reduce 49
+
+
+state 82
+	vetorassign : TK_IDENTIFIER '[' . expressao ']' '=' literal  (37)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 112
+
+
+state 83
+	varassign : TK_IDENTIFIER '=' . expressao  (35)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 113
+
+
+state 84
+	varassign : '$' TK_IDENTIFIER . '=' expressao  (36)
+
+	'='  shift 114
+	.  error
+
+
+state 85
+	comandosseq : comando ';' . comandosseq  (16)
+	comandosseq : .  (15)
+
+	KW_IF  shift 52
+	KW_LOOP  shift 53
+	KW_INPUT  shift 54
+	KW_RETURN  shift 55
+	KW_OUTPUT  shift 56
+	TK_IDENTIFIER  shift 57
+	'{'  shift 45
+	'$'  shift 58
+	'}'  reduce 15
+
+	comando  goto 59
+	varassign  goto 60
+	vetorassign  goto 61
+	controlefluxo  goto 62
+	input  goto 63
+	output  goto 64
+	return  goto 65
+	blococomandos  goto 66
+	comandosseq  goto 115
+	condif  goto 68
+	loop  goto 69
+
+
+state 86
+	blococomandos : '{' comandosseq '}' .  (17)
+
+	.  reduce 17
+
+
+state 87
+	expressao : expressao . operador expressao  (78)
+	condif : KW_IF '(' expressao . ')' KW_THEN comando KW_ELSE comando  (79)
+	condif : KW_IF '(' expressao . ')' KW_THEN comando  (80)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	')'  shift 116
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	.  error
+
+	operador  goto 109
+
+
+state 88
+	expressao : expressao . operador expressao  (78)
+	loop : KW_LOOP '(' expressao . ')' comando  (81)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	')'  shift 117
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	.  error
+
+	operador  goto 109
+
+
+state 89
+	expressao : TK_IDENTIFIER '[' . expressao ']'  (73)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 118
+
+
+state 90
+	expressao : TK_IDENTIFIER '(' . argseq ')'  (74)
+	argseq : .  (66)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 119
+	','  reduce 66
+	')'  reduce 66
+
+	literal  goto 120
+	argseq  goto 121
+
+
+state 91
+	expressao : '(' expressao . ')'  (77)
+	expressao : expressao . operador expressao  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	')'  shift 122
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	.  error
+
+	operador  goto 109
+
+
+state 92
+	expressao : '*' TK_IDENTIFIER .  (76)
+
+	.  reduce 76
+
+
+state 93
+	expressao : '&' TK_IDENTIFIER .  (75)
+
+	.  reduce 75
+
+
+state 94
+	operador : OPERATOR_LE .  (51)
+
+	.  reduce 51
+
+
+state 95
+	operador : OPERATOR_GE .  (52)
+
+	.  reduce 52
+
+
+state 96
+	operador : OPERATOR_EQ .  (53)
+
+	.  reduce 53
+
+
+state 97
+	operador : OPERATOR_NE .  (54)
+
+	.  reduce 54
+
+
+state 98
+	operador : OPERATOR_AND .  (55)
+
+	.  reduce 55
+
+
+state 99
+	operador : OPERATOR_OR .  (56)
+
+	.  reduce 56
+
+
+state 100
+	operador : '+' .  (57)
+
+	.  reduce 57
+
+
+state 101
+	operador : '-' .  (58)
+
+	.  reduce 58
+
+
+state 102
+	operador : '*' .  (59)
+
+	.  reduce 59
+
+
+state 103
+	operador : '\\' .  (60)
+
+	.  reduce 60
+
+
+state 104
+	operador : '<' .  (61)
+
+	.  reduce 61
+
+
+state 105
+	operador : '>' .  (62)
+
+	.  reduce 62
+
+
+state 106
+	operador : '!' .  (63)
+
+	.  reduce 63
+
+
+state 107
+	operador : '&' .  (64)
+
+	.  reduce 64
+
+
+state 108
+	operador : '/' .  (65)
+
+	.  reduce 65
+
+
+state 109
+	expressao : expressao operador . expressao  (78)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 123
+
+
+state 110
+	outputexp : LIT_STRING ',' . outputexp  (48)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	LIT_STRING  shift 79
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 80
+	outputexp  goto 124
+
+
+state 111
+	outputexp : expressao ',' . outputexp  (47)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	LIT_STRING  shift 79
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 80
+	outputexp  goto 125
+
+
+state 112
+	vetorassign : TK_IDENTIFIER '[' expressao . ']' '=' literal  (37)
+	expressao : expressao . operador expressao  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	']'  shift 126
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	.  error
+
+	operador  goto 109
+
+
+state 113
+	varassign : TK_IDENTIFIER '=' expressao .  (35)
+	expressao : expressao . operador expressao  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	KW_ELSE  reduce 35
+	';'  reduce 35
+
+	operador  goto 109
+
+
+state 114
+	varassign : '$' TK_IDENTIFIER '=' . expressao  (36)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 73
+	'('  shift 74
+	'*'  shift 75
+	'&'  shift 76
+	.  error
+
+	literal  goto 77
+	expressao  goto 127
+
+
+state 115
+	comandosseq : comando ';' comandosseq .  (16)
+
+	.  reduce 16
+
+
+state 116
+	condif : KW_IF '(' expressao ')' . KW_THEN comando KW_ELSE comando  (79)
+	condif : KW_IF '(' expressao ')' . KW_THEN comando  (80)
+
+	KW_THEN  shift 128
+	.  error
+
+
+state 117
+	loop : KW_LOOP '(' expressao ')' . comando  (81)
+
+	KW_IF  shift 52
+	KW_LOOP  shift 53
+	KW_INPUT  shift 54
+	KW_RETURN  shift 55
+	KW_OUTPUT  shift 56
+	TK_IDENTIFIER  shift 57
+	'{'  shift 45
+	'$'  shift 58
+	.  error
+
+	comando  goto 129
+	varassign  goto 60
+	vetorassign  goto 61
+	controlefluxo  goto 62
+	input  goto 63
+	output  goto 64
+	return  goto 65
+	blococomandos  goto 66
+	condif  goto 68
+	loop  goto 69
+
+
+state 118
+	expressao : TK_IDENTIFIER '[' expressao . ']'  (73)
+	expressao : expressao . operador expressao  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	']'  shift 130
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	.  error
+
+	operador  goto 109
+
+
+state 119
+	argseq : TK_IDENTIFIER .  (68)
+
+	.  reduce 68
+
+
+state 120
+	argseq : literal .  (67)
+
+	.  reduce 67
+
+
+state 121
+	argseq : argseq . ',' literal  (69)
+	argseq : argseq . ',' TK_IDENTIFIER  (70)
+	expressao : TK_IDENTIFIER '(' argseq . ')'  (74)
+
+	','  shift 131
+	')'  shift 132
+	.  error
+
+
+state 122
+	expressao : '(' expressao ')' .  (77)
+
+	.  reduce 77
+
+
+123: shift/reduce conflict (shift 94, reduce 78) on OPERATOR_LE
+123: shift/reduce conflict (shift 95, reduce 78) on OPERATOR_GE
+123: shift/reduce conflict (shift 96, reduce 78) on OPERATOR_EQ
+123: shift/reduce conflict (shift 97, reduce 78) on OPERATOR_NE
+123: shift/reduce conflict (shift 98, reduce 78) on OPERATOR_AND
+123: shift/reduce conflict (shift 99, reduce 78) on OPERATOR_OR
+123: shift/reduce conflict (shift 100, reduce 78) on '+'
+123: shift/reduce conflict (shift 101, reduce 78) on '-'
+123: shift/reduce conflict (shift 102, reduce 78) on '*'
+123: shift/reduce conflict (shift 103, reduce 78) on '\\'
+123: shift/reduce conflict (shift 104, reduce 78) on '<'
+123: shift/reduce conflict (shift 105, reduce 78) on '>'
+123: shift/reduce conflict (shift 106, reduce 78) on '!'
+123: shift/reduce conflict (shift 107, reduce 78) on '&'
+123: shift/reduce conflict (shift 108, reduce 78) on '/'
+state 123
+	expressao : expressao . operador expressao  (78)
+	expressao : expressao operador expressao .  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	KW_ELSE  reduce 78
+	';'  reduce 78
+	']'  reduce 78
+	','  reduce 78
+	')'  reduce 78
+
+	operador  goto 109
+
+
+state 124
+	outputexp : LIT_STRING ',' outputexp .  (48)
+
+	.  reduce 48
+
+
+state 125
+	outputexp : expressao ',' outputexp .  (47)
+
+	.  reduce 47
+
+
+state 126
+	vetorassign : TK_IDENTIFIER '[' expressao ']' . '=' literal  (37)
+
+	'='  shift 133
+	.  error
+
+
+state 127
+	varassign : '$' TK_IDENTIFIER '=' expressao .  (36)
+	expressao : expressao . operador expressao  (78)
+
+	OPERATOR_LE  shift 94
+	OPERATOR_GE  shift 95
+	OPERATOR_EQ  shift 96
+	OPERATOR_NE  shift 97
+	OPERATOR_AND  shift 98
+	OPERATOR_OR  shift 99
+	'+'  shift 100
+	'-'  shift 101
+	'*'  shift 102
+	'\\'  shift 103
+	'<'  shift 104
+	'>'  shift 105
+	'!'  shift 106
+	'&'  shift 107
+	'/'  shift 108
+	KW_ELSE  reduce 36
+	';'  reduce 36
+
+	operador  goto 109
+
+
+state 128
+	condif : KW_IF '(' expressao ')' KW_THEN . comando KW_ELSE comando  (79)
+	condif : KW_IF '(' expressao ')' KW_THEN . comando  (80)
+
+	KW_IF  shift 52
+	KW_LOOP  shift 53
+	KW_INPUT  shift 54
+	KW_RETURN  shift 55
+	KW_OUTPUT  shift 56
+	TK_IDENTIFIER  shift 57
+	'{'  shift 45
+	'$'  shift 58
+	.  error
+
+	comando  goto 134
+	varassign  goto 60
+	vetorassign  goto 61
+	controlefluxo  goto 62
+	input  goto 63
+	output  goto 64
+	return  goto 65
+	blococomandos  goto 66
+	condif  goto 68
+	loop  goto 69
+
+
+state 129
+	loop : KW_LOOP '(' expressao ')' comando .  (81)
+
+	.  reduce 81
+
+
+state 130
+	expressao : TK_IDENTIFIER '[' expressao ']' .  (73)
+
+	.  reduce 73
+
+
+state 131
+	argseq : argseq ',' . literal  (69)
+	argseq : argseq ',' . TK_IDENTIFIER  (70)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	TK_IDENTIFIER  shift 135
+	.  error
+
+	literal  goto 136
+
+
+state 132
+	expressao : TK_IDENTIFIER '(' argseq ')' .  (74)
+
+	.  reduce 74
+
+
+state 133
+	vetorassign : TK_IDENTIFIER '[' expressao ']' '=' . literal  (37)
+
+	LIT_INTEGER  shift 17
+	LIT_FALSE  shift 18
+	LIT_TRUE  shift 19
+	LIT_CHAR  shift 20
+	.  error
+
+	literal  goto 137
+
+
+134: shift/reduce conflict (shift 138, reduce 80) on KW_ELSE
+state 134
+	condif : KW_IF '(' expressao ')' KW_THEN comando . KW_ELSE comando  (79)
+	condif : KW_IF '(' expressao ')' KW_THEN comando .  (80)
+
+	KW_ELSE  shift 138
+	';'  reduce 80
+
+
+state 135
+	argseq : argseq ',' TK_IDENTIFIER .  (70)
+
+	.  reduce 70
+
+
+state 136
+	argseq : argseq ',' literal .  (69)
+
+	.  reduce 69
+
+
+state 137
+	vetorassign : TK_IDENTIFIER '[' expressao ']' '=' literal .  (37)
+
+	.  reduce 37
+
+
+state 138
+	condif : KW_IF '(' expressao ')' KW_THEN comando KW_ELSE . comando  (79)
+
+	KW_IF  shift 52
+	KW_LOOP  shift 53
+	KW_INPUT  shift 54
+	KW_RETURN  shift 55
+	KW_OUTPUT  shift 56
+	TK_IDENTIFIER  shift 57
+	'{'  shift 45
+	'$'  shift 58
+	.  error
+
+	comando  goto 139
+	varassign  goto 60
+	vetorassign  goto 61
+	controlefluxo  goto 62
+	input  goto 63
+	output  goto 64
+	return  goto 65
+	blococomandos  goto 66
+	condif  goto 68
+	loop  goto 69
+
+
+state 139
+	condif : KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando .  (79)
+
+	.  reduce 79
+
+
+Rules never reduced:
+	litseq : literal  (31)
+
+
+State 40 contains 8 shift/reduce conflicts, 1 reduce/reduce conflict.
+State 48 contains 4 shift/reduce conflicts.
+State 123 contains 15 shift/reduce conflicts.
+State 134 contains 1 shift/reduce conflict.
+
+
+53 terminals, 26 nonterminals
+82 grammar rules, 140 states
