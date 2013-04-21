@@ -13,7 +13,7 @@ lex: scanner.l
 	gcc -o scanner.obj -c scanner.yy.c
 
 main:   yacc lex hashtable main.c
-	gcc -o etapa2 yac.obj scanner.obj hashtable.obj -Wall
+	gcc -o etapa2 main.c yac.obj scanner.obj hashtable.obj -Wall
 clean:
 	rm scanner.yy.c
 	rm y.tab.c

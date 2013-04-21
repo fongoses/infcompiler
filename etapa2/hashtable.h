@@ -13,6 +13,7 @@ typedef struct hash_node {
 #define HASH_SIZE 997 
 
 void hashInit();
+void initMe(); //adicionado( haviamos esquecido na etapa anterior)
 int hashAddress(char *);
 HASH_NODE *hashInsert(char *, int);
 HASH_NODE *hashFind(char *);

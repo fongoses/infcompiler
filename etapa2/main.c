@@ -10,10 +10,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "hashtable.h" //incluimos aqui tb, pois o y.tab.h nao enxerga o hashtable.h
 #include "y.tab.h"
+
 extern FILE * yyin;
 extern int LineNumber;
 extern int running;
+extern int yyparse(void);
 
 #define TESTE_MANUAL 0
 
@@ -22,7 +25,7 @@ extern int running;
 int main(int argc , char ** argv){
 
 
-	if(TESTE_MANUAL){
+	if(!TESTE_MANUAL){
 
 		if(argc < 2) {
                 	fprintf(stderr,"Error: No input file\n");
@@ -37,6 +40,8 @@ int main(int argc , char ** argv){
         	}
 		initMe();
 		yyparse();
+		//yyerror (in yacc.y) handles erros, exiting 3		
+		fprintf(stdout,"Compilation Successfull.\n");
 		exit(0);
 
 	}else{

@@ -51,6 +51,12 @@
 %{
 
 	#include "hashtable.h" //pega tipo 'node'
+	#include <stdio.h>
+	#include <stdlib.h>
+
+extern int yyin;
+
+
 	#define DEBUG 1	
 	#define TESTE_MANUAL 0
 %}
@@ -230,29 +236,10 @@ controlefluxo: condif
 %%
 
 
-#include <stdio.h>
-#include <stdlib.h>
-
-extern int yyin;
-
 int yyerror(char *s){
 	fprintf(stderr, "Failed to compilate the code\n");
 	exit(3); 
 	
 }
 
-
-int main(){
-
-
-
-		initMe();	
-		yyparse(); //if something goes wrong, then yyerror will be called and the program dies here.
-		
-		fprintf(stdout,"Compilation Successfull.\n");
-		exit(0); //successfull compilation: exits with 0
-	
-
-
-}
 
