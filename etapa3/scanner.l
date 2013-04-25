@@ -12,6 +12,7 @@
 
 
 #include "hashtable.h"
+#include "astree.h"
 #include "y.tab.h" //definicoes do analisador sintatico (nao utilizamos mais tokens.h)
 int LineNumber = 1;
 int running = 1;

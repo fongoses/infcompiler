@@ -1,4 +1,4 @@
-#include "astree.h"
+//#include "astree.h"
 
 ASTREE * astreeCreate(int type, ASTREE * S0, ASTREE * S1, ASTREE * S2, ASTREE * S3){
 

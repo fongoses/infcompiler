@@ -23,7 +23,7 @@
 typedef struct astree_node{
 		int type;
 		struct astree_node * son[MAX_SONS];
-	} ASTREE;
+} ASTREE;
 
 
 

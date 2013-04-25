@@ -52,6 +52,7 @@
 %{
 
 	#include "hashtable.h" //pega tipo 'node'
+	#include "astree.h"
 	#include "astree.c" //adiciona codigo da arvore
 	#include <stdio.h>
 	#include <stdlib.h>
