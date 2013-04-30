@@ -46,11 +46,14 @@
 %token SYMBOL_LIT_STRING 6
 %token SYMBOL_IDENTIFIER 7
 
-
-
+%type <number> literal 
+%type <number> expressao
+%type <tree> expressao
 %{
 
 	#include "hashtable.h" //pega tipo 'node'
+	#include "astree.h"
+	#include "astree.c" //adiciona codigo da arvore
 	#include <stdio.h>
 	#include <stdlib.h>
 
@@ -62,13 +65,15 @@ extern int yyin;
 
 
 %union {
-	int number;
+	int number; //obs do professor: em vez do numero, deve haver um ponteiro
+				// para a tabela de simbolos
 	HASH_NODE * node;
 	char * text;
 	char boolean; /* we are associating our boolean type to C's char type. */
 	int tipo;
 	int exp;
 	int operator;
+	ASTREE * tree;
 }
 	
 
@@ -109,9 +114,18 @@ blococomandos:
 	;
 
 literal : 
-	 LIT_INTEGER { printf(" Achei integer %d\n",$1);}
-	| LIT_FALSE
-	| LIT_TRUE
+	 LIT_INTEGER  {
+			//printf(" Achei integer %d\n",$1);
+			//$$ = $1; //valor associado ao literal inteiro lido eh o proprio valor do analisador lexico 
+			//obs: necessario declarar o type para essa associacao.
+
+			//para gerar arvore:
+			$$ = astreeCreate(ASTREE_LIT_INT,0,0,0,0);
+	
+			}
+	
+	| LIT_FALSE { $$ = 0;}
+	| LIT_TRUE  { $$ = 0; }
 	| LIT_CHAR	
  //	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
 	;
@@ -147,9 +161,11 @@ controlefluxo: condif
 
 
 
- /* var assignment*/
+ /* var assignment*/ 
+ //alteracao pelo professor (imprimir arvore na atribuicao)
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
- varassign: TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
+ varassign: TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); //astreePrint() 
+	}
 	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
 	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); } //rever: pode essa atribuicao?
 	;
@@ -213,14 +229,46 @@ controlefluxo: condif
 	| argseq ',' expressao
 	;
 
- expressao: literal
-	|  TK_IDENTIFIER
+ //alteracoes feitas em aula, sugeridas pelo professor
+ //basicamente, as alteracoes correspondem somente ao analisador sintatico reali
+ //zar a avaliacao e o calculo de algumas operacoes. Isso corresponde a um inter
+ //pretador, e nao a um compilador, de fato.
+ //Serao feitas, ainda na aula de hoje (25/04/13) , mecanismos para geracao de	
+ //arvore sintatica (astree.h) 
+ expressao: literal {
+			 
+			$$ = $1; //acao default, nao necessaria 
+			//para a associacao acima '$$', que corresponde a asso
+			//ciacao de 'expressao' com literal, eh necessario
+			//declarar o tipo 'type' de expressao, que nessa regra
+			//eh um 'number'
+			}
+	|  TK_IDENTIFIER { //acao vazia
+			 } 
 	| TK_IDENTIFIER '[' expressao  ']' //chamada de campo vetor
  	| TK_IDENTIFIER '(' argseq')' // Chamada de funcao
 	| '&' TK_IDENTIFIER 
 	| '*' TK_IDENTIFIER	
 	| '(' expressao ')'
-	| expressao operador expressao
+	| expressao '-'	expressao   //prof: expressoes agora sao separadas.
+				{ 
+					$$=astreeCreate(ASTREE_ADD,$1,$3,0,0);
+				}
+	| expressao '+' expressao { 
+					 //adcionar if DEBUG aqui
+					//$$ = $1 + $3; //associado o valor da ex-
+					//pressao como o resultado da soma	
+					//printf("Soma %d\n",$1+$3);
+
+					//agora, gerando a arvore (anteriormente
+					//apenas interpretavamos o codigo)
+					$$=astreeCreate(ASTREE_ADD,$1,$3,0,0);
+				
+	
+				 }
+	| expressao '*' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0); }
+	| expressao '/'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0); }
+
 	;
 
  /* FLUXO */
