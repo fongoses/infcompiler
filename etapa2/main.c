@@ -19,7 +19,7 @@ extern int running;
 extern int yyparse(void);
 
 #define TESTE_MANUAL 0
-#define DEBUGGING 1
+#define DEBUGGING 0
 
 
 int main(int argc , char ** argv){

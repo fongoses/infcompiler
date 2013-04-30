@@ -284,7 +284,7 @@ controlefluxo: condif
 
 
 int yyerror(char *s){
-	fprintf(stderr, "Failed to compilate the code\n");
+        fprintf(stderr, "Failed to compilate the code\n");
 	exit(3); 
 	
 }

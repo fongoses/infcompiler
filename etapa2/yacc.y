@@ -58,6 +58,7 @@ extern int yyin;
 
 
 	#define DEBUG 0	
+	#define TESTE_MANUAL 0
 %}
 
 
@@ -109,7 +110,7 @@ blococomandos:
 	;
 
 literal : 
-	 LIT_INTEGER { printf(" Achei integer %d\n",$1);}
+	 LIT_INTEGER
 	| LIT_FALSE
 	| LIT_TRUE
 	| LIT_CHAR	
@@ -236,7 +237,7 @@ controlefluxo: condif
 
 
 int yyerror(char *s){
-	fprintf(stderr, "Failed to compilate the code\n");
+	if(DEBUG) fprintf(stderr, "Failed to compilate the code\n");
 	exit(3); 
 	
 }
