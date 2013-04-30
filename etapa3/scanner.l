@@ -12,38 +12,36 @@
 
 
 #include "hashtable.h"
-#include "astree.h"
-#include "y.tab.h" //definicoes do analisador sintatico (nao utilizamos mais tokens.h)
+#include "y.tab.h"
 int LineNumber = 1;
 int running = 1;
-//extern union yylval; //store the value of currnet token. this is used by the syntax analyzer //nao necessario: ja presente no y.tab.h gerado
+
 
 %}
 %x COMMENT_LINE
-
 %x COMMENT_MULTIPLE_LINES
 
 %%
 
 
-word	{ yylval.tipo=KW_WORD; return KW_WORD;}
-bool	{ yylval.tipo=KW_BOOL;return KW_BOOL;}
-byte	{ yylval.tipo=KW_BYTE;return KW_BYTE;}
-if	{ yylval.exp=KW_IF; return KW_IF;}
-then	{ yylval.exp=KW_THEN;return KW_THEN;}
-else	{ yylval.exp=KW_ELSE;return KW_ELSE;}
-loop	{ yylval.exp=KW_LOOP;return KW_LOOP;}
-input	{ yylval.exp=KW_INPUT;return KW_INPUT;}
-return	{ yylval.exp=KW_RETURN;return KW_RETURN;}
-output	{ yylval.exp=KW_OUTPUT;return KW_OUTPUT;}
+word	{ return KW_WORD;}
+bool	{ return KW_BOOL;}
+byte	{ return KW_BYTE;}
+if	{ return KW_IF;}
+then	{ return KW_THEN;}
+else	{ return KW_ELSE;}
+loop	{ return KW_LOOP;}
+input	{ return KW_INPUT;}
+return	{ return KW_RETURN;}
+output	{ return KW_OUTPUT;}
 
 
-"<="	{ yylval.operator=OPERATOR_LE;return OPERATOR_LE;}
-">="	{ yylval.operator=OPERATOR_GE;return OPERATOR_GE;}
-"=="	{ yylval.operator=OPERATOR_EQ;return OPERATOR_EQ;}
-"!="	{ yylval.operator=OPERATOR_NE;return OPERATOR_NE;}
-"&&"	{ yylval.operator=OPERATOR_AND;return OPERATOR_AND;}
-"||"	{ yylval.operator=OPERATOR_OR;return OPERATOR_OR;}
+"<="	{ return OPERATOR_LE;}
+">="	{ return OPERATOR_GE;}
+"=="	{ return OPERATOR_EQ;}
+"!="	{ return OPERATOR_NE;}
+"&&"	{ return OPERATOR_AND;}
+"||"	{ return OPERATOR_OR;}
 
  /* especiais, incluindo alguns operadores */
 [,;:()[\]{}\+\-*<>=!&$] { return yytext[0];} 
@@ -54,10 +52,11 @@ output	{ yylval.exp=KW_OUTPUT;return KW_OUTPUT;}
 
 FALSE			{ hashInsert(yytext,LIT_FALSE); return LIT_FALSE;}
 TRUE			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
-[a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,TK_IDENTIFIER);yylval.text = yytext;return TK_IDENTIFIER;}
-[0-9][a-fA-F0-9]*	{ hashInsert(yytext,LIT_INTEGER);yylval.number = atoi(yytext);return LIT_INTEGER;}
+[a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,TK_IDENTIFIER);return TK_IDENTIFIER;}
+[0-9][a-fA-F0-9]*	{ hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;}
 \'.\'			{ hashInsert(yytext,LIT_CHAR);return LIT_CHAR;} /* ok */
-\".+\"			{ hashInsert(yytext,LIT_STRING);return LIT_STRING;} /* ok */
+\"[^\"]*\"			{ hashInsert(yytext,LIT_CHAR);return LIT_STRING;} /* ok */
+
 "\n"			{ ++LineNumber;} //corrigido 1
 
 "//"			{ BEGIN(COMMENT_LINE);}

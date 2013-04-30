@@ -19,7 +19,6 @@ int running = 1;
 
 %}
 %x COMMENT_LINE
-
 %x COMMENT_MULTIPLE_LINES
 
 %%
@@ -56,7 +55,8 @@ TRUE			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
 [a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,TK_IDENTIFIER);return TK_IDENTIFIER;}
 [0-9][a-fA-F0-9]*	{ hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;}
 \'.\'			{ hashInsert(yytext,LIT_CHAR);return LIT_CHAR;} /* ok */
-\".+\"			{ hashInsert(yytext,LIT_STRING);return LIT_STRING;} /* ok */
+\"[^\"]*\"			{ hashInsert(yytext,LIT_CHAR);return LIT_STRING;} /* ok */
+
 "\n"			{ ++LineNumber;} //corrigido 1
 
 "//"			{ BEGIN(COMMENT_LINE);}
