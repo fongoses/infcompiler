@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "hashtable.h"
 #define MAX_SONS 4
 #define ASTREE_SYMBOL 1
 #define ASTREE_LIT_INT 2
@@ -19,14 +20,20 @@
 #define ASTREE_MIN 4
 #define ASTREE_MUL 5
 #define ASTREE_DIV 6
+#define ASTREE_SCALAR_ASS 7 
+#define ASTREE_CMDL 8 
+#define ASTREE_LIT_SEQ 9 
+#define ASTREE_VARDEC 10 
 
 typedef struct astree_node{
 		int type;
+		//int valor: 07/05 ,valor para o literal: nao necessario, eh armazenado como symbol
+		HASH_NODE * symbol;
 		struct astree_node * son[MAX_SONS];
 } ASTREE;
 
 
 
-ASTREE * astreeCreate(int type, ASTREE * s0, ASTREE * S1, ASTREE * S2, ASTREE * S3);
+ASTREE * astreeCreate(int type, ASTREE * s0, ASTREE * S1, ASTREE * S2, ASTREE * S3, HASH_NODE * ptr);
 void astreePrintSingle(ASTREE *node);
 void astreePrintTree(ASTREE *node);

@@ -46,18 +46,23 @@
 %token SYMBOL_LIT_STRING 6
 %token SYMBOL_IDENTIFIER 7
 
-%type <number> literal 
-%type <number> expressao
-%type <tree> expressao
+ //tipos dos valores a serem associados , pelo parser, a essas expressoes
+%type <symbol> literal  // 07/05 : identificador e number sao as mesmas coisas. Associados a eles temos o ponteiro para a tab de simbolos 
+%type <tree> expressao //07/05 : 'number' para 'tree'
+%type <tree> comando
+%type <tree> comandosseq //em cmdlist, estamos associando um ponteiro da arvore estatica ao valor padrao ($$) da expressa
+%type <tree> blococomandos
+%type <tree> litseq
+%type <tree> varassign
+
 %{
 
-	#include "hashtable.h" //pega tipo 'node'
-	#include "astree.h"
-	#include "astree.c" //adiciona codigo da arvore
+//	#include "hashtable.h" //pega tipo 'node'
+	#include "astree.h" //ja inclui hashtable.h
 	#include <stdio.h>
 	#include <stdlib.h>
 
-extern int yyin;
+	extern int yyin;
 
 
 	#define DEBUG 0	
@@ -74,8 +79,15 @@ extern int yyin;
 	int exp;
 	int operator;
 	ASTREE * tree;
+	HASH_NODE * symbol;
 }
-	
+
+ //associatividade/prioridade de expressoes
+ //prioridade >
+%left OPERATOR_AND OPERATOR_OR	
+%nonassoc OPERATOR_LE OPERATOR_GE OPERATOR_EQ	
+%left '+' '-'
+%left '*' '/'
 
 %%
 
@@ -95,22 +107,26 @@ localdecseq: //lista de declaracoes locais :declaracoes permitidas antes de um b
 	;
 
 comando:
-	 varassign
-	| vetorassign
-	| controlefluxo
-	| input
-	| output
-	| return
-	| blococomandos
+	 varassign { $$ = 0;}
+	| vetorassign { $$ = 0;} 
+	| controlefluxo { $$ = 0;}
+	| input{ $$ = 0;}
+	| output{ $$ = 0;}
+	| return{ $$ = 0;}
+	| blococomandos{ $$ = 0;}
 	;
 
 
 comandosseq:
-	/* sequencia de comandos vazia : comando vazio*/	
-	| comando ';' comandosseq //recursao a esquerda
+	/* sequencia de comandos vazia : comando vazio*/
+	{ $$ = 0; } //seq vazia: valor associado eh zero. 
+	| comando ';' comandosseq  {
+		//07/05: ok, de acordo com o codigo do professor
+		astreeCreate(ASTREE_CMDL,$1,$3,0,0,0);
+		} //recursao a esquerda
 
 blococomandos:
-	'{' comandosseq '}'
+	'{' comandosseq '}' { $$ = $2; astreePrintTree($2); }
 	;
 
 literal : 
@@ -120,19 +136,19 @@ literal :
 			//obs: necessario declarar o type para essa associacao.
 
 			//para gerar arvore:
-			$$ = astreeCreate(ASTREE_LIT_INT,0,0,0,0);
+			$$ = astreeCreate(ASTREE_LIT_INT,0,0,0,0,(HASH_NODE*)$1); //07/05: ptr da tabela de simbolos recebido pelo scanner
 	
 			}
 	
-	| LIT_FALSE { $$ = 0;}
-	| LIT_TRUE  { $$ = 0; }
+	| LIT_FALSE { }
+	| LIT_TRUE  { }
 	| LIT_CHAR	
  //	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
 	;
 
  litseq : //sequencia de literais
-	literal //sequencia de literais nao pode ser vazia por causa da clausula vetordec  (que adiciona ':').
-	| literal litseq //rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
+	literal {$$ = $1;} //um no filho da sequencia eh o no resultante da avaliacao de literal ($1) declarado logo acima
+	| literal litseq  {$$ = astreeCreate(ASTREE_LIT_SEQ,$1,$2,0,0,0);}//rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
 	;
  
 
@@ -164,7 +180,10 @@ controlefluxo: condif
  /* var assignment*/ 
  //alteracao pelo professor (imprimir arvore na atribuicao)
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
- varassign: TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); //astreePrint() 
+ varassign: TK_IDENTIFIER '=' expressao  { 
+			$$ = astreeCreate(ASTREE_SCALAR_ASS,0,0,0,0,$1); //$1 eh o identificador (na realidade o seu ponteiro para tab de simbolos)
+			
+			if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); //astreePrint() 
 	}
 	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
 	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); } //rever: pode essa atribuicao?
@@ -173,7 +192,6 @@ controlefluxo: condif
  vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
 		;
 	 
-		//totest //rever: no do professor , string nao eh literal3
 
 /* functions */	
  paramseq: 	/* empty params */
@@ -237,13 +255,17 @@ controlefluxo: condif
  //arvore sintatica (astree.h) 
  expressao: literal {
 			 
-			$$ = $1; //acao default, nao necessaria 
+		//	$$ = $1; //acao default, nao necessaria 
 			//para a associacao acima '$$', que corresponde a asso
 			//ciacao de 'expressao' com literal, eh necessario
 			//declarar o tipo 'type' de expressao, que nessa regra
 			//eh um 'number'
+
+			//dia 07/05: a insercao deve ocorrer aqui ou em literal ?Literal
+			$$ = $1; //ok, apenas associa o valor recebido a expressao. No caso, eh o ponteiro da tab de simb	
 			}
-	|  TK_IDENTIFIER { //acao vazia
+	|  TK_IDENTIFIER { 
+				$$=astreeCreate(ASTREE_SYMBOL,0,0,0,0,$1); //scanner necessita retornar ptr para tab de simbolos (ok)
 			 } 
 	| TK_IDENTIFIER '[' expressao  ']' //chamada de campo vetor
  	| TK_IDENTIFIER '(' argseq')' // Chamada de funcao
@@ -252,7 +274,7 @@ controlefluxo: condif
 	| '(' expressao ')'
 	| expressao '-'	expressao   //prof: expressoes agora sao separadas.
 				{ 
-					$$=astreeCreate(ASTREE_ADD,$1,$3,0,0);
+					$$=astreeCreate(ASTREE_ADD,$1,$3,0,0,0);
 				}
 	| expressao '+' expressao { 
 					 //adcionar if DEBUG aqui
@@ -262,12 +284,12 @@ controlefluxo: condif
 
 					//agora, gerando a arvore (anteriormente
 					//apenas interpretavamos o codigo)
-					$$=astreeCreate(ASTREE_ADD,$1,$3,0,0);
+					$$=astreeCreate(ASTREE_ADD,$1,$3,0,0,0);
 				
 	
 				 }
-	| expressao '*' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0); }
-	| expressao '/'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0); }
+	| expressao '*' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
+	| expressao '/'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
 
 	;
 

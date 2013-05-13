@@ -11,7 +11,7 @@
 
 
 
-#include "hashtable.h"
+#include "astree.h"
 #include "y.tab.h"
 int LineNumber = 1;
 int running = 1;
@@ -52,8 +52,8 @@ output	{ return KW_OUTPUT;}
 
 FALSE			{ hashInsert(yytext,LIT_FALSE); return LIT_FALSE;}
 TRUE			{ hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
-[a-zA-Z_][a-zA-Z0-9_]*	{ hashInsert(yytext,TK_IDENTIFIER);return TK_IDENTIFIER;}
-[0-9][a-fA-F0-9]*	{ hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;}
+[a-zA-Z_][a-zA-Z0-9_]*	{ yylval.symbol = hashInsert(yytext,TK_IDENTIFIER);return TK_IDENTIFIER;}
+[0-9][a-fA-F0-9]*	{ yylval.symbol = hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;} //07/05 : retornando pont da tab de simbolos (fazer para literais rest)
 \'.\'			{ hashInsert(yytext,LIT_CHAR);return LIT_CHAR;} /* ok */
 \"[^\"]*\"			{ hashInsert(yytext,LIT_CHAR);return LIT_STRING;} /* ok */
 

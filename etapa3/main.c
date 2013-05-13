@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "hashtable.h" //incluimos aqui tb, pois o y.tab.h nao enxerga o hashtable.h
+//#include "hashtable.h" //ja incluso no astree.h
 #include "astree.h"
 #include "y.tab.h"
 
