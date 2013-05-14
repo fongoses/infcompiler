@@ -24,6 +24,23 @@
 #define ASTREE_CMDL 8 
 #define ASTREE_LIT_SEQ 9 
 #define ASTREE_VARDEC 10 
+#define ASTREE_ARGSEQ 11 
+#define ASTREE_FUNCALL 12 
+#define ASTREE_VETCALL 13 
+#define ASTREE_PTRADDR 14
+#define ASTREE_PTRVALUE 15 
+#define ASTREE_LIT_FALSE 16
+#define ASTREE_LIT_TRUE 17
+#define ASTREE_LIT_CHAR 18
+#define ASTREE_VETORDEC 19
+#define ASTREE_FUNDEC 20
+#define ASTREE_PARAMSEQ 21
+#define ASTREE_LOCALDECSEQ 22
+#define ASTREE_KWWORD 23
+#define ASTREE_KWBOOL 24
+#define ASTREE_KWBYTE 25
+#define ASTREE_PROGRAM 26
+#define ASTREE_DEC 27
 
 typedef struct astree_node{
 		int type;

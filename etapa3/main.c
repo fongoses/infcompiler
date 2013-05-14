@@ -39,11 +39,20 @@ int main(int argc , char ** argv){
                 	fprintf(stderr,"Error opening the file\n");
                 	exit(3);
         	}
-		initMe();
-		yyparse();
-		//yyerror (in yacc.y) handles erros, exiting 3		
-		fprintf(stdout,"Compilation Successfull.\n");
-		exit(0);
+		
+		if(argc==2){
+			initMe();
+			
+			astreePrintTree( yyparse());
+			//yyerror (in yacc.y) handles erros, exiting 3		
+			fprintf(stdout,"Compilation Successfull.\n");
+			
+			exit(0);
+		}
+	
+		if(argc==3) {
+			//do something - criar arq de saida
+		}
 
 	}else{
 
@@ -53,7 +62,8 @@ int main(int argc , char ** argv){
 		fprintf(stdout,"Compilation Successfull.\n");
 		exit(0); //successfull compilation: exits with 0
 	}	
-
+	
+	exit(0);
 
 }
 

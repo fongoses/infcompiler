@@ -28,11 +28,11 @@
 %token <operator> OPERATOR_OR    
 
 
-%token <number> LIT_INTEGER /*todo1: floating too? */   
-%token <boolean> LIT_FALSE      
-%token <boolean> LIT_TRUE	     
-%token <text> LIT_CHAR       
-%token <text> LIT_STRING
+%token <node> LIT_INTEGER
+%token <node> LIT_FALSE      
+%token <node> LIT_TRUE	     
+%token <node> LIT_CHAR       
+%token <node> LIT_STRING
 %token <node> TK_IDENTIFIER  
 %token TOKEN_ERROR    
 
@@ -54,6 +54,17 @@
 %type <tree> blococomandos
 %type <tree> litseq
 %type <tree> varassign
+%type <tree> vetorassign
+%type <tree> argseq
+%type <tree> vetordec
+%type <tree> vardec
+%type <tree> fundec
+%type <tree> paramseq
+%type <tree> localdecseq
+%type <tree> tipos
+%type <tree> program
+%type <tree> dec
+
 
 %{
 
@@ -74,7 +85,7 @@
 				// para a tabela de simbolos
 	HASH_NODE * node;
 	char * text;
-	char boolean; /* we are associating our boolean type to C's char type. */
+	int boolean; /* we are associating our boolean type to C's int type. */
 	int tipo;
 	int exp;
 	int operator;
@@ -96,16 +107,18 @@
 
 program: 
 	/* empty program */
-	| dec program
+	{ $$ = 0;}
+	| dec program { $$ = astreeCreate(ASTREE_PROGRAM,$1,$2,0,0,0);}
 	;
 
-dec: 	vardec 
-	| vetordec //declaracao de vetor
-	| fundec
+dec: 	vardec { $$ = astreeCreate(ASTREE_DEC,$1,0,0,0,0); }
+	| vetordec { $$ = astreeCreate(ASTREE_DEC,$1,0,0,0,0); } //declaracao de vetor
+	| fundec { $$ = astreeCreate(ASTREE_DEC,$1,0,0,0,0); }
 	;
 
-localdecseq: //lista de declaracoes locais :declaracoes permitidas antes de um bloco (declaracao de vetor e funcao nao sao permitidas aqui)
-	| vardec localdecseq
+localdecseq: //lista de declaracoes locais :declaracoes permitidas antes de um bloco (declaracao de vetor e funcao nao sao permitidas aqui
+	{ $$ = 0;}
+	| vardec localdecseq { $$ = astreeCreate(ASTREE_LOCALDECSEQ,$1,$2,0,0,0);}
 	;
 
 comando:
@@ -138,13 +151,12 @@ literal :
 			//obs: necessario declarar o type para essa associacao.
 
 			//para gerar arvore:
-			$$ = astreeCreate(ASTREE_LIT_INT,0,0,0,0,(HASH_NODE*)$1); //07/05: ptr da tabela de simbolos recebido pelo scanner
+			$$ = astreeCreate(ASTREE_LIT_INT,0,0,0,0,$1); //07/05: ptr da tabela de simbolos recebido pelo scanner
 	
 			}
-	
-	| LIT_FALSE { }
-	| LIT_TRUE  { }
-	| LIT_CHAR	
+	| LIT_FALSE { $$ = astreeCreate(ASTREE_LIT_FALSE,0,0,0,0,$1); }
+	| LIT_TRUE   { $$ = astreeCreate(ASTREE_LIT_TRUE,0,0,0,0,$1); }
+	| LIT_CHAR { $$ = astreeCreate(ASTREE_LIT_CHAR,0,0,0,0,$1); }
  //	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
 	;
 
@@ -154,9 +166,9 @@ literal :
 	;
  
 
-tipos:  KW_WORD 
-	| KW_BOOL
-	| KW_BYTE
+tipos:  KW_WORD { $$ = astreeCreate(ASTREE_KWWORD,0,0,0,0,0); }
+	| KW_BOOL{ $$ = astreeCreate(ASTREE_KWBOOL,0,0,0,0,0); }
+	| KW_BYTE{ $$ = astreeCreate(ASTREE_KWBYTE,0,0,0,0,0); }
 	;
 	
 controlefluxo: condif
@@ -167,14 +179,24 @@ controlefluxo: condif
 /* var declaration*/
  // $2 corresponde a KW_WORD e %4 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  vardec:
-	 tipos TK_IDENTIFIER ':' literal ';' { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$2); }
-	 | tipos '$' TK_IDENTIFIER ':' literal ';'  { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$3); }
+	 tipos TK_IDENTIFIER ':' literal ';' { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$2);
+		$$ = astreeCreate(ASTREE_VARDEC,$1,$4,0,0,$2);
+	
+	 }
+	 | tipos '$' TK_IDENTIFIER ':' literal ';'  { if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)$3);
+		$$ = astreeCreate(ASTREE_VARDEC,$1,$5,0,0,$3);
+	 }
 	 ; //totest6 
 
  
  vetordec:
-	tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
-	| tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' litseq ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); }
+	tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2); 
+	
+		$$ = astreeCreate(ASTREE_VETORDEC,$1,astreeCreate(ASTREE_LIT_INT,0,0,0,0,$4),0,0,$2); //ajustar
+	}
+	| tipos TK_IDENTIFIER '[' LIT_INTEGER ']' ':' litseq ';' {if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)$2);
+		$$ = astreeCreate(ASTREE_VETORDEC,$1,astreeCreate(ASTREE_LIT_INT,0,0,0,0,$4),$7,0,$2); //ajustar
+	 }
 	; //totest2
 
 
@@ -187,24 +209,38 @@ controlefluxo: condif
 			
 			if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); //astreePrint() 
 	}
-	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
-	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); } //rever: pode essa atribuicao?
+	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2);
+	
+		$$ = astreeCreate(ASTREE_SCALAR_ASS,0,0,0,0,0); //ajustar alterar, nao eh SCALAR_ASS
+	 }
+	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2);
+		$$ = astreeCreate(ASTREE_SCALAR_ASS,0,0,0,0,0);
+	 }
 	;
 
- vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
+ vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1);
+			$$ = astreeCreate(ASTREE_SCALAR_ASS,0,0,0,0,0);
+		
+		 }	
 		;
 	 
 
 /* functions */	
  paramseq: 	/* empty params */
-		| tipos TK_IDENTIFIER
-		| tipos '$' TK_IDENTIFIER //totest4			 
-		| tipos TK_IDENTIFIER ',' paramseq 
-		| tipos '$' TK_IDENTIFIER ',' paramseq
+		{ $$=0;}
+		| tipos TK_IDENTIFIER {$$ = astreeCreate(ASTREE_PARAMSEQ,0,0,0,0,$2);}
+		| tipos '$' TK_IDENTIFIER {$$= astreeCreate(ASTREE_PARAMSEQ,0,0,0,0,$3);}			 
+		| tipos TK_IDENTIFIER ',' paramseq {$$ = astreeCreate(ASTREE_PARAMSEQ,$4,0,0,0,$2);}
+		| tipos '$' TK_IDENTIFIER ',' paramseq { $$ = astreeCreate(ASTREE_PARAMSEQ,$5,0,0,0,$3);}
 		; //vetor nao eh parametro, porem ponteiros sao
 
 
- fundec :  tipos TK_IDENTIFIER '(' paramseq ')'  localdecseq blococomandos { if(DEBUG) fprintf(stdout,"funcao %s:\n",(char*)$2); };
+ fundec :  tipos TK_IDENTIFIER '(' paramseq ')'  localdecseq blococomandos { 
+	
+	if(DEBUG) fprintf(stdout,"funcao %s:\n",(char*)$2);
+		$$ = astreeCreate(ASTREE_FUNDEC,$4,$6,$7,0,$2);
+	 }
+	;
 
   /* function's body declaration */
  //function's body is basically a block.
@@ -227,17 +263,10 @@ controlefluxo: condif
 	;
 
  
-//sequencia de argumentos para chamada de funcao: Rever: uma expressao pode ser expressa na chamada de funcao?
-/* argseq:
-	| literal
-	| TK_IDENTIFIER
-	| argseq ',' literal 	
-	| argseq ',' TK_IDENTIFIER
-	;
-*/
- argseq: //rever: argumentos de chamada de funcao eh uma lista de expressoes 
-	| expressao
-	| argseq ',' expressao
+ argseq: //rever: argumentos de chamada de funcao eh uma lista de expressoes
+	{ $$ = 0;} 
+	| expressao 	{$$ = astreeCreate(ASTREE_ARGSEQ,$1,0,0,0,0);}
+	| argseq ',' expressao  {$$ = astreeCreate(ASTREE_ARGSEQ,$1,$3,0,0,0); }
 	;
 
  //alteracoes feitas em aula, sugeridas pelo professor
@@ -260,11 +289,11 @@ controlefluxo: condif
 	|  TK_IDENTIFIER { 
 				$$=astreeCreate(ASTREE_SYMBOL,0,0,0,0,$1); //scanner necessita retornar ptr para tab de simbolos (ok)
 			 } 
-	| TK_IDENTIFIER '[' expressao  ']' //chamada de campo vetor
- 	| TK_IDENTIFIER '(' argseq')' // Chamada de funcao
-	| '&' TK_IDENTIFIER 
-	| '*' TK_IDENTIFIER	
-	| '(' expressao ')'
+	| TK_IDENTIFIER '[' expressao  ']' {$$ = astreeCreate(ASTREE_VETCALL,$3,0,0,0,$1);} //chamada de campo vetor
+ 	| TK_IDENTIFIER '(' argseq')'  {$$ = astreeCreate(ASTREE_FUNCALL,0,$3,0,0,$1);}// Chamada de funcao
+	| '&' TK_IDENTIFIER { $$ = astreeCreate(ASTREE_PTRADDR,0,0,0,0,$2);} 
+	| '*' TK_IDENTIFIER { $$ = astreeCreate(ASTREE_PTRVALUE,0,0,0,0,$2);} 
+	| '(' expressao ')' { $$ = 0;} 
 	| expressao '-'	expressao   //prof: expressoes agora sao separadas.
 				{ 
 					$$=astreeCreate(ASTREE_ADD,$1,$3,0,0,0);
