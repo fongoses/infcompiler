@@ -118,7 +118,6 @@ literal :
 	;
 
  litseq : //sequencia de literais
-	literal //sequencia de literais nao pode ser vazia por causa da clausula vetordec  (que adiciona ':').
 	| literal litseq //rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
 	;
  

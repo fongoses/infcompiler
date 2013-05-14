@@ -147,7 +147,6 @@ literal :
 	;
 
  litseq : //sequencia de literais
-	literal {$$ = $1;} //um no filho da sequencia eh o no resultante da avaliacao de literal ($1) declarado logo acima
 	| literal litseq  {$$ = astreeCreate(ASTREE_LIT_SEQ,$1,$2,0,0,0);}//rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
 	;
  
