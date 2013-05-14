@@ -47,7 +47,7 @@
 %token SYMBOL_IDENTIFIER 7
 
  //tipos dos valores a serem associados , pelo parser, a essas expressoes
-%type <symbol> literal  // 07/05 : identificador e number sao as mesmas coisas. Associados a eles temos o ponteiro para a tab de simbolos 
+%type <tree> literal  // 07/05 : identificador e number sao as mesmas coisas. Associados a eles temos o ponteiro para a tab de simbolos 
 %type <tree> expressao //07/05 : 'number' para 'tree'
 %type <tree> comando
 %type <tree> comandosseq //em cmdlist, estamos associando um ponteiro da arvore estatica ao valor padrao ($$) da expressa
@@ -147,6 +147,7 @@ literal :
 	;
 
  litseq : //sequencia de literais
+	{ $$ = 0; }
 	| literal litseq  {$$ = astreeCreate(ASTREE_LIT_SEQ,$1,$2,0,0,0);}//rever: recursao a esquerda aqui gera mais 9 red-red conflicts oO
 	;
  
