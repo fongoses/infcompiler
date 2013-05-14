@@ -88,7 +88,8 @@
 %nonassoc OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE '<' '>' '&' '|' '!' '\\'
 %left '+' '-'
 %left '*' '/'
-
+%nonassoc IFX
+%nonassoc KW_ELSE
 
 %%
 
@@ -298,9 +299,10 @@ controlefluxo: condif
 
  /* FLUXO */
  //comando nao pode ter ';' por causa do if
- condif: KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
-       | KW_IF '(' expressao ')' KW_THEN comando  {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
-       ;
+ condif: 
+        KW_IF '(' expressao ')' KW_THEN comando %prec IFX {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+	|KW_IF '(' expressao ')' KW_THEN comando KW_ELSE comando {if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");}
+       	;
 
  loop : KW_LOOP '(' expressao ')' comando {if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");}
    	; //obs: um bloco de comandos tb eh um comando
