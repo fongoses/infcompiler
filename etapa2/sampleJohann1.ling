@@ -1,0 +1,14 @@
+word a: 0;
+word b: 0;
+
+word main(word a,word b)
+	word x:3;
+	word z:4;
+{
+
+	z[a+1] = 2;
+	
+
+
+
+}

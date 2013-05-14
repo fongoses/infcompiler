@@ -74,7 +74,7 @@
 	#include <stdlib.h>
 
 	extern int yyin;
-
+	ASTREE * TREE;
 
 	#define DEBUG 0	
 %}
@@ -107,11 +107,12 @@
 
 program: 
 	/* empty program */
-	{ $$ = 0;}
-	| dec program { $$ = astreeCreate(ASTREE_PROGRAM,$1,$2,0,0,0);}
+	{ $$ = 0; fprintf(stdout,"Program:\n");}
+	| dec program { $$ = astreeCreate(ASTREE_PROGRAM,$1,$2,0,0,0);astreePrintTree($$); } // astreeCreate(ASTREE_PROGRAM,$1,$2,0,0,0);
+	
 	;
 
-dec: 	vardec { $$ = astreeCreate(ASTREE_DEC,$1,0,0,0,0); }
+dec: 	vardec { $$ = astreeCreate(ASTREE_DEC,$1,0,0,0,0); fprintf(stdout,"Vardec\n"); }
 	| vetordec { $$ = astreeCreate(ASTREE_DEC,$1,0,0,0,0); } //declaracao de vetor
 	| fundec { $$ = astreeCreate(ASTREE_DEC,$1,0,0,0,0); }
 	;
