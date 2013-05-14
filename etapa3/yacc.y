@@ -85,9 +85,10 @@
  //associatividade/prioridade de expressoes
  //prioridade >
 %left OPERATOR_AND OPERATOR_OR	
-%nonassoc OPERATOR_LE OPERATOR_GE OPERATOR_EQ	
+%nonassoc OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE '<' '>' '&' '|' '!' '\\'
 %left '+' '-'
 %left '*' '/'
+
 
 %%
 
@@ -280,7 +281,6 @@ controlefluxo: condif
 	
 				 }
 	| expressao '*' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
-	| expressao '/'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
 	| expressao OPERATOR_LE expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
 	| expressao OPERATOR_GE  expressao {  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
 	| expressao OPERATOR_EQ expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
