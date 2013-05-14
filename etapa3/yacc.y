@@ -224,16 +224,7 @@ controlefluxo: condif
  return: KW_RETURN expressao 
 	;
 
- operador: OPERATOR_LE
-	| OPERATOR_GE
-	| OPERATOR_EQ
-	| OPERATOR_NE
-	| OPERATOR_AND
-	| OPERATOR_OR
-	| '+' | '-' | '*' | '\\' | '<' | '>' | '!' | '&' | '/'
-	;	
-
-
+ 
 //sequencia de argumentos para chamada de funcao: Rever: uma expressao pode ser expressa na chamada de funcao?
 /* argseq:
 	| literal
@@ -290,6 +281,18 @@ controlefluxo: condif
 				 }
 	| expressao '*' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
 	| expressao '/'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
+	| expressao OPERATOR_LE expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
+	| expressao OPERATOR_GE  expressao {  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
+	| expressao OPERATOR_EQ expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
+	| expressao OPERATOR_NE expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
+	| expressao OPERATOR_AND expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
+	| expressao OPERATOR_OR  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
+	| expressao '\\'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
+	| expressao '<' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
+	| expressao '>'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
+	| expressao '!' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
+	| expressao '&'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
+
 
 	;
 
