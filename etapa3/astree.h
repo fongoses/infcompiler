@@ -41,6 +41,7 @@
 #define ASTREE_KWBYTE 25
 #define ASTREE_PROGRAM 26
 #define ASTREE_DEC 27
+#define ASTREE_LIT_STRING 28
 
 typedef struct astree_node{
 		int type;

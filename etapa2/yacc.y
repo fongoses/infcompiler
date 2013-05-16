@@ -114,7 +114,7 @@ literal :
 	| LIT_FALSE
 	| LIT_TRUE
 	| LIT_CHAR	
- //	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
+	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
 	;
 
  litseq : //sequencia de literais
@@ -151,10 +151,10 @@ controlefluxo: condif
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  varassign: TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
 	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
-	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); } //rever: pode essa atribuicao?
+	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); } 
 	;
 
- vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
+ vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' expressao  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1); }	
 		;
 	 
 		//totest //rever: no do professor , string nao eh literal3
@@ -179,9 +179,9 @@ controlefluxo: condif
 
  outputexp: /* expressao da clausula output */
 	  expressao
-	| LIT_STRING
+	//| LIT_STRING
 	| expressao ',' outputexp
-	| LIT_STRING ',' outputexp
+	//| LIT_STRING ',' outputexp //retirado, pois LIT_STRING foi incluso em literal (16/05)
 	; 
 
  output: KW_OUTPUT outputexp  {if(DEBUG) fprintf(stdout,"Valor escrito na saida padrao\n");}

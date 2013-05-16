@@ -1,2 +1,7 @@
 word a: 0;
 word b: 0;
+
+word main(){
+
+	a[1+a+func()] = 1*b;
+}
