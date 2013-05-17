@@ -158,7 +158,7 @@ literal :
 	| LIT_FALSE { $$ = astreeCreate(ASTREE_LIT_FALSE,0,0,0,0,$1); }
 	| LIT_TRUE   { $$ = astreeCreate(ASTREE_LIT_TRUE,0,0,0,0,$1); }
 	| LIT_CHAR { $$ = astreeCreate(ASTREE_LIT_CHAR,0,0,0,0,$1); }
- //	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
+ 	| LIT_STRING //Professor recomenda string nao ser literal, por motivos a serem discutidos na etapa futura	
 	;
 
  litseq : //sequencia de literais
@@ -219,7 +219,7 @@ controlefluxo: condif
 	 }
 	;
 
- vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' literal  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1);
+ vetorassign:  TK_IDENTIFIER '[' expressao ']' '=' expressao  { if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)$1);
 			$$ = astreeCreate(ASTREE_SCALAR_ASS,0,0,0,0,0);
 		
 		 }	
@@ -252,9 +252,9 @@ controlefluxo: condif
 
  outputexp: /* expressao da clausula output */
 	  expressao
-	| LIT_STRING
+//	| LIT_STRING
 	| expressao ',' outputexp
-	| LIT_STRING ',' outputexp
+//	| LIT_STRING ',' outputexp
 	; 
 
  output: KW_OUTPUT outputexp  {if(DEBUG) fprintf(stdout,"Valor escrito na saida padrao\n");}
