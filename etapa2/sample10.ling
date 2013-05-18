@@ -1,0 +1,14 @@
+//
+//
+//
+//
+//
+//
+//
+//
+//
+word a: 0 ;
+word b: 0 ;
+word v[15] ;
+word function () word b: 0; word c: 0;
+{ a=10; v[a+1] = 5 * b; }

@@ -39,7 +39,7 @@ void astreePrintSingle(ASTREE * node){
 	return;
 }
 
-void astreePrintTree(ASTREE * node) {
+void astreePrintTree(ASTREE * node, int ident) {
 	int i =0;
 	
 	astreePrintSingle(node);

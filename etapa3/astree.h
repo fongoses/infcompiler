@@ -54,4 +54,4 @@ typedef struct astree_node{
 
 ASTREE * astreeCreate(int type, ASTREE * s0, ASTREE * S1, ASTREE * S2, ASTREE * S3, HASH_NODE * ptr);
 void astreePrintSingle(ASTREE *node);
-void astreePrintTree(ASTREE *node);
+void astreePrintTree(ASTREE *node, int ident);

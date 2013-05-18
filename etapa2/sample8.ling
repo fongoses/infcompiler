@@ -1,0 +1,99 @@
+/*
+	Universidade Federal do Rio Grande do Sul
+	Instituto de Informatica
+	Departamento de Informatica Aplicada
+	Compiladores - Turma B - Professor Marcelo Johann
+	Trabalho Final - Etapa 2. Codigo para teste. 	
+	Alunos: Luiz Gustavo Frozi e Mario Gasparoni
+*/
+
+
+word a:0;
+word vet[5]: 0 0 0 0 0;
+byte $b:0;
+
+
+
+word main(){
+
+	a=funcao();
+	a= a+1;
+	output "O resultado eh",a,"\n";
+	loop(a > 1){
+		a=a+1;
+		*b=a+2;
+	};
+
+	return 0;
+
+}
+
+word funcaoassign (word a , word vet){
+
+
+	b = a+1;
+	b = func();
+	c = func(a,b,c,a+1,b+2,c+3);
+	c = func(func(a),b(),c(a+1,a+2));
+	d = ab;
+	
+	return vet[a] + 1;
+}
+
+word funcaoPtr( word $a, word $b)
+	word a:1;
+	word b:1;
+	word c:1;
+	word $b: 2;
+	word $c: 3;
+{
+	*a=*b;
+	a=&b + *c;
+	output str,*str,&str,"hello",a+1,b,c,funca(),funcb(a,v,v,c),vet[a+2],vet[a+a];	
+	
+	if (1+a == 1+b) then {
+		a=a+2;	
+		b=3;
+		c=c()+2;
+
+	} else {
+		a=3;
+	};
+
+	str = "asdasdasd";
+
+}
+
+
+word funcaostr( word a, word b )
+
+	byte str: 0;
+{
+	
+	output str , "asdasda","asdasdasd";
+
+
+
+}
+
+word funcaoassign ( byte a, bool c)
+{
+
+
+
+}
+
+
+word funcao(word a , word b) word param_1:0; word param_2: 1;{
+
+	vet[0] = 1;
+	
+	loop(a+1){
+		a = funcao(a,vet[*b+1]);
+		b = funcao(a,vet[3]);
+
+	};
+	return a+b+ vet[0];
+
+	
+}
