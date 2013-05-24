@@ -150,7 +150,7 @@ controlefluxo: condif
  /* var assignment*/
  // $1 corresponde a KW_WORD e %3 corresponde a LIT_INTEGER recebido em yyval pelo analisador lexico
  varassign: TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); }
-	   | '$' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
+	   | '&' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); }
 	   | '*' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2); } 
 	;
 
@@ -196,7 +196,7 @@ controlefluxo: condif
 	| OPERATOR_NE
 	| OPERATOR_AND
 	| OPERATOR_OR
-	| '+' | '-' | '*' | '\\' | '<' | '>' | '!' | '&' | '/'
+	| '+' | '-' | '*' | '<' | '>' | '!' | '/'
 	;	
 
 

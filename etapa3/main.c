@@ -43,6 +43,7 @@ int main(int argc , char ** argv){
 		if(argc==2){
 			initMe();
 			yyparse();
+			hashPrint();
 			//astreePrintTree(TREE);
 			//yyerror (in yacc.y) handles erros, exiting 3		
 			fprintf(stdout,"Compilation Successfull.\n");			

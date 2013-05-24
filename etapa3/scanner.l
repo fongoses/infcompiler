@@ -55,7 +55,7 @@ TRUE			{ yylval.symbol=hashInsert(yytext,LIT_TRUE);return LIT_TRUE;}
 [a-zA-Z_][a-zA-Z0-9_]*	{ yylval.symbol = hashInsert(yytext,TK_IDENTIFIER);return TK_IDENTIFIER;}
 [0-9][a-fA-F0-9]*	{ yylval.symbol = hashInsert(yytext,LIT_INTEGER);return LIT_INTEGER;} //07/05 : retornando pont da tab de simbolos (fazer para literais rest)
 \'.\'			{ yylval.symbol = hashInsert(yytext,LIT_CHAR);return LIT_CHAR;} /* ok */
-\"[^\"]*\"			{ yylval.symbol=hashInsert(yytext,LIT_STRING);return LIT_STRING;} /* ok */
+\"[^\"]*\"		{ yylval.symbol=hashInsert(yytext,LIT_STRING);return LIT_STRING;} /* ok */
 
 "\n"			{ ++LineNumber;} //corrigido 1
 
