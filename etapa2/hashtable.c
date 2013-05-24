@@ -44,8 +44,8 @@ int hashAddress(char *text) {
 HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash table 'Table', returning its pointer.
     HASH_NODE *node;
 
-    //if the token already exists , ignore its insertion
-    if (hashFind(text) != (void*)0) return (void*)0; 
+    node = hashFind(text);
+    if (node != (void*)0) return node; 
 
     int address = hashAddress(text);
     
