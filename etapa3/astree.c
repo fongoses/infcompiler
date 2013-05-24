@@ -23,7 +23,7 @@ void astreePrintSingle(ASTREE * node){
 	fprintf(stdout,"ASTREE(");
 	switch( node->type){
 		case  ASTREE_SYMBOL: fprintf(stdout,"ASTREE_SYMBOL {%s}",node->symbol->text); break;
-		case  ASTREE_LIT_INT: fprintf(stdout,"ASTREE_LIT_INT"); break;
+		case  ASTREE_LIT_INT: fprintf(stdout,"ASTREE_LIT_INT {%s}",node->symbol->text); break;
 		case  ASTREE_ADD: fprintf(stdout,"ASTREE_ADD"); break;
 		case  ASTREE_MIN: fprintf(stdout,"ASTREE_MIN"); break;
 		case  ASTREE_MUL: fprintf(stdout,"ASTREE_MUL"); break;

@@ -103,7 +103,9 @@ comando:
 
 comandosseq:
 	/* sequencia de comandos vazia : comando vazio*/	
-	| comando ';' comandosseq //recursao a esquerda
+	|';' 
+	| comandosseq comando ';'
+	;
 
 blococomandos:
 	'{' comandosseq '}'

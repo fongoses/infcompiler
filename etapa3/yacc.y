@@ -132,22 +132,24 @@ localdecseq: //lista de declaracoes locais :declaracoes permitidas antes de um b
 	;
 
 comando:
-	 varassign { $$ =  $1;}
+	varassign { $$ =  $1;}
 	| vetorassign { $$ = $1;} 
 	| controlefluxo { $$ = $1;}
-	| input{ $$ = $1;}
-	| output{ $$ = $1;}
-	| return{ $$ = $1;}
-	| blococomandos{ $$ = $1;}
+	| input { $$ = $1;}
+	| output { $$ = $1;}
+	| return { $$ = $1;}
+	| blococomandos { $$ = $1;}
 	;
 
 
 comandosseq:
 	/* sequencia de comandos vazia : comando vazio*/
-	{ $$ = 0; } //seq vazia: valor associado eh zero. 
-	| comando ';' comandosseq  {
-		astreeCreate(ASTREE_COMMANDSEQ,$1,$3,0,0,0);
-	} //recursao a esquerda
+	{$$ = 0; }
+	|';' { $$ = 0; } //seq vazia: valor associado eh zero. 
+	| comandosseq comando ';'  {
+ 		$$ = astreeCreate(ASTREE_COMMANDSEQ,$1,$2,0,0,0);
+	}
+	;
 
 blococomandos:
 	'{' comandosseq '}' { $$ = astreeCreate(ASTREE_BLOCK,$2,0,0,0,0); }
