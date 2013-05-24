@@ -83,7 +83,6 @@
 	#include <stdlib.h>
 
 	extern int yyin;
-	ASTREE * TREE;
 
 	#define DEBUG 0	
 %}
@@ -114,9 +113,7 @@
 %%
 
 
-program: global { $$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);
-//astreePrintTree($$,0);
- };
+program: global { $$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);astreePrintTree($$,0);};
 
 
 global: /* empty program */

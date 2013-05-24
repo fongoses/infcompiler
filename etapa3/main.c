@@ -18,7 +18,6 @@ extern FILE * yyin;
 extern int LineNumber;
 extern int running;
 extern int yyparse(void);
-extern ASTREE * TREE;
 #define TESTE_MANUAL 0
 
 
@@ -43,8 +42,6 @@ int main(int argc , char ** argv){
 		if(argc==2){
 			initMe();
 			yyparse();
-			hashPrint();
-			//astreePrintTree(TREE);
 			//yyerror (in yacc.y) handles erros, exiting 3		
 			fprintf(stdout,"Compilation Successfull.\n");			
 			exit(0);
