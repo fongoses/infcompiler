@@ -42,7 +42,6 @@
 #define ASTREE_PROGRAM 26
 #define ASTREE_LIT_STRING 28
 #define ASTREE_GLOBALSEQ 29
-#define ASTREE_CONTROLEFLUXO 30
 #define ASTREE_INPUT 31
 #define ASTREE_OUTPUT 32
 #define ASTREE_RETURN 33
@@ -67,18 +66,19 @@
 #define ASTREE_G 52
 #define ASTREE_NOT 53
 #define ASTREE_PTRDEC 54
-
+extern FILE *outputFile;
 
 
 typedef struct astree_node{
 		int type;
-		//int valor: 07/05 ,valor para o literal: nao necessario, eh armazenado como symbol
 		HASH_NODE * symbol;
 		struct astree_node * son[MAX_SONS];
 } ASTREE;
 
 
 
+void getSymbolTypeName(char * dstbuffer, int code);
 ASTREE * astreeCreate(int type, ASTREE * s0, ASTREE * S1, ASTREE * S2, ASTREE * S3, HASH_NODE * ptr);
 void astreePrintSingle(ASTREE *node);
 void astreePrintTree(ASTREE *node, int level);
+void astreeCreateCode(ASTREE * node, int level);

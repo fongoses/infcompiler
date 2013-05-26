@@ -198,7 +198,7 @@ controlefluxo: condif
 	| OPERATOR_NE
 	| OPERATOR_AND
 	| OPERATOR_OR
-	| '+' | '-' | '*' | '<' | '>' | '!' | '/'
+	| '+' | '-' | '*' | '<' | '>' | '/'
 	;	
 
 

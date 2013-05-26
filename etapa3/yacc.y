@@ -64,7 +64,7 @@
 %type <tree> tipos
 %type <tree> program
 %type <tree> dec
-%type <tree> global
+%type <tree> globalseq
 
 %type <tree> controlefluxo 
 %type <tree> input
@@ -81,16 +81,15 @@
 	#include "astree.h" //ja inclui hashtable.h
 	#include <stdio.h>
 	#include <stdlib.h>
+	
+	#define DEBUG 0
 
-	extern int yyin;
-
-	#define DEBUG 0	
+	extern int yyin;	
+	extern FILE * outputFile;
 %}
 
 
 %union {
-	int number; //obs do professor: em vez do numero, deve haver um ponteiro
-				// para a tabela de simbolos
 	HASH_NODE * node;
 	char * text;
 	int boolean; /* we are associating our boolean type to C's int type. */
@@ -113,12 +112,16 @@
 %%
 
 
-program: global { $$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);astreePrintTree($$,0);};
+program: globalseq { 
+		$$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);		
+		if(!outputFile) astreePrintTree($$,0);
+		else astreeCreateCode($$,0);
+	;};
 
 
-global: /* empty program */
+globalseq: /* empty program */
 	{ $$ = 0;}
-	| global dec {$$ = astreeCreate(ASTREE_GLOBALSEQ,$1,$2,0,0,0); }
+	| globalseq dec {$$ = astreeCreate(ASTREE_GLOBALSEQ,$1,$2,0,0,0); }
 	;
 
 dec: 	vardec { $$ = $1;}
@@ -142,7 +145,7 @@ comando:
 	;
 
 
-comandosseq:
+comandosseq: //rever: como serah reconstituida uma seq de ponto-e-virgula 
 	/* sequencia de comandos vazia : comando vazio*/
 	{$$ = 0; }
 	|';' { $$ = 0; } //seq vazia: valor associado eh zero. 
@@ -316,7 +319,7 @@ controlefluxo: condif { $$ = $1;}
 	| expressao '/'  expressao{  $$=astreeCreate(ASTREE_DIV,$1,$3,0,0,0); }
 	| expressao '<' expressao {  $$=astreeCreate(ASTREE_L,$1,$3,0,0,0); }
 	| expressao '>'  expressao {  $$=astreeCreate(ASTREE_G,$1,$3,0,0,0); }
-	| expressao '!' expressao {  $$=astreeCreate(ASTREE_NOT,$1,$3,0,0,0); }
+	// | '!' expressao {  $$=astreeCreate(ASTREE_NOT,$1,0,0,0,0); } //existe essa expressao ?
 	// | expressao '&'  expressao {  $$=astreeCreate(ASTREE_BITAND,$1,$3,0,0,0); }
 	;
 

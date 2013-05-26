@@ -1,5 +1,5 @@
 #include "astree.h"
-
+#include <string.h>
 ASTREE * astreeCreate(int type, ASTREE * S0, ASTREE * S1, ASTREE * S2, ASTREE * S3, HASH_NODE * n){
 
 	ASTREE * node = 0;
@@ -49,7 +49,6 @@ void astreePrintSingle(ASTREE * node){
 		case  ASTREE_PROGRAM: fprintf(stdout,"ASTREE_PROGRAM"); break;
 		case  ASTREE_LIT_STRING: fprintf(stdout,"ASTREE_LIT_STRING {%s}",node->symbol->text); break;
 		case  ASTREE_GLOBALSEQ: fprintf(stdout,"ASTREE_GLOBALSEQ"); break;
-		case  ASTREE_CONTROLEFLUXO: fprintf(stdout,"ASTREE_CONTROLEFLUXO"); break;
 		case  ASTREE_INPUT: fprintf(stdout,"ASTREE_INPUT {%s}",node->symbol->text); break;
 		case  ASTREE_OUTPUT: fprintf(stdout,"ASTREE_OUTPUT"); break;
 		case  ASTREE_RETURN: fprintf(stdout,"ASTREE_RETURN"); break;
@@ -96,4 +95,370 @@ void astreePrintTree(ASTREE * node, int level) {
 			astreePrintTree(node->son[i],level+1);
 
 }
+
+void getDecType(char * dstbuffer, int code){
+	if (!dstbuffer) return;
+	
+	switch (code){
+
+		case 	ASTREE_KWWORD: strcpy(dstbuffer,"word ");
+			break;
+
+		case 	ASTREE_KWBOOL: strcpy(dstbuffer,"bool ");
+			break;
+
+		case 	ASTREE_KWBYTE: strcpy(dstbuffer,"byte ");
+			break;
+	}
+
+}
+/*
+void getSymbolType(char * dstbuffer, int code){
+	if (!dstbuffer) return;
+	
+	switch (code){
+
+		case SYMBOL_LIT_INTEGER: strcpy(dstbuffer,"word "); 
+		case SYMBOL_LIT_FALSE: strcpy(dstbuffer,"false "); 
+		case SYMBOL_LIT_TRUE: strcpy(dstbuffer,"true "); 
+		case SYMBOL_LIT_CHAR: strcpy(dstbuffer,"byte "); 
+		case SYMBOL_LIT_STRING: strcpy(dstbuffer,"byte* "); 
+		break;
+	}
+
+}*/
+
+
+void astreeCreateCode(ASTREE * node, int level){
+
+	if((!node) || (!outputFile)) return ;
+	char buffer[200]; //temporary buffer for chars
+	int i;
+	
+	for(i=0;i< level; i++)
+		fprintf(outputFile,"  ");
+	
+	switch( node->type){
+		case  ASTREE_SYMBOL: 
+			fprintf(outputFile,"%s",node->symbol->text); 
+			break;
+
+		case  ASTREE_LIT_INT: 
+			fprintf(outputFile,"%s",node->symbol->text); 
+			break;
+
+		case  ASTREE_ADD:
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," + "); 
+			astreeCreateCode(node->son[1],level); 
+			break;
+
+		case  ASTREE_MIN: 
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," - "); 
+			astreeCreateCode(node->son[1],level); 
+			break;
+
+		case  ASTREE_MUL: 
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," * "); 
+			astreeCreateCode(node->son[1],level); 
+			break;
+
+		case  ASTREE_DIV: 
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," / "); 
+			astreeCreateCode(node->son[1],level); 
+			break;
+
+		case  ASTREE_SCALAR_ASS: 
+			fprintf(outputFile,"%s = ",node->symbol->text); 
+			astreeCreateCode(node->son[0],level);
+			break;
+
+		case  ASTREE_LIT_SEQ: 
+			astreeCreateCode(node->son[0],level);
+			fprintf(outputFile," ");
+			astreeCreateCode(node->son[1],level);
+			break;
+
+		case  ASTREE_VARDEC:
+			getDecType(buffer,node->son[0]->type);
+			fprintf(outputFile,"%s %s:",buffer,node->symbol->text); 
+			astreeCreateCode(node->son[1],level);
+			fprintf(outputFile,";\n");
+			break;
+
+		case  ASTREE_ARGSEQ:			
+			//rever esses ifs
+			if(node->son[0]){ //se ha mais elem na seq
+				astreeCreateCode(node->son[0],level+1);
+				fprintf(outputFile,",");
+				astreeCreateCode(node->son[1],level+1);			
+			}else 	//se ha somente 1 elem na seq
+				if(node->son[1]){
+				astreeCreateCode(node->son[0],0);
+			}		
+			fprintf(outputFile,",");
+			break;
+
+		case  ASTREE_FUNCALL: 
+			fprintf(outputFile,"%s(",node->symbol->text); 
+			astreeCreateCode(node->son[0],level+1);
+			fprintf(outputFile,")");		
+			break;
+
+		case  ASTREE_VETCALL: 
+			fprintf(outputFile,"%s[",node->symbol->text);
+			astreeCreateCode(node->son[0],0);
+			fprintf(outputFile,"]");
+			break;
+		
+		case  ASTREE_PTRADDR: 
+			fprintf(outputFile,"& %s",node->symbol->text); 
+			break;
+	
+		case  ASTREE_PTRVALUE: 
+			fprintf(outputFile,"* %s",node->symbol->text); 
+			break;
+	
+		case  ASTREE_LIT_FALSE: 
+			fprintf(outputFile,"%s",node->symbol->text); 
+			break;
+
+		case  ASTREE_LIT_TRUE: 
+			fprintf(outputFile,"%s",node->symbol->text); 
+			break;
+
+		case  ASTREE_LIT_CHAR: 
+			fprintf(outputFile,"%s",node->symbol->text); 
+			break;
+
+		case  ASTREE_VETORDEC: 
+			getDecType(buffer,node->son[0]->type);
+			if(node->son[2]){
+				fprintf(outputFile,"%s %s[%s]:",buffer,node->symbol->text,node->son[1]->symbol->text); 
+				astreeCreateCode(node->son[2],level);
+				fprintf(outputFile,";");
+			}else fprintf(outputFile,"%s %s [%s];",buffer,node->symbol->text,node->son[1]->symbol->text);			 
+			fprintf(outputFile,"\n");
+			break;
+
+		case  ASTREE_FUNDEC: 
+			getDecType(buffer,node->son[0]->type);
+			fprintf(outputFile,"%s %s ( ",buffer, node->symbol->text);
+			astreeCreateCode(node->son[1],level); //paramseq
+			fprintf(outputFile, ")\n");			
+			astreeCreateCode(node->son[2],0); //localdecseq
+			fprintf(outputFile,"\n");
+			astreeCreateCode(node->son[3],level); //blococomandos
+			break;
+
+		case  ASTREE_PARAMSEQ:
+			if(node->son[0]) { //se ha mais elementos na seq							
+				astreeCreateCode(node->son[0],level+1);
+				fprintf(outputFile,",");
+				astreeCreateCode(node->son[1],level+1);
+			}else if (node->son[1]){				
+				astreeCreateCode(node->son[1],level+1);				
+			}
+			break;
+
+		case  ASTREE_LOCALDECSEQ: 
+			astreeCreateCode(node->son[0],level);
+			fprintf(outputFile,"\n");
+			astreeCreateCode(node->son[1],level);			
+			break;
+
+		case  ASTREE_KWWORD: 
+			fprintf(outputFile,"word"); 
+			break;
+
+		case  ASTREE_KWBOOL: 
+			fprintf(outputFile,"bool"); 
+			break;
+
+		case  ASTREE_KWBYTE: 
+			fprintf(outputFile,"byte");
+			break;
+	
+		case  ASTREE_PROGRAM:
+			astreeCreateCode(node->son[0],0);
+			fprintf(outputFile,"\n");
+			break;
+	
+		case  ASTREE_LIT_STRING: 
+			fprintf(outputFile,"%s",node->symbol->text); 
+			break;
+
+		case  ASTREE_GLOBALSEQ: 
+			astreeCreateCode(node->son[0],0);
+			astreeCreateCode(node->son[1],0);		
+			break;
+	
+
+		case  ASTREE_INPUT: 
+			fprintf(outputFile,"input %s",node->symbol->text);
+			break;
+
+		case  ASTREE_OUTPUT: 
+			fprintf(outputFile,"output ");
+			astreeCreateCode(node->son[0],level);
+			break;
+
+		case  ASTREE_RETURN: 
+			fprintf(outputFile,"return");
+			astreeCreateCode(node->son[0],level+1);
+			break;
+
+		case  ASTREE_PTR_ASS: 
+			fprintf(outputFile,"&%s =  ",node->symbol->text);
+			astreeCreateCode(node->son[0],level+1);			
+			break;
+
+		case  ASTREE_DEREF_ASS:		
+			fprintf(outputFile,"*%s =  ",node->symbol->text);
+			astreeCreateCode(node->son[0],level+1);
+			break;
+			
+		case  ASTREE_VET_ASS:			
+			fprintf(outputFile,"%s[",node->symbol->text);
+			astreeCreateCode(node->son[0],0);
+			fprintf(outputFile,"] = ");
+			astreeCreateCode(node->son[1],level);	
+			break;
+
+		case  ASTREE_EXPRESSION: 
+			fprintf(outputFile,"("); 
+			astreeCreateCode(node->son[0],level);
+			fprintf(outputFile,")");
+			break;
+
+		case  ASTREE_OUTPUTSEQ: 
+			if(node->son[0]) { //se ha mais elementos na seq							
+				astreeCreateCode(node->son[0],level+1);
+				fprintf(outputFile,",");
+				astreeCreateCode(node->son[1],level+1);
+			}else if (node->son[1]){				
+				astreeCreateCode(node->son[1],level+1);				
+			}			
+			break;
+
+		case  ASTREE_IF: 
+			fprintf(outputFile,"if ( ");
+			astreeCreateCode(node->son[0],level);
+			fprintf(outputFile," ) then");
+			astreeCreateCode(node->son[1],level+1);
+			break;
+
+		case  ASTREE_IF_ELSE:
+			fprintf(outputFile,"if ( ");
+			astreeCreateCode(node->son[0],level);
+			fprintf(outputFile," ) then");
+			astreeCreateCode(node->son[1],level+1);
+			fprintf(outputFile,"\nelse ");
+			astreeCreateCode(node->son[2],level+1);
+			break;
+
+		case  ASTREE_LOOP: 
+			fprintf(outputFile,"loop ( "); 
+			astreeCreateCode(node->son[0],level);
+			fprintf(outputFile," ) ");
+			astreeCreateCode(node->son[1],level);
+			break;
+	
+		case  ASTREE_BLOCK: 
+			fprintf(outputFile,"{\n");
+			astreeCreateCode(node->son[0],1);
+			fprintf(outputFile,"}\n");
+			break;
+
+		case  ASTREE_PARAM:
+			getDecType(buffer,node->son[0]->type);
+			fprintf(outputFile,"%s %s",buffer,node->symbol->text); //tipo eh um filho do no
+			break;
+
+		case  ASTREE_PTRPARAM:
+			getDecType(buffer,node->son[0]->type);
+			fprintf(outputFile,"%s $%s",buffer,node->symbol->text); //tipo eh um filho do no
+			break;
+
+		case  ASTREE_LE:
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," <= ");
+			astreeCreateCode(node->son[1],level);
+			break;
+
+		case  ASTREE_GE:
+ 			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," >= ");
+			astreeCreateCode(node->son[1],level);
+			break;
+
+		case  ASTREE_EQ:
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," == ");
+			astreeCreateCode(node->son[1],level);
+			break;
+
+		case  ASTREE_NE: 
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," != ");
+			astreeCreateCode(node->son[1],level);	
+			break;
+
+		case  ASTREE_AND:
+ 			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," && ");
+			astreeCreateCode(node->son[1],level);
+			break;	
+
+		case  ASTREE_OR:
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," || ");
+			astreeCreateCode(node->son[1],level);
+			break;	
+ 
+		case  ASTREE_L:
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," < ");
+			astreeCreateCode(node->son[1],level);
+			break;
+ 
+		case  ASTREE_G:
+			astreeCreateCode(node->son[0],level); 
+			fprintf(outputFile," > ");
+			astreeCreateCode(node->son[1],level);
+			break;
+			 
+		case  ASTREE_NOT:			
+			fprintf(outputFile,"!");
+			astreeCreateCode(node->son[0],level); 
+			break; 
+
+		case  ASTREE_COMMANDSEQ:
+			//rever ifs				
+			if(node->son[0]) { //se ha mais elementos na seq							
+				astreeCreateCode(node->son[0],level);
+				astreeCreateCode(node->son[1],level);
+				fprintf(outputFile,";\n");
+			}else if (node->son[1]){				
+				astreeCreateCode(node->son[1],level);								
+				fprintf(outputFile,";\n");			
+			}			
+			break;
+
+		case  ASTREE_PTRDEC: 			
+			getDecType(buffer,node->son[0]->type);
+			fprintf(outputFile,"%s $%s:",buffer,node->symbol->text); 
+			astreeCreateCode(node->son[1],level+1);
+			fprintf(outputFile,";\n");
+			break;
+
+		default: fprintf(outputFile, "**ERROR"); break;
+		}		
+	return;
+}
+
+
 
