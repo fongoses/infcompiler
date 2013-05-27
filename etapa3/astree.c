@@ -173,7 +173,7 @@ void astreeCreateCode(ASTREE * node, int level){
 
 		case  ASTREE_SCALAR_ASS: 
 			fprintf(outputFile,"%s = ",node->symbol->text); 
-			astreeCreateCode(node->son[0],level);
+			astreeCreateCode(node->son[0],0);
 			break;
 
 		case  ASTREE_LIT_SEQ: 
@@ -192,19 +192,18 @@ void astreeCreateCode(ASTREE * node, int level){
 		case  ASTREE_ARGSEQ:			
 			//rever esses ifs
 			if(node->son[0]){ //se ha mais elem na seq
-				astreeCreateCode(node->son[0],level+1);
+				astreeCreateCode(node->son[0],0);
 				fprintf(outputFile,",");
-				astreeCreateCode(node->son[1],level+1);			
+				astreeCreateCode(node->son[1],0);			
 			}else 	//se ha somente 1 elem na seq
 				if(node->son[1]){
 				astreeCreateCode(node->son[0],0);
 			}		
-			fprintf(outputFile,",");
 			break;
 
 		case  ASTREE_FUNCALL: 
 			fprintf(outputFile,"%s(",node->symbol->text); 
-			astreeCreateCode(node->son[0],level+1);
+			astreeCreateCode(node->son[0],0);
 			fprintf(outputFile,")");		
 			break;
 
@@ -256,11 +255,11 @@ void astreeCreateCode(ASTREE * node, int level){
 
 		case  ASTREE_PARAMSEQ:
 			if(node->son[0]) { //se ha mais elementos na seq							
-				astreeCreateCode(node->son[0],level+1);
+				astreeCreateCode(node->son[0],0);
 				fprintf(outputFile,",");
-				astreeCreateCode(node->son[1],level+1);
+				astreeCreateCode(node->son[1],0);
 			}else if (node->son[1]){				
-				astreeCreateCode(node->son[1],level+1);				
+				astreeCreateCode(node->son[1],0);				
 			}
 			break;
 
@@ -370,7 +369,7 @@ void astreeCreateCode(ASTREE * node, int level){
 		case  ASTREE_BLOCK: 
 			fprintf(outputFile,"{\n");
 			astreeCreateCode(node->son[0],1);
-			fprintf(outputFile,"}\n");
+			fprintf(outputFile,"}");
 			break;
 
 		case  ASTREE_PARAM:
@@ -439,8 +438,8 @@ void astreeCreateCode(ASTREE * node, int level){
 		case  ASTREE_COMMANDSEQ:
 			//rever ifs				
 			if(node->son[0]) { //se ha mais elementos na seq							
-				astreeCreateCode(node->son[0],level);
-				astreeCreateCode(node->son[1],level);
+				astreeCreateCode(node->son[0],0);
+				astreeCreateCode(node->son[1],0);
 				fprintf(outputFile,";\n");
 			}else if (node->son[1]){				
 				astreeCreateCode(node->son[1],level);								
