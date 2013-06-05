@@ -302,6 +302,7 @@ controlefluxo: condif { $$ = $1;}
 	}// Chamada de funcao
 	| '&' TK_IDENTIFIER { $$ = astreeCreate(ASTREE_PTRADDR,0,0,0,0,$2);} 
 	| '*' TK_IDENTIFIER { $$ = astreeCreate(ASTREE_PTRVALUE,0,0,0,0,$2);} 
+	| '*' '(' expressao ')' { $$ = astreeCreate(ASTREE_PTRVALUE,$3,0,0,0,0);} 
 	| '(' expressao ')' { $$ = astreeCreate(ASTREE_EXPRESSION,$2,0,0,0,0);} 
 	| expressao '-'	expressao { 
 		$$=astreeCreate(ASTREE_MIN,$1,$3,0,0,0);

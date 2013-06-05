@@ -221,6 +221,7 @@ controlefluxo: condif
  	| TK_IDENTIFIER '(' argseq')' // Chamada de funcao
 	| '&' TK_IDENTIFIER 
 	| '*' TK_IDENTIFIER	
+	| '*' '(' expressao ')'	
 	| '(' expressao ')'
 	| expressao operador expressao
 	;

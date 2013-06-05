@@ -52,10 +52,10 @@ output	{ return KW_OUTPUT;}
 
 FALSE			{ yylval.symbol=hashInsert(yytext,SYMBOL_LIT_FALSE); return LIT_FALSE;}
 TRUE			{ yylval.symbol=hashInsert(yytext,SYMBOL_LIT_TRUE);return LIT_TRUE;}
-[a-zA-Z_][a-zA-Z0-9_]*	{ yylval.symbol = hashInsert(yytext,SYMBOL_IDENTIFIER);return TK_IDENTIFIER;} //16/05: scanner agora insere o tipo e nao mais o token na tabela de simbolos.
+[a-zA-Z_][a-zA-Z0-9_]*	{ yylval.symbol = hashInsert(yytext,SYMBOL_IDENTIFIER);return TK_IDENTIFIER;}
 [0-9][a-fA-F0-9]*	{ yylval.symbol = hashInsert(yytext,SYMBOL_LIT_INTEGER);return LIT_INTEGER;} //07/05 : retornando pont da tab de simbolos (fazer para literais rest)
 \'.\'			{ yylval.symbol = hashInsert(yytext,SYMBOL_LIT_CHAR);return LIT_CHAR;} /* ok */
-\"[^\"]*\"			{ yylval.symbol=hashInsert(yytext,SYMBOL_LIT_STRING);return LIT_STRING;} /* ok */
+\"[^\"]*\"		{ yylval.symbol=hashInsert(yytext,SYMBOL_LIT_STRING);return LIT_STRING;} /* ok */
 
 "\n"			{ ++LineNumber;} //corrigido 1
 

@@ -15,10 +15,10 @@
 #include "y.tab.h"
 
 extern FILE * yyin;
+FILE * outputFile;
 extern int LineNumber;
 extern int running;
 extern int yyparse(void);
-extern ASTREE * TREE;
 #define TESTE_MANUAL 0
 
 
@@ -26,43 +26,30 @@ extern ASTREE * TREE;
 int main(int argc , char ** argv){
 
 
-	if(!TESTE_MANUAL){
 
-		if(argc < 2) {
-                	fprintf(stderr,"Error: No input file\n");
-                	exit(3);
-       	 	}
+	if(argc < 2) {
+		fprintf(stderr,"Error: No input file\n");
+		exit(3);
+	}
 
-        	yyin=fopen(argv[1],"r"); //yyin: global var which stores the file pointer to the current input file of the lexycal analyzer
-
-        	if(yyin <= 0) {
-                	fprintf(stderr,"Error opening the file\n");
-                	exit(3);
-        	}
-		
-		if(argc==2){
-			initMe();
-			yyparse();
-			//astreePrintTree(TREE);
-			//yyerror (in yacc.y) handles erros, exiting 3		
-			fprintf(stdout,"Compilation Successfull.\n");			
-			exit(0);
-		}
+	yyin=fopen(argv[1],"r");
+ 
+	if(yyin <= 0) {
+		fprintf(stderr,"Error opening the file\n");
+		exit(3);
+	}
 	
-		if(argc==3) {
-			//do something - criar arq de saida
-		}
-
-	}else{
-
-		initMe();	
-		yyparse(); //if something goes wrong, then yyerror will be called and the program dies here.
-		
-		fprintf(stdout,"Compilation Successfull.\n");
-		exit(0); //successfull compilation: exits with 0
-	}	
+	if(argc==3) {
+		outputFile = fopen(argv[2],"w+"); //global var
+	}
 	
+	initMe();
+	yyparse();
+	//yyerror (in yacc.y) handles erros, exiting 3		
 	exit(0);
+
+
+
 
 }
 
