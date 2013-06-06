@@ -20,7 +20,7 @@ ASTREE * astreeCreate(int type, ASTREE * S0, ASTREE * S1, ASTREE * S2, ASTREE * 
 	node->son[3] = S3;
 
 	if(!n) return node;
-	
+/*	
 	if (astreeCheckDeclarations(node) == DEC_OK) {	
 		error=0;
 		return node;
@@ -31,6 +31,8 @@ ASTREE * astreeCreate(int type, ASTREE * S0, ASTREE * S1, ASTREE * S2, ASTREE * 
 		error=1; //seta flag de error para o programa principal
 		return node;
 	}
+	recomentar apos testes basicos da etapa5  (esse codigo pertence a etapa4 ainda nao completa)
+*/
 }
 
 //Obtem dataType a partir do tipo do nodo
@@ -331,7 +333,7 @@ void astreePrintSingle(ASTREE * node){
 void astreePrintTree(ASTREE * node, int level) {
 	int i =0;
 		
-	if(!node) return;
+if(!node) return;
 	for(i=0;i< level; i++)
 		fprintf(stdout,"    ");
 		

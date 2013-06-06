@@ -1,4 +1,4 @@
-	/**********************************************************************
+ /**********************************************************************
 	 *Analisador Sintático  
  **********************************************************************
  * This represents the syntax analyzer.
@@ -115,8 +115,8 @@
 program: globalseq { 
 		$$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);
 		GLOBALSEQ = $$->son[0]; //armazena arvore em variavel global, para ser verificada por astreeCheckDeclarations		
-		if(outputFile) astreeCreateCode($$,0);
-	;};
+		//if(outputFile) astreeCreateCode($$,0);		
+	};
 
 
 globalseq: /* empty program */
@@ -124,7 +124,7 @@ globalseq: /* empty program */
 	| globalseq dec {
 		//antes de criar no com declaracao, verifica declaracao
 		$$ = astreeCreate(ASTREE_GLOBALSEQ,$1,$2,0,0,0);		
-	//	astreeCheckDeclarations($2); em astreeCreate
+		//astreeCheckDeclarations($2); em astreeCreate
 		 }
 	;
 
@@ -311,7 +311,8 @@ controlefluxo: condif { $$ = $1;}
 		$$=astreeCreate(ASTREE_MIN,$1,$3,0,0,0);
 	}
 	| expressao '+' expressao { 
-		$$=astreeCreate(ASTREE_ADD,$1,$3,0,0,0);	
+		$$=astreeCreate(ASTREE_ADD,$1,$3,0,0,0);			
+		print_tac(generateCode($$));
 	}
 	| expressao '*' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
 	| expressao OPERATOR_LE expressao {  $$=astreeCreate(ASTREE_LE,$1,$3,0,0,0); }
