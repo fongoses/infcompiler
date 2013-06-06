@@ -1,12 +1,12 @@
 word $ab:0;
-
+word $ab: 1;
 word main(){
+}
+
+word foo(){
+	a=1;
 }
 
 word foo(){
 
 }
-word main(){
-
-}
-

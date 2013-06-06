@@ -21,8 +21,9 @@ ASTREE * astreeCreate(int type, ASTREE * S0, ASTREE * S1, ASTREE * S2, ASTREE * 
 	
 	if (astreeCheckDeclarations(node) == DEC_OK) return node;
 	else {	
-		exit(3);
+		//exit(3);
 		//return (void*)0;
+		return node;
 	}
 }
 
@@ -65,15 +66,15 @@ int astreeCheckDeclarations(ASTREE * node){
 	if (!node) return DEC_ERR;
 	
 	switch (node->type){ 
-		
+	
+		/*1) Verifica redeclaracoes */	
 		case ASTREE_VARDEC:					
 			
 			tempNode=hashFind(node->symbol->text);
 			//TODO: ajustar para analisar o campo declaration do no		
 			if(!tempNode) return DEC_OK;
 
-			if(tempNode->declared) 	{
-				
+			if(tempNode->declared){				
 				fprintf(stdout,"error %d: Var %s already declared at line %d\n",getLineNumber(),tempNode->text,tempNode->lineNumber);
 				return DEC_ERR;
 			}
@@ -87,8 +88,7 @@ int astreeCheckDeclarations(ASTREE * node){
 			//TODO: ajustar para analisar o campo declaration do no		
 			if(!tempNode) return DEC_OK;
 
-			if(tempNode->declared) 	{
-				
+			if(tempNode->declared) 	{				
 				fprintf(stdout,"error %d: Var $%s already declared at line %d\n",getLineNumber(),tempNode->text,tempNode->lineNumber);
 				return DEC_ERR;
 			}
@@ -104,8 +104,7 @@ int astreeCheckDeclarations(ASTREE * node){
 			//TODO: ajustar para analisar o campo declaration do no		
 			if(!tempNode) return DEC_OK;
 
-			if(tempNode->declared) 	{
-				
+			if(tempNode->declared) 	{				
 				fprintf(stdout,"error %d: Vector %s already declared at line %d\n",getLineNumber(),tempNode->text,tempNode->lineNumber);
 				return DEC_ERR;
 			}
@@ -120,8 +119,7 @@ int astreeCheckDeclarations(ASTREE * node){
 			//TODO: ajustar para analisar o campo declaration do no		
 			if(!tempNode) return DEC_OK;
 
-			if(tempNode->declared) 	{
-				
+			if(tempNode->declared) 	{				
 				fprintf(stdout,"error %d: Function %s already declared at line %d\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
 				return DEC_ERR;
 			}
@@ -129,41 +127,134 @@ int astreeCheckDeclarations(ASTREE * node){
 			astreeSetDeclarations(node);
 			return DEC_OK;
 		
+		/*2) Verifica redeclaracoes de identificadores/vars */	
+		case ASTREE_SYMBOL:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode) return DEC_ERR; //variavel nao declarada
+		
+			if(!tempNode->declared){
+				fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+			
+			 return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada		
+					
+		case ASTREE_VETCALL:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode) return DEC_ERR; //variavel nao declarada
+		
+			if(!tempNode->declared){
+				fprintf(stdout,"error %d: vector %s not declared\n",getLineNumber(),node->symbol->text);
+			return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada		
+	
+		case ASTREE_FUNCALL:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode) {
+				fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+				return DEC_ERR; //variavel nao declarada
+			}
 
+		
+			if(!tempNode->declared){
+				fprintf(stdout,"error %d: function %s() not declared\n",getLineNumber(),node->symbol->text);
+			return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada	
+	
+		case ASTREE_PTRADDR:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode){
+				fprintf(stdout,"error %d: var &%s not declared\n",getLineNumber(),node->symbol->text);
+			return DEC_ERR; //variavel nao declarada
+			}
+		
+			if(!tempNode->declared){
+				fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+			 return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada
+
+		case ASTREE_PTRVALUE:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode){
+			fprintf(stdout,"error %d: var *%s not declared\n",getLineNumber(),node->symbol->text);
+			
+			return DEC_ERR; //variavel nao declarada
+			}
+		
+			if(!tempNode->declared){ 
+				fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+
+				return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada		
+		
+		case ASTREE_SCALAR_ASS:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode){
+			fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+			
+			return DEC_ERR; //variavel nao declarada
+			}
+		
+			if(!tempNode->declared){
+			fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+			return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada		
+
+
+		case ASTREE_PTR_ASS:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode){
+			fprintf(stdout,"error %d: var *%s not declared\n",getLineNumber(),node->symbol->text);
+			
+			return DEC_ERR; //variavel nao declarada
+			}
+		
+			if(!tempNode->declared){
+			fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+			 return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada		
+		
+		case ASTREE_DEREF_ASS:
+			
+			tempNode=hashFind(node->symbol->text);
+			
+			if(!tempNode){
+			fprintf(stdout,"error %d: var *%s not declared\n",getLineNumber(),node->symbol->text);
+			
+			return DEC_ERR; //variavel nao declarada
+			}
+		
+			if(!tempNode->declared){
+				fprintf(stdout,"error %d: var %s not declared\n",getLineNumber(),node->symbol->text);
+
+				 return DEC_ERR;
+			}
+			else return DEC_OK; //variavel declarada		
+
+	
 		default: return DEC_OK;
 
 	}
-
-
-
-	
-
-
-/*
-	switch(node->type){
-		case ASTREE_VARDEC:
-		
-		break;
-		
-
-	}*/
-/*
-	if(tempNode->lineNumber == node->symbol->lineNumber) return DEC_OK;
-
-	if (((node->symbol->dataType == DATATYPE_WORD) 
-			|| (node->symbol->dataType == DATATYPE_BYTE)
-			|| (node->symbol->dataType == DATATYPE_BOOL)
-			)&&(
-				((tempNode->dataType == DATATYPE_WORD) 
-				|| (tempNode->dataType == DATATYPE_BYTE)
-				|| (tempNode->dataType == DATATYPE_BOOL)) 
-			)) {
-				fprintf(stdout,"error %d: Var %s already declared at line %d\n", node->symbol->lineNumber,node->symbol->text,tempNode->lineNumber);
-				return DEC_ERR;
-			}
-		else return DEC_OK;
-	
-	return DEC_OK;*/
 }
 
 void astreePrintSingle(ASTREE * node){

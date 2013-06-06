@@ -1,5 +1,5 @@
-/**********************************************************************
- *Analisador Sintático  
+	/**********************************************************************
+	 *Analisador Sintático  
  **********************************************************************
  * This represents the syntax analyzer.
  **********************************************************************
@@ -302,7 +302,7 @@ controlefluxo: condif { $$ = $1;}
 	| TK_IDENTIFIER '[' expressao  ']' {
 		$$ = astreeCreate(ASTREE_VETCALL,$3,0,0,0,$1);
 	} //chamada de campo vetor
- 	| TK_IDENTIFIER '(' argseq')'  {
+ 	| TK_IDENTIFIER '(' argseq ')'  {
 		$$ = astreeCreate(ASTREE_FUNCALL,$3,0,0,0,$1);
 	}// Chamada de funcao
 	| '&' TK_IDENTIFIER { $$ = astreeCreate(ASTREE_PTRADDR,0,0,0,0,$2);} 
