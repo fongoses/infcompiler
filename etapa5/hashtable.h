@@ -21,6 +21,7 @@ typedef struct hash_node {
 #define SYMBOL_VECTOR 5
 #define SYMBOL_FUNCTION 6
 #define SYMBOL_POINTER 7
+#define SYMBOL_LABEL 8 //11/06
 #define DATATYPE_WORD 1 
 #define DATATYPE_BYTE 2 
 #define DATATYPE_BOOL 3  //boolean nao serah

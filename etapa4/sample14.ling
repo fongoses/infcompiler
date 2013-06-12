@@ -1,0 +1,37 @@
+word a:0;
+word b:1;
+
+word main(){
+    a[1]=b; //erro: n eh vetor
+    c=1;    //nao dec
+    d=0;    //nao dec
+    a=b;    //ok
+    a=c;    //nao dec
+    b=d;    //nao dec
+    c=d;    //nao dec e nao dec
+    a[1]=0; //n eh vetor
+    b[1]=0; //n eh vetor
+    a=b[1]; //n eh vetor
+    b=a[1]; //n eh vetor
+    a[1]=b; //n eh vetor
+    b[1]=a; //n eh vetor
+    a[1]=c; //n eh vetor e nao dec
+    b[1]=c; //n eh vetor e nao dec
+    a=c[1]; //nao dec
+    b=c[1]; //nao dec
+    c[1]=d[1];  //nao dec
+    c[1]=a;     //nao dec
+    c[1]=a[1];  //nao dec e n eh vetor
+    c[1]=d;     //nao dec e n dec
+    c=d[1];     //n eh vetor e nao dec
+	*a=1; //isso nao pode em C ANSI
+    &a=1; //isso pode =D
+    &c=1; //nao dec
+    &a=b;  //ok
+    &a=&b; //ok
+    &c=&a; //nao dec
+    &c=d; //nao dec e nao dec
+    &c=&d;//nao dec e nao dec
+    a=&b; //ok ? quem verifica a exp eh o typecheck
+}
+

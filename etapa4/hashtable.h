@@ -17,15 +17,16 @@ typedef struct hash_node {
     para identificacao do tipo de uma variavel                                 
 */
 
-
-#define SYMBOL_SCALAR
-#define SYMBOL_VECTOR
-#define SYMBOL_FUNCTION
-#define SYMBOL_POINTER
 #define DATATYPE_WORD 1 
 #define DATATYPE_BYTE 2 
 #define DATATYPE_BOOL 3  //boolean nao serah
-
+#define DATATYPE_SCALAR 4
+#define DATATYPE_VECTOR 5
+#define DATATYPE_FUNCTION 6
+#define DATATYPE_POINTER 7
+#define DATATYPE_INT 8
+#define DATATYPE_CHAR 9
+#define DATATYPE_STRING 10
 
 void hashInit();
 void initMe(); //adicionado( haviamos esquecido na etapa anterior)

@@ -1,2 +1,8 @@
 word ab:0;
 word ab:0;
+
+word main(){
+    a[a+1]=0;
+
+
+}

@@ -177,6 +177,16 @@ HASH_NODE * makeTemp(void){
 	return hashInsert(buffer,SYMBOL_SCALAR);	
 }
 
+//11/06
+HASH_NODE * makeLabel(void){
+
+	static int nextTemp = 0;
+	char buffer[128];
+	sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
+	return hashInsert(buffer,SYMBOL_LABEL);	
+}
+
+
 
 
 

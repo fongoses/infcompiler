@@ -1,4 +1,4 @@
-	/**********************************************************************
+ /**********************************************************************
 	 *Analisador Sintático  
  **********************************************************************
  * This represents the syntax analyzer.
@@ -116,6 +116,7 @@ program: globalseq {
 		$$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);
 		GLOBALSEQ = $$->son[0]; //armazena arvore em variavel global, para ser verificada por astreeCheckDeclarations		
 		if(outputFile) astreeCreateCode($$,0);
+        //else astreePrintTree($$,0);
 	;};
 
 
