@@ -21,7 +21,85 @@ ASTREE * astreeCreate(int type, ASTREE * S0, ASTREE * S1, ASTREE * S2, ASTREE * 
 }
 
 
-//Obtem dataType a partir do tipo do nodo
+//retorna o DATATYPE de uma litseq. O tipo da litseq eh o tipo dos literais que a compoem
+int getLitSeqType(ASTREE * node){
+	
+	ASTREE * first,*rest;
+	if(!node) return DATATYPE_INVALID;
+	
+	first = node->son[1]; //lit
+	rest=node->son[0];	//litseq
+	while(rest){		
+		if(first->symbol->decType != node->son[1]->symbol->decType) return DATATYPE_INVALID;
+		first=rest->son[1];
+		rest=rest->son[0];
+	}	
+	return first->symbol->decType;	
+
+}
+
+//dado um nodo do tipo dec, retorna o tipo da declaracao.Funcao auxiliar a getDeclarationType
+int getType(ASTREE * node){
+	
+	if(!node) return DATATYPE_INVALID;
+	if(!node->son[0]) return DATATYPE_INVALID;
+	switch (node->son[0]->type){
+		case ASTREE_KWWORD:
+			return DATATYPE_WORD;		
+
+		case ASTREE_KWBYTE:
+			return DATATYPE_BYTE;		
+		
+		case ASTREE_KWBOOL:
+			return DATATYPE_BOOL;
+	
+		default: return DATATYPE_INVALID;
+
+	}
+}
+
+
+//Obtem decType(word, byte ou bool) das declaracoes
+int getDeclarationType(ASTREE * node){
+
+	if(!node) return DATATYPE_INVALID;
+	switch (node->type){
+
+		case ASTREE_VARDEC:
+			return getType(node);		
+		
+	       /* da mesma forma, DECTYPE_VECTOR eh retornado para chamada ou declaracao de vetores */ 
+		case ASTREE_VETORDEC:
+			return getType(node);		
+
+		case ASTREE_FUNDEC: 	
+			return getType(node);		
+
+		case ASTREE_PTRDEC: 	
+			return getType(node);		
+	
+		//literais tb sao declaracoes	
+		case ASTREE_LIT_INT:
+			return DATATYPE_WORD;
+
+		case ASTREE_LIT_FALSE:		
+			return DATATYPE_BOOL;
+
+		case ASTREE_LIT_TRUE:
+			return DATATYPE_BOOL;
+		
+		case ASTREE_LIT_CHAR:
+			return DATATYPE_BYTE;
+		
+		case ASTREE_LIT_STRING:
+			return DATATYPE_STRING;
+		
+		//symbols possuem tipo ja associados
+		default: return 0;
+	}
+}
+
+//Obtem dataType (scalar, vector,pointer ou function) das declaracoes
 int getDataType (ASTREE * node){
 
 	if(!node) return DEC_ERR;
@@ -57,101 +135,6 @@ int getDataType (ASTREE * node){
 	}
 }
 
-//retorna o DATATYPE de uma litseq. O tipo da litseq eh o tipo dos literais que a compoem
-int getLitSeqType(ASTREE * node){
-	
-	ASTREE * first,*rest;
-	if(!node) return DATATYPE_INVALID;
-	
-	first = node->son[1]; //lit
-	rest=node->son[0];	//litseq
-	while(rest){		
-		fprintf(stderr,"LITSEQ: %d\n",first->symbol->decType);	
-		if(first->symbol->decType != node->son[1]->symbol->decType) return DATATYPE_INVALID;
-		first=rest->son[1];
-		rest=rest->son[0];
-	}	
-	fprintf(stderr,"LITSEQ: %d\n",first->symbol->decType);	
-	return first->symbol->decType;	
-
-}
-
-//utilizado para obtencao do tipo de literais presentes na sequencia de literais da inicializacao do vetor
-int getLitType(ASTREE * node){
-
-	if(!node) return DATATYPE_INVALID;
-	switch(node->type){
-	
-		case ASTREE_LIT_INT: return DATATYPE_WORD;
-		
-		case ASTREE_LIT_CHAR: return DATATYPE_BYTE;		
-
-		case ASTREE_LIT_TRUE: return DATATYPE_BOOL;
-		
-		case ASTREE_LIT_FALSE: return DATATYPE_BOOL;
-
-		case ASTREE_LIT_STRING: return DATATYPE_STRING;
-
-		default: return DATATYPE_INVALID;
-	}
-}
-
-
-
-void setItemType(ASTREE * node){ //seta decType para elementos/simbolos de inicializacao do vetor
-
-	if(!node) return;
-	
-	//nodo eh do tipo ASTREE_LIT_SEQ , sendo assim nao testaremos switch->node
-	node->son[1]->symbol->decType = getLitType(node->son[1]);
-	//fprintf(stderr,"setItemType() %d - %d\n",node->son[1]->symbol->decType,getLitType(node->son[1]));	
-	setItemType(node->son[0]);	
-	
-}
-
-int getType(ASTREE * node){
-	
-	if(!node) return DATATYPE_INVALID;
-	if(!node->son[0]) return DATATYPE_INVALID;
-	switch (node->son[0]->type){
-		case ASTREE_KWWORD:
-			return DATATYPE_WORD;		
-
-		case ASTREE_KWBYTE:
-			return DATATYPE_BYTE;		
-		
-		case ASTREE_KWBOOL:
-			return DATATYPE_BOOL;
-	
-		default: return DATATYPE_INVALID;
-
-	}
-}
-
-
-//Obtem decType a partir do tipo do nodo
-int getDeclarationType(ASTREE * node){
-
-	if(!node) return DATATYPE_INVALID;
-	switch (node->type){
-
-		case ASTREE_VARDEC:
-			return getType(node);		
-		
-	       /* da mesma forma, DECTYPE_VECTOR eh retornado para chamada ou declaracao de vetores */ 
-		case ASTREE_VETORDEC:
-			setItemType(node->son[2]); //seta datatype de cada elemento da lista de inicializacao do vetor	
-			return getType(node);		
-
-		case ASTREE_FUNDEC: 	
-			return getType(node);		
-
-		case ASTREE_PTRDEC: 	
-			return getType(node);		
-		
-		default: return 0;
-	}
-}
 
 void setType(ASTREE * node){
 	if(!node) return;
@@ -159,7 +142,6 @@ void setType(ASTREE * node){
 	if(node->symbol->declared) return;
 	node->symbol->dataType = getDataType(node); //a partir do ponteiro setado na linha acima, atribui tipo ao elem na tab de simb, mas somente se esse simb ja nao estiver declarado
 	node->symbol->decType = getDeclarationType(node);
-
 }
 
 //seta uma variavel como declarada apos a primeira passada (no inicio do programa, quando eh zero)
@@ -499,7 +481,7 @@ int astreeCheckNature(ASTREE * node){
 	int itemNum; //para verificacao de elementos na declaracao de vetor	
 	int temp;
 	char * ptrl;//para strtol
-
+	
 	if (!node) return DATATYPE_INVALID;	
 
 	switch (node->type){ 
@@ -518,7 +500,7 @@ int astreeCheckNature(ASTREE * node){
 		result = astreeCheckNature(node->son[1]);
 		resultTemp = getLitSeqType(node->son[0]);//FAZER ESSA FUNCAO
 		if(result != resultTemp){			
-			fprintf(stderr,"error at line %d: initializing vector with multiple types. r: %d rt:%d\n",node->lineNumber,result,resultTemp);
+			fprintf(stderr,"error at line %d: initializing vector with multiple types.\n",node->lineNumber);
 			 return DATATYPE_INVALID;
 		}
 		return result;	
@@ -526,11 +508,7 @@ int astreeCheckNature(ASTREE * node){
         case ASTREE_PTRADDR: return DECTYPE_POINTER;
          
         case ASTREE_PTRVALUE: return DECTYPE_POINTER;
-
-        case ASTREE_VETCALL: return node->symbol->dataType;
-
-        case ASTREE_FUNCALL: return node->symbol->dataType;
-	
+        	
 	case ASTREE_SYMBOL: return node->symbol->dataType;
 	
 	case ASTREE_ADD:
@@ -539,7 +517,6 @@ int astreeCheckNature(ASTREE * node){
 			fprintf(stderr,"error at line %d: sum operator expects word/byte types of operands.\n",node->lineNumber);
 			return DATATYPE_INVALID;
 		}		
-		//fprintf(stderr,"ADD OK %d\n",result);
 		return result;
 
 	case ASTREE_MIN:
@@ -616,22 +593,20 @@ int astreeCheckNature(ASTREE * node){
 			}	
 		}
 		
-		if(node->symbol->dataType == astreeCheckNature(node->son[2])) return DATATYPE_VALID;
-	
+		if(node->symbol->decType == astreeCheckNature(node->son[2])) return DATATYPE_VALID;	
 		fprintf(stderr,"error at line %d: vector declaration type mismatch of its initialization.\n",node->symbol->lineNumber);
-
 		return DATATYPE_INVALID;
 
-	/*verificacao de chamadas : vetor e funcao
+	/*verificacao de chamadas : vetor e funcao*/
 	case ASTREE_FUNCALL:
 		
-		//check params
 		return 1921; 
 
-	case ASTREE_VETCALL:
-
-
-		return 10293;*/
+	case ASTREE_VETCALL:	
+		result = astreeCheckNature(node->son[0]);
+		if((result == DATATYPE_WORD) || (result == DATATYPE_BYTE)) return result;
+		return DATATYPE_INVALID;	
+		
 	default: return 1;
 
     }
