@@ -82,7 +82,7 @@
 	#include <stdlib.h>
 	
 	#define DEBUG 0
-
+	extern char error;
 	extern int yyin;	
 	extern FILE * outputFile;
 	ASTREE * GLOBALSEQ; //no com a lista de declaracoes globais
@@ -116,7 +116,9 @@ program: globalseq {
 		$$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);
 		GLOBALSEQ = $$->son[0]; //armazena arvore em variavel global, para ser verificada por astreeCheckDeclarations		
 		if(outputFile) astreeCreateCode($$,0);
-        //else astreePrintTree($$,0);
+		astreeCheckDeclarations($$);
+		if (astreeCheckNature($$) == DATATYPE_INVALID) error = 1;
+      		//astreePrintTree($$,0);
 	;};
 
 

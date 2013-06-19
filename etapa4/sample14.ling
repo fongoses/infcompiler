@@ -1,6 +1,6 @@
 word a:0;
 word b:1;
-
+word b:2;
 word main(){
     a[1]=b; //erro: n eh vetor
     c=1;    //nao dec
