@@ -5,6 +5,7 @@ typedef struct hash_node {
     int decType;
     int lineNumber;
     char declared;
+    int paramNum;
     struct hash_node *next;
    } HASH_NODE;
 
