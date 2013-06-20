@@ -97,6 +97,9 @@ int getDeclarationType(ASTREE * node){
 		
 		case ASTREE_PARAM:
 			return getType(node);
+		
+		case ASTREE_PTRPARAM:
+			return getType(node);
 	
 				
 		//symbols possuem tipo ja associados
@@ -135,6 +138,28 @@ int getDataType (ASTREE * node){
 
 		case ASTREE_PTRADDR: //PTRADDR: 'chamada'/utilizacao de um ponteiro declarado 	
 			return  DECTYPE_POINTER;
+	
+		case ASTREE_PARAM:
+			return DECTYPE_SCALAR;
+		
+		case ASTREE_PTRPARAM:
+			return DECTYPE_POINTER;
+		
+		//literais possuem dataType scalar
+		case ASTREE_LIT_INT:
+			return DECTYPE_SCALAR;
+
+		case ASTREE_LIT_FALSE:		
+			return DECTYPE_SCALAR;
+
+		case ASTREE_LIT_TRUE:
+			return DECTYPE_SCALAR;
+		
+		case ASTREE_LIT_CHAR:
+			return DECTYPE_SCALAR;
+		
+		case ASTREE_LIT_STRING:
+			return DECTYPE_SCALAR;
 
 		default: return DEC_ERR;
 	}
@@ -187,7 +212,17 @@ int validArguments(ASTREE * node){
 	fundecNode = nodeFind(TREE,ASTREE_FUNDEC,node->symbol->text);
 	paramSeq = fundecNode->son[1];
 	if(!paramSeq) return DATATYPE_VALID;
-	currentParam=paramSeq->son[1];	
+	currentParam=paramSeq->son[1];
+
+	//seq de tam 1
+	if(paramSeq->type == ASTREE_PARAM) {
+		currentParam = 	paramSeq;
+		currentArg = argSeq;
+//		fprintf(stderr,"symbol: %s cA: %d, cp: %d\n",currentArg->symbol->text,currentArg->symbol->dataType,currentParam->symbol->dataType);		
+		if(!equalType(currentArg,currentParam)) return DATATYPE_INVALID;
+		return DATATYPE_VALID;
+		
+	}
 	while(paramSeq){
 		//fim das duas seq
 		if(paramSeq->son[0])
@@ -531,8 +566,9 @@ void astreeCheckRedeclarations(ASTREE * node){
 			if(node->son[1])//se ha parametros
 				node->symbol->paramNum = getSeqSize(node->son[1])-1; //passa para a funcao o nodo ASTREE_ARGSEQ
 				//-1 pois a o tipo faz parte dessa sequencia(no lado esq da recursao), e acaba contando
-			else node->symbol->paramNum = 0;
+			else node->symbol->paramNum = 0;						
 			break;
+				
 
 		default: return;
 	}
@@ -583,11 +619,12 @@ int astreeCheckNature(ASTREE * node){
          
         case ASTREE_PTRVALUE: return DECTYPE_POINTER;
         	
-	case ASTREE_SYMBOL: return node->symbol->dataType;
+	case ASTREE_SYMBOL: return node->symbol->decType;
 	
 	case ASTREE_ADD:
 		result = astreeCheckMathExpression(node);
-		if (result == DATATYPE_INVALID){ 
+		if (result == DATATYPE_INVALID){
+		//	fprintf(stderr,"symbol: %s decType: %d, dataType: %d\n",node->son[0]->symbol->text,node->son[0]->symbol->decType,node->son[0]->symbol->dataType); 
 			fprintf(stderr,"error at line %d: sum operator expects word/byte types of operands.\n",node->lineNumber);
 			return DATATYPE_INVALID;
 		}		
@@ -683,10 +720,11 @@ int astreeCheckNature(ASTREE * node){
 		paramNum = getSeqSize(node->son[0]); 
 		//verifica se numero de argumentos passados bate com numero de parametros declarados na funcao	
 		if (node->symbol->paramNum != paramNum){
-			fprintf(stderr,"error at line %d: function '%s' expects %d parameters, but it was given %d.\n",node->lineNumber,node->symbol->text,node->symbol->paramNum,temp);			
+			fprintf(stderr,"error at line %d: function '%s' expects %d parameters, but it was given %d.\n",node->lineNumber,node->symbol->text,node->symbol->paramNum,paramNum);			
 			return DATATYPE_INVALID; //se numero de parametros nao bate, nem testa os tipos
 		}
-
+		
+		//verifica ARGSEQ
 		if(node->son[0]) //valida argumentos apenas se existirem
 			//valida tipos dos argumentos passados com os declarados na funcao
 			if(validArguments(node) == DATATYPE_INVALID) {
@@ -695,17 +733,19 @@ int astreeCheckNature(ASTREE * node){
 			}
 		return node->symbol->decType;
 	
-	case ASTREE_ARGSEQ:
+	/*case ASTREE_ARGSEQ:
 		//sequencia de argumentos de funcao eh semelhante a globalseq (apenas verifica tipos da sequencia um a 1)
 		resultTemp= astreeCheckNature(node->son[0]);
 		result = astreeCheckNature(node->son[1]);
 		if((result == DATATYPE_INVALID) || (resultTemp == DATATYPE_INVALID)) return DATATYPE_INVALID;
 		return DATATYPE_VALID;	
-	
+	*/
 	
 	case ASTREE_VETCALL:	
 		result = astreeCheckNature(node->son[0]);
 		if((result == DATATYPE_WORD) || (result == DATATYPE_BYTE)) return result;
+
+		
 		return DATATYPE_INVALID;	
 		
 	default: return 1;

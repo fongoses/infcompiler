@@ -1,6 +1,14 @@
 word a:6;
 word b[4]: 1 2 3 "3";
-word c(){
+word x:1;
+word y(word z,word j){
+
+}
+word c()
+word tst:1;
+word foo:2;
+{
+	a=foo+1;
 
 }
 
@@ -15,6 +23,8 @@ word main(){
 	a=c();
 	a=d("",9,10,1);
 	a=d(1,"",10,"");	
-	a=d(1,9,10,1);
+	a=d(1,9,10,1);	//ok
+	a=d(x,9,10,1);	//ok
+	a=y(x,1);	//ok
 	a=d(1,9,"",1);
 }
