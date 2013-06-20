@@ -95,6 +95,10 @@ int getDeclarationType(ASTREE * node){
 		case ASTREE_LIT_STRING:
 			return DATATYPE_STRING;
 		
+		case ASTREE_PARAM:
+			return getType(node);
+	
+				
 		//symbols possuem tipo ja associados
 		default: return 0;
 	}
@@ -156,44 +160,59 @@ retorno:
 */
 int equalType(ASTREE * n1, ASTREE * n2){
 
+	
 	if ((!n1) && (!n2)) return 1;
 	if ((!n1) && (n2)) return 0;	
 	if ((n1) && (!n2)) return 0;
-	if ((!n1->symbol) || (!n2->symbol)) return 0;
+	if ((!(n1->symbol)) || (!(n2->symbol))) return 0;
+
 	return ((n1->symbol->dataType == n2->symbol->dataType) && (n1->symbol->decType == n2->symbol->decType));
 	
 }
 
 //compara os tipos dos argumentos passados na chamada da funcao com os tipos declarados na definicao da funcao
 //a funcao espera que tanto a declaracao como a chamada possuam quantidade igual de parametros
+//Espera-se como entrada da funcao, um nodo da arvore do tipo ASTREE_FUNCALL
 int validArguments(ASTREE * node){
 	
 	ASTREE * fundecNode;
 	ASTREE * currentArg;
 	ASTREE * currentParam;
+	ASTREE * paramSeq;
+	ASTREE * argSeq;
 	if(!node) return DATATYPE_INVALID;
-	if(!node->symbol) return DATATYPE_INVALID;
 	
-	currentArg = node->son[1];
+	argSeq = node->son[0];
+	currentArg = argSeq->son[1];
 	fundecNode = nodeFind(TREE,ASTREE_FUNDEC,node->symbol->text);
-	currentParam = fundecNode->son[1];
+	paramSeq = fundecNode->son[1];
+	if(!paramSeq) return DATATYPE_VALID;
+	currentParam=paramSeq->son[1];	
+	while(paramSeq){
+		//fim das duas seq
+		if(paramSeq->son[0])
+			if(paramSeq->son[0]->type == ASTREE_PARAM){
+				currentArg=argSeq->son[1];
+				currentParam=paramSeq->son[1];
+				//fprintf(stderr,"cA: %d, cp: %d\n",currentArg->symbol->decType,currentParam->symbol->decType);
+				if(!equalType(currentArg,currentParam)) return DATATYPE_INVALID;
+				if(!equalType(argSeq->son[0],paramSeq->son[0])) return DATATYPE_INVALID;
+			}
+		
+		//qndo n eh o fim		
+		if(currentParam){
+				
+			//fprintf(stderr,"cA: %d, cp: %d\n",currentArg->symbol->decType,currentParam->symbol->decType);
+			if(!equalType(currentArg,currentParam)) return DATATYPE_INVALID;
+			paramSeq=paramSeq->son[0];
+			if(!paramSeq) break;
 
-	while(node){
-		if(currentArg){
-			if(!equalType(currentArg,currentParam)) return DATATYPE_INVALID; 
-			// se ha 1 parametro errado, basta dizer que ocorreu um erro na linha tal, e nao informar cada parametro errado.
-			node=node->son[0];
-			if(!node) break;
-			currentArg=node->son[1];
-			fundecNode=fundecNode->son[0];
-			currentParam=fundecNode->son[1];
-		}
-		break;	
-	}
-	
+			currentParam=paramSeq->son[1];
+			argSeq=argSeq->son[0];
+			currentArg=argSeq->son[1];
+		}else break;	
+	}	
 	return DATATYPE_VALID;
-	
-
 }
 //seta uma variavel como declarada apos a primeira passada (no inicio do programa, quando eh zero)
 int astreeSetDeclarations(ASTREE * node){
@@ -223,8 +242,6 @@ void  astreeCheckDeclarations(ASTREE * node){
 	for(i=0;i<MAX_SONS;i++){
 		astreeCheckDeclarations(node->son[i]);
 	}
-
-
 }
 
 //checa declaracoes de variaveis
@@ -439,11 +456,15 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
 }
 
 
-//a partir do nodo ASTREE_FUNDEC, obtem  a quantidade de parametros da funcao
-int getParamNum(ASTREE* node){
+/*
+	A partir de um nodo que representa uma sequencia, calcula o tamanho dessa sequencia
+	Essa funcao eh util quando ha necessidade de descobrir, por exemplo, o numero de parametros/argumentos
+	de uma funcao
+*/
+int getSeqSize(ASTREE* node){
 
 	if(!node) return 0;
-	return 1+ getParamNum(node->son[0]);
+	return 1 + getSeqSize(node->son[0]);
 
 }
 void astreeCheckRedeclarations(ASTREE * node){
@@ -507,7 +528,10 @@ void astreeCheckRedeclarations(ASTREE * node){
 				return;
 			}
 			//get numberofparams
-			paramNum = getParamNum(node->son[1]);
+			if(node->son[1])//se ha parametros
+				node->symbol->paramNum = getSeqSize(node->son[1])-1; //passa para a funcao o nodo ASTREE_ARGSEQ
+				//-1 pois a o tipo faz parte dessa sequencia(no lado esq da recursao), e acaba contando
+			else node->symbol->paramNum = 0;
 			break;
 
 		default: return;
@@ -531,6 +555,7 @@ int astreeCheckNature(ASTREE * node){
 	int temp;
 	char * ptrl;//para strtol
 	ASTREE*decTemp;
+	int paramNum; //numero de parametros da funcao
 	if (!node) return DATATYPE_INVALID;	
 
 	switch (node->type){ 
@@ -605,7 +630,8 @@ int astreeCheckNature(ASTREE * node){
 	
 	case ASTREE_FUNDEC:
 		return astreeCheckNature(node->son[3]); //check blocks
-	/*Obs, nao eh necessario verificar parametros na declaracao, apenas na chamada (ARGSEQ)	
+	
+	/*Obs, nao eh necessario verificar parametros na declaracao(PARAMSEQ), apenas na chamada (ARGSEQ)	
 	case ASTREE_PARAMSEQ:
 		//sequencia de argumentos de funcao eh semelhante a globalseq (apenas verifica tipos da sequencia um a 1)
 		resultTemp= astreeCheckNature(node->son[0]);
@@ -643,7 +669,7 @@ int astreeCheckNature(ASTREE * node){
 	case ASTREE_VETORDEC:
 		if(node->son[2]){
 			itemNum = strtol(node->son[1]->symbol->text,&ptrl,16);		
-			if(itemNum != getItemNum(node->son[2])){
+			if(itemNum != getSeqSize(node->son[2])){
 				fprintf(stderr,"error at line %d: vector size differs from the vector initialization.\n",node->symbol->lineNumber);
 				return DATATYPE_INVALID;
 			}	
@@ -654,17 +680,19 @@ int astreeCheckNature(ASTREE * node){
 		return DATATYPE_INVALID;
 
 	case ASTREE_FUNCALL:
-		temp = getParamNum(node->son[0]);//error
-	
+		paramNum = getSeqSize(node->son[0]); 
 		//verifica se numero de argumentos passados bate com numero de parametros declarados na funcao	
-		if (node->symbol->paramNum != temp){
-			temp=DATATYPE_INVALID; 	
-			fprintf(stderr,"error at line %d: function '%s' expects %d parameters, but it was given %d.\n",node->symbol->lineNumber,node->symbol->text,node->symbol->paramNum,temp);
+		if (node->symbol->paramNum != paramNum){
+			fprintf(stderr,"error at line %d: function '%s' expects %d parameters, but it was given %d.\n",node->lineNumber,node->symbol->text,node->symbol->paramNum,temp);			
+			return DATATYPE_INVALID; //se numero de parametros nao bate, nem testa os tipos
 		}
-		
-		//valida tipos dos argumentos passados com os declarados na funcao
-		if(validArguments(node) == DATATYPE_INVALID) return DATATYPE_INVALID;
-		
+
+		if(node->son[0]) //valida argumentos apenas se existirem
+			//valida tipos dos argumentos passados com os declarados na funcao
+			if(validArguments(node) == DATATYPE_INVALID) {
+				fprintf(stderr,"error at line %d: function '%s' mismatching type of its declaration\n",node->lineNumber,node->symbol->text);
+				return DATATYPE_INVALID;
+			}
 		return node->symbol->decType;
 	
 	case ASTREE_ARGSEQ:
@@ -684,10 +712,6 @@ int astreeCheckNature(ASTREE * node){
 
     }
 
-}
-int getItemNum(ASTREE * node){
-	if(!node) return 0;	
-	return 1 + getItemNum(node->son[0]);	
 }
 	
 int astreeCheckMathExpression(ASTREE * node){
@@ -1153,13 +1177,28 @@ void astreeCreateCode(ASTREE * node, int level){
 	return;
 }
 
+/*
+	Encontra um nodo dentre aqueles que possuem alguma referencia para a tabela de simbolos,
+	como por exemplo declaracoes, atribuicoes, alguns comandos, etc.
+	Type se refere ao tipo de nodo a ser encontrado (ASTREE_FUNDEC, etc..)
+	
 
-ASTREE * nodeFind(ASTREE * tree, int type, char * text){
+*/
+ASTREE * nodeFind(ASTREE * tree, int type, char * symboltext){
 
+	int i;
+	ASTREE * resultSon;
 	if(!tree) return 0;
-	if(!text) return 0;
-	
+	if(!symboltext) return 0;
+
+	if(tree->symbol) 
+		if ((tree->type==type) && (!strcmp(tree->symbol->text,symboltext))){
+			return tree;
+		}
+	for(i=0;i<MAX_SONS;i++){
+		resultSon=nodeFind(tree->son[i],type,symboltext);
+		if(resultSon) return resultSon;
+	}
 	return 0;
-	
 }
 

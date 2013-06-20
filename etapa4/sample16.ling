@@ -4,9 +4,17 @@ word c(){
 
 }
 
+word d(word f,word g,word h,word i){
+
+
+}
 word main(){
 
 	a="3"+4;
 	b[1]=2;
-	a=c(1);
+	a=c();
+	a=d("",9,10,1);
+	a=d(1,"",10,"");	
+	a=d(1,9,10,1);
+	a=d(1,9,"",1);
 }

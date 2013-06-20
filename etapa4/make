@@ -1,13 +1,16 @@
-word  $ab:  0;
-word  $ab:  1;
+word  a:6;
+word  b[4]: 1 2 3 "3";
+word  c ( )
+{
+}
+word  d ( word  f,word  g,word  h,word  i)
+{
+}
 word  main ( )
 {
-}
-word  foo ( )
-{
-a = 1;
-}
-word  foo ( )
-{
+a = "3" + 4;
+b[1] = 2;
+a = c();
+a = d(8,9,10,"");
 }
 
