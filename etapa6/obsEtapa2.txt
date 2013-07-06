@@ -1,0 +1,26 @@
+Obs sobre o trabalho.
+1) somente blocos de funcoes contem declaracoes(main e outras funcoes
+declaradas)
+
+2) comandos terminam por ';' e declaracoes de funcoes nao termina por ';;
+
+
+obs:
+	a) Separador (Puro)
+	b) Terminador (Puro): varios ';'
+	
+		//programa correto com ifs e else	
+		{	
+			a=5;
+			b=7;
+			if(x)
+				a=5
+			else
+				a=5;
+				
+		}
+		
+		comando loop possui bloco e esse bloco eh terminado por ';'
+
+	c) ling 
+	d) c/c++

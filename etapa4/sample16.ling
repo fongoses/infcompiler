@@ -5,8 +5,8 @@ word y(word z,word j){
 
 }
 word c()
-word tst:1;
-word foo:2;
+	word tst:1;
+	word foo:2;
 {
 	a=foo+1;
 

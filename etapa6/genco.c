@@ -177,12 +177,6 @@ TAC* makeIfThen(TAC* son0, TAC* son1){
     return tac_join(tac_join(son0,nova1),nova2);
 }
 
-TAC * makeFun (HASH_NODE* symbol TAC * son3 ){ //bloco da funcao eh o filho 3
-		
-	//completar o codigo abaixo.
-	//return tac_join(tac_create(TAC_BEGINF,name,0,0), ...
-}
-	
 //funcao OK
 TAC * tacReverse(TAC * last){
     TAC * first = 0;
@@ -193,6 +187,47 @@ TAC * tacReverse(TAC * last){
        first->prev->next = first;
     
     return first;
+}
+
+
+//ASSEMBLER.
+
+//nao eh recursiva
+void generateASM(TAC * first){
+
+	TAC * tac=0;
+	FILE fout = 0; //arquivo de saida
+
+	for(tac=firs;tac;tac=tac->next){
+		switch(tac->type){
+
+			case TAC_BEGINF: fprintf(fout,".globl %s\n"
+			".type\n"
+			"   main, @function",tac->target->text); //nome da funcao em %s
+			break;
+			case TAC_ENDF: break;
+			case TAC_MOV: break;
+			case TAC_ADD: 	
+				fprintf(fout," movl    a, %%eax\n"
+        				"addl    $2, %%eax"
+        				"movl    %%eax, a");
+			
+			break;
+			case TAC_OUTPUT: 
+				//printf
+				fprintf(fout,"movl    a, %%eax\n"
+        			"movl    %%eax, 4(%%esp)\n"
+        			"movl    $.LC0, (%%esp)\n"
+        				"call    printf\n"
+
+				
+			break;
+			default: break;
+
+		}
+	}	
+
+
 }
 
 

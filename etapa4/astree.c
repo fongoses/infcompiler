@@ -265,12 +265,24 @@ int astreeSetDeclarations(ASTREE * node){
 	
 }
 
-void  astreeCheckDeclarations(ASTREE * node){
+void  astreeSetSymbolTypes(ASTREE * node){
 
 	int i;
 	if (!node) return;
 
 	setType(node);
+
+	for(i=0;i<MAX_SONS;i++){
+		astreeSetSymbolTypes(node->son[i]);
+	}
+}
+
+void  astreeCheckDeclarations(ASTREE * node){
+
+	int i;
+	if (!node) return;
+
+	//setType(node);
 	
 	astreeCheckDeclarationsSingle(node);
 
