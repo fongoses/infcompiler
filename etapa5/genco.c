@@ -48,7 +48,7 @@ TAC * generateCode(ASTREE * node){
         */
 
         case ASTREE_SYMBOL:
-            return tac_create(TAC_SYMBOL,node->symbol,0,0); //para elem da lista que corresponde ao symbol (que eh um elem folha), insere (em target) o  ptr para sua tab de simbolos
+            result = tac_create(TAC_SYMBOL,node->symbol,0,0); //para elem da lista que corresponde ao symbol (que eh um elem folha), insere (em target) o  ptr para sua tab de simbolos
             break;
 
         case ASTREE_LIT_INT:
@@ -217,7 +217,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         default:
-            result=0;
+            result = 0;
             break;
         }
 
