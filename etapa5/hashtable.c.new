@@ -167,7 +167,6 @@ void hashPrintFull() {
         }
         printf("\n");
     }
-
 }
 
 HASH_NODE * makeTemp(void){
@@ -175,7 +174,7 @@ HASH_NODE * makeTemp(void){
 	static int nextTemp = 0;
 	char buffer[128];
 	sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
-	return hashInsert(buffer,DECTYPE_SCALAR);
+	return hashInsert(buffer,SYMBOL_SCALAR);	
 }
 
 //11/06
@@ -184,8 +183,27 @@ HASH_NODE * makeLabel(void){
 	static int nextTemp = 0;
 	char buffer[128];
 	sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
-	return hashInsert(buffer,DECTYPE_LABEL);
+	return hashInsert(buffer,SYMBOL_LABEL);	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

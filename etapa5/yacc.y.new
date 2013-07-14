@@ -78,16 +78,14 @@
 %{
 
 	#include "astree.h" //ja inclui hashtable.h
-	#include "tac.h"
 	#include <stdio.h>
 	#include <stdlib.h>
 	
 	#define DEBUG 0
-	extern char error;
+
 	extern int yyin;	
 	extern FILE * outputFile;
-	extern ASTREE * TREE ; //no com a lista de declaracoes globais
-	extern TAC * mainTAC; //tac global
+	ASTREE * TREE;
 %}
 
 
@@ -116,14 +114,13 @@
 
 program: globalseq { 
 		$$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);
-		TREE = $$->son[0]; //armazena arvore em variavel global, ja que algumas declaracoes precisam ser recuperadas durante o percurso da arvore		
+		TREE = $$->son[0]; //armazena arvore em variavel global, para ser verificada por astreeCheckDeclarations		
 		if(outputFile) astreeCreateCode($$,0);
 		astreeCheckDeclarations($$);
 		if (astreeCheckNature($$) == DATATYPE_INVALID) error = 1;
-		mainTAC = generateCode($$);
-		print_tac(mainTAC);
-      		//astreePrintTree($$,0);
-	;};
+      		
+		//if(outputFile) astreeCreateCode($$,0);		
+	};
 
 
 globalseq: /* empty program */
@@ -131,7 +128,7 @@ globalseq: /* empty program */
 	| globalseq dec {
 		//antes de criar no com declaracao, verifica declaracao
 		$$ = astreeCreate(ASTREE_GLOBALSEQ,$1,$2,0,0,0);		
-	//	astreeCheckDeclarations($2); em astreeCreate
+		//astreeCheckDeclarations($2); em astreeCreate
 		 }
 	;
 
@@ -319,7 +316,7 @@ controlefluxo: condif { $$ = $1;}
 	}
 	| expressao '+' expressao { 
 		$$=astreeCreate(ASTREE_ADD,$1,$3,0,0,0);			
-		//print_tac(generateCode($$));
+		print_tac(generateCode($$));
 	}
 	| expressao '*' expressao {  $$=astreeCreate(ASTREE_MUL,$1,$3,0,0,0); }
 	| expressao OPERATOR_LE expressao {  $$=astreeCreate(ASTREE_LE,$1,$3,0,0,0); }

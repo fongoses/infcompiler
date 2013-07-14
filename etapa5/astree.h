@@ -9,7 +9,8 @@
  **********************************************************************/
 
 
-
+#ifndef __ASTREE_H__
+#define __ASTREE_H__
 #include <stdio.h>
 #include <stdlib.h>
 #include "hashtable.h"
@@ -97,3 +98,4 @@ void setItemType(ASTREE * node);
 void astreeCheckUndeclaredAndDatatype(ASTREE * node);
 void astreeCheckRedeclarations(ASTREE * node);
 ASTREE * nodeFind(ASTREE * tree,int type,char * text);
+#endif

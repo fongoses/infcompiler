@@ -19,6 +19,7 @@ static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 #line 79 "yacc.y"
 
 	#include "astree.h" /*ja inclui hashtable.h*/
+	#include "tac.h"
 	#include <stdio.h>
 	#include <stdlib.h>
 	
@@ -27,7 +28,8 @@ static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 	extern int yyin;	
 	extern FILE * outputFile;
 	extern ASTREE * TREE ; /*no com a lista de declaracoes globais*/
-#line 92 "yacc.y"
+	extern TAC * mainTAC; /*tac global*/
+#line 94 "yacc.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -45,7 +47,7 @@ typedef union {
 	HASH_NODE * symbol;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 48 "y.tab.c"
+#line 50 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -432,7 +434,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 353 "yacc.y"
+#line 358 "yacc.y"
 
 
 int yyerror(char *s){
@@ -442,7 +444,7 @@ int yyerror(char *s){
 }
 
 
-#line 445 "y.tab.c"
+#line 447 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -649,22 +651,24 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 115 "yacc.y"
+#line 117 "yacc.y"
 	{ 
 		yyval.tree = astreeCreate(ASTREE_PROGRAM,yystack.l_mark[0].tree,0,0,0,0);
 		TREE = yyval.tree->son[0]; /*armazena arvore em variavel global, ja que algumas declaracoes precisam ser recuperadas durante o percurso da arvore		*/
 		if(outputFile) astreeCreateCode(yyval.tree,0);
 		astreeCheckDeclarations(yyval.tree);
 		if (astreeCheckNature(yyval.tree) == DATATYPE_INVALID) error = 1;
+		mainTAC = generateCode(yyval.tree);
+		print_tac(mainTAC);
       		/*astreePrintTree($$,0);*/
 	;}
 break;
 case 2:
-#line 126 "yacc.y"
+#line 130 "yacc.y"
 	{ yyval.tree = 0;}
 break;
 case 3:
-#line 127 "yacc.y"
+#line 131 "yacc.y"
 	{
 		/*antes de criar no com declaracao, verifica declaracao*/
 		yyval.tree = astreeCreate(ASTREE_GLOBALSEQ,yystack.l_mark[-1].tree,yystack.l_mark[0].tree,0,0,0);		
@@ -672,73 +676,73 @@ case 3:
 		 }
 break;
 case 4:
-#line 134 "yacc.y"
+#line 138 "yacc.y"
 	{ yyval.tree = yystack.l_mark[0].tree;}
 break;
 case 5:
-#line 135 "yacc.y"
+#line 139 "yacc.y"
 	{ yyval.tree = yystack.l_mark[0].tree; }
 break;
 case 6:
-#line 136 "yacc.y"
+#line 140 "yacc.y"
 	{ yyval.tree = yystack.l_mark[0].tree; }
 break;
 case 7:
-#line 140 "yacc.y"
+#line 144 "yacc.y"
 	{ yyval.tree = 0;}
 break;
 case 8:
-#line 141 "yacc.y"
+#line 145 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_LOCALDECSEQ,yystack.l_mark[-1].tree,yystack.l_mark[0].tree,0,0,0);}
 break;
 case 9:
-#line 145 "yacc.y"
+#line 149 "yacc.y"
 	{ yyval.tree =  yystack.l_mark[0].tree;}
 break;
 case 10:
-#line 146 "yacc.y"
-	{ yyval.tree = yystack.l_mark[0].tree;}
-break;
-case 11:
-#line 147 "yacc.y"
-	{ yyval.tree = yystack.l_mark[0].tree;}
-break;
-case 12:
-#line 148 "yacc.y"
-	{ yyval.tree = yystack.l_mark[0].tree;}
-break;
-case 13:
-#line 149 "yacc.y"
-	{ yyval.tree = yystack.l_mark[0].tree;}
-break;
-case 14:
 #line 150 "yacc.y"
 	{ yyval.tree = yystack.l_mark[0].tree;}
 break;
-case 15:
+case 11:
 #line 151 "yacc.y"
 	{ yyval.tree = yystack.l_mark[0].tree;}
 break;
+case 12:
+#line 152 "yacc.y"
+	{ yyval.tree = yystack.l_mark[0].tree;}
+break;
+case 13:
+#line 153 "yacc.y"
+	{ yyval.tree = yystack.l_mark[0].tree;}
+break;
+case 14:
+#line 154 "yacc.y"
+	{ yyval.tree = yystack.l_mark[0].tree;}
+break;
+case 15:
+#line 155 "yacc.y"
+	{ yyval.tree = yystack.l_mark[0].tree;}
+break;
 case 16:
-#line 157 "yacc.y"
+#line 161 "yacc.y"
 	{yyval.tree = 0; }
 break;
 case 17:
-#line 158 "yacc.y"
+#line 162 "yacc.y"
 	{ yyval.tree = 0; }
 break;
 case 18:
-#line 159 "yacc.y"
+#line 163 "yacc.y"
 	{
  		yyval.tree = astreeCreate(ASTREE_COMMANDSEQ,yystack.l_mark[-2].tree,yystack.l_mark[-1].tree,0,0,0);
 	}
 break;
 case 19:
-#line 165 "yacc.y"
+#line 169 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_BLOCK,yystack.l_mark[-1].tree,0,0,0,0); }
 break;
 case 20:
-#line 169 "yacc.y"
+#line 173 "yacc.y"
 	{
 			/*printf(" Achei integer %d\n",$1);*/
 			/*$$ = $1; //valor associado ao literal inteiro lido eh o proprio valor do analisador lexico */
@@ -750,77 +754,77 @@ case 20:
 			}
 break;
 case 21:
-#line 178 "yacc.y"
+#line 182 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_LIT_FALSE,0,0,0,0,yystack.l_mark[0].node); }
 break;
 case 22:
-#line 179 "yacc.y"
+#line 183 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_LIT_TRUE,0,0,0,0,yystack.l_mark[0].node); }
 break;
 case 23:
-#line 180 "yacc.y"
+#line 184 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_LIT_CHAR,0,0,0,0,yystack.l_mark[0].node); }
 break;
 case 24:
-#line 181 "yacc.y"
+#line 185 "yacc.y"
 	{yyval.tree = astreeCreate(ASTREE_LIT_STRING,0,0,0,0,yystack.l_mark[0].node);}
 break;
 case 25:
-#line 185 "yacc.y"
+#line 189 "yacc.y"
 	{ yyval.tree = 0; }
 break;
 case 26:
-#line 186 "yacc.y"
+#line 190 "yacc.y"
 	{yyval.tree = astreeCreate(ASTREE_LIT_SEQ,yystack.l_mark[-1].tree,yystack.l_mark[0].tree,0,0,0);}
 break;
 case 27:
-#line 190 "yacc.y"
+#line 194 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_KWWORD,0,0,0,0,0); }
 break;
 case 28:
-#line 191 "yacc.y"
+#line 195 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_KWBOOL,0,0,0,0,0); }
 break;
 case 29:
-#line 192 "yacc.y"
+#line 196 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_KWBYTE,0,0,0,0,0); }
 break;
 case 30:
-#line 195 "yacc.y"
+#line 199 "yacc.y"
 	{ yyval.tree = yystack.l_mark[0].tree;}
 break;
 case 31:
-#line 196 "yacc.y"
+#line 200 "yacc.y"
 	{yyval.tree = yystack.l_mark[0].tree;}
 break;
 case 32:
-#line 203 "yacc.y"
+#line 207 "yacc.y"
 	{ if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)yystack.l_mark[-3].node);
 		yyval.tree = astreeCreate(ASTREE_VARDEC,yystack.l_mark[-4].tree,yystack.l_mark[-1].tree,0,0,yystack.l_mark[-3].node);
 	
 	 }
 break;
 case 33:
-#line 207 "yacc.y"
+#line 211 "yacc.y"
 	{ if(DEBUG) fprintf(stdout,"Var %s inicializada\n",(char*)yystack.l_mark[-3].node);
 		yyval.tree = astreeCreate(ASTREE_PTRDEC,yystack.l_mark[-5].tree,yystack.l_mark[-1].tree,0,0,yystack.l_mark[-3].node);
 	 }
 break;
 case 34:
-#line 214 "yacc.y"
+#line 218 "yacc.y"
 	{if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)yystack.l_mark[-4].node); 
 	
 		yyval.tree = astreeCreate(ASTREE_VETORDEC,yystack.l_mark[-5].tree,astreeCreate(ASTREE_LIT_INT,0,0,0,0,yystack.l_mark[-2].node),0,0,yystack.l_mark[-4].node); /*gambiarra autorizada: nao pode ter literal, pois vetordec somente aceita inteiros como tamanho.*/
 	}
 break;
 case 35:
-#line 218 "yacc.y"
+#line 222 "yacc.y"
 	{if(DEBUG) fprintf(stdout,"Vetor %s declarado e inicializado\n",(char*)yystack.l_mark[-6].node);
 		yyval.tree = astreeCreate(ASTREE_VETORDEC,yystack.l_mark[-7].tree,astreeCreate(ASTREE_LIT_INT,0,0,0,0,yystack.l_mark[-4].node),yystack.l_mark[-1].tree,0,yystack.l_mark[-6].node); /*gambiarra autorizada.*/
 	 }
 break;
 case 36:
-#line 228 "yacc.y"
+#line 232 "yacc.y"
 	{ 
 			yyval.tree = astreeCreate(ASTREE_SCALAR_ASS,yystack.l_mark[0].tree,0,0,0,yystack.l_mark[-2].node); /*$1 eh o identificador (na realidade o seu ponteiro para tab de simbolos)*/
 			
@@ -828,194 +832,195 @@ case 36:
 	}
 break;
 case 37:
-#line 233 "yacc.y"
+#line 237 "yacc.y"
 	{ if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)yystack.l_mark[-2].node);
 	
 		yyval.tree = astreeCreate(ASTREE_PTR_ASS,yystack.l_mark[0].tree,0,0,0,yystack.l_mark[-2].node); /*ajustar alterar, nao eh SCALAR_ASS*/
 	 }
 break;
 case 38:
-#line 237 "yacc.y"
+#line 241 "yacc.y"
 	{ if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)yystack.l_mark[-2].node);
 		yyval.tree = astreeCreate(ASTREE_DEREF_ASS,yystack.l_mark[0].tree,0,0,0,yystack.l_mark[-2].node);
 	 }
 break;
 case 39:
-#line 242 "yacc.y"
+#line 246 "yacc.y"
 	{ if(DEBUG) fprintf(stdout,"Vetor %s recebe uma string\n",(char*)yystack.l_mark[-5].node);
 	yyval.tree = astreeCreate(ASTREE_VET_ASS,yystack.l_mark[-3].tree,yystack.l_mark[0].tree,0,0,yystack.l_mark[-5].node);		
 	 }
 break;
 case 40:
-#line 250 "yacc.y"
+#line 254 "yacc.y"
 	{yyval.tree = astreeCreate(ASTREE_PARAM,yystack.l_mark[-1].tree,0,0,0,yystack.l_mark[0].node);}
 break;
 case 41:
-#line 251 "yacc.y"
+#line 255 "yacc.y"
 	{yyval.tree= astreeCreate(ASTREE_PTRPARAM,yystack.l_mark[-2].tree,0,0,0,yystack.l_mark[0].node);}
 break;
 case 42:
-#line 256 "yacc.y"
+#line 260 "yacc.y"
 	{ yyval.tree=0;}
 break;
 case 43:
-#line 257 "yacc.y"
+#line 261 "yacc.y"
 	{yyval.tree = yystack.l_mark[0].tree;}
 break;
 case 44:
-#line 258 "yacc.y"
+#line 262 "yacc.y"
 	{ yyval.tree =  astreeCreate(ASTREE_PARAMSEQ,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 45:
-#line 261 "yacc.y"
+#line 265 "yacc.y"
 	{ 	
 	if(DEBUG) fprintf(stdout,"funcao %s:\n",(char*)yystack.l_mark[-5].node);
 		yyval.tree = astreeCreate(ASTREE_FUNDEC,yystack.l_mark[-6].tree,yystack.l_mark[-3].tree,yystack.l_mark[-1].tree,yystack.l_mark[0].tree,yystack.l_mark[-5].node);
 	 }
 break;
 case 46:
-#line 270 "yacc.y"
+#line 274 "yacc.y"
 	{
 		if(DEBUG) fprintf(stdout,"Lido valor e armazenado em %s\n",(char*) yystack.l_mark[0].node);
 		yyval.tree = astreeCreate(ASTREE_INPUT,0,0,0,0,yystack.l_mark[0].node);
 	}
 break;
 case 47:
-#line 277 "yacc.y"
+#line 281 "yacc.y"
 	{ yyval.tree = yystack.l_mark[0].tree;}
 break;
 case 48:
-#line 278 "yacc.y"
+#line 282 "yacc.y"
 	{yyval.tree = astreeCreate(ASTREE_OUTPUTSEQ,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0);}
 break;
 case 49:
-#line 281 "yacc.y"
+#line 285 "yacc.y"
 	{if(DEBUG) fprintf(stdout,"Valor escrito na saida padrao\n");
 			yyval.tree=astreeCreate(ASTREE_OUTPUT,yystack.l_mark[0].tree,0,0,0,0);
 	}
 break;
 case 50:
-#line 286 "yacc.y"
+#line 290 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_RETURN,yystack.l_mark[0].tree,0,0,0,0); }
 break;
 case 51:
-#line 291 "yacc.y"
+#line 295 "yacc.y"
 	{ yyval.tree = 0;}
 break;
 case 52:
-#line 292 "yacc.y"
+#line 296 "yacc.y"
 	{yyval.tree = yystack.l_mark[0].tree;}
 break;
 case 53:
-#line 293 "yacc.y"
+#line 297 "yacc.y"
 	{yyval.tree = astreeCreate(ASTREE_ARGSEQ,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 54:
-#line 302 "yacc.y"
+#line 306 "yacc.y"
 	{yyval.tree = yystack.l_mark[0].tree;}
 break;
 case 55:
-#line 303 "yacc.y"
+#line 307 "yacc.y"
 	{ yyval.tree=astreeCreate(ASTREE_SYMBOL,0,0,0,0,yystack.l_mark[0].node);}
 break;
 case 56:
-#line 304 "yacc.y"
+#line 308 "yacc.y"
 	{
 		yyval.tree = astreeCreate(ASTREE_VETCALL,yystack.l_mark[-1].tree,0,0,0,yystack.l_mark[-3].node);
 	}
 break;
 case 57:
-#line 307 "yacc.y"
+#line 311 "yacc.y"
 	{
 		yyval.tree = astreeCreate(ASTREE_FUNCALL,yystack.l_mark[-1].tree,0,0,0,yystack.l_mark[-3].node);
 	}
 break;
 case 58:
-#line 310 "yacc.y"
+#line 314 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_PTRADDR,0,0,0,0,yystack.l_mark[0].node);}
 break;
 case 59:
-#line 311 "yacc.y"
+#line 315 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_PTRVALUE,0,0,0,0,yystack.l_mark[0].node);}
 break;
 case 60:
-#line 312 "yacc.y"
+#line 316 "yacc.y"
 	{ yyval.tree = astreeCreate(ASTREE_EXPRESSION,yystack.l_mark[-1].tree,0,0,0,0);}
 break;
 case 61:
-#line 313 "yacc.y"
+#line 317 "yacc.y"
 	{ 
 		yyval.tree=astreeCreate(ASTREE_MIN,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0);
 	}
 break;
 case 62:
-#line 316 "yacc.y"
+#line 320 "yacc.y"
 	{ 
-		yyval.tree=astreeCreate(ASTREE_ADD,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0);	
+		yyval.tree=astreeCreate(ASTREE_ADD,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0);			
+		/*print_tac(generateCode($$));*/
 	}
 break;
 case 63:
-#line 319 "yacc.y"
+#line 324 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_MUL,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 64:
-#line 320 "yacc.y"
+#line 325 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_LE,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 65:
-#line 321 "yacc.y"
+#line 326 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_GE,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 66:
-#line 322 "yacc.y"
+#line 327 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_EQ,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 67:
-#line 323 "yacc.y"
+#line 328 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_NE,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 68:
-#line 324 "yacc.y"
+#line 329 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_AND,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 69:
-#line 325 "yacc.y"
+#line 330 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_OR,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 70:
-#line 326 "yacc.y"
+#line 331 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_DIV,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 71:
-#line 327 "yacc.y"
+#line 332 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_L,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 72:
-#line 328 "yacc.y"
+#line 333 "yacc.y"
 	{  yyval.tree=astreeCreate(ASTREE_G,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0); }
 break;
 case 73:
-#line 336 "yacc.y"
+#line 341 "yacc.y"
 	{ 
 		if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");
 		yyval.tree=astreeCreate(ASTREE_IF,yystack.l_mark[-3].tree,yystack.l_mark[0].tree,0,0,0);
 	}
 break;
 case 74:
-#line 340 "yacc.y"
+#line 345 "yacc.y"
 	{
 		if(DEBUG) fprintf(stdout,"Clausula if avaliada\n");
 		yyval.tree=astreeCreate(ASTREE_IF_ELSE,yystack.l_mark[-5].tree,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0);
 	}
 break;
 case 75:
-#line 346 "yacc.y"
+#line 351 "yacc.y"
 	{
 		if(DEBUG) fprintf(stdout,"Clausula loop avaliada\n");
 		yyval.tree=astreeCreate(ASTREE_LOOP,yystack.l_mark[-2].tree,yystack.l_mark[0].tree,0,0,0);
 	}
 break;
-#line 1018 "y.tab.c"
+#line 1023 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
