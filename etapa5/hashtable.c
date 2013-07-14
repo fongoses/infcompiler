@@ -45,11 +45,11 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
     HASH_NODE *node;
 
     node = hashFind(text);
-    if (node != (void*)0) return node; 
+    if (node != (void*)0) return node;
 
 
     int address = hashAddress(text);
-    
+
     // Calc the address and allocates the node
     node = (HASH_NODE *) calloc(sizeof(HASH_NODE),1);
 
@@ -70,9 +70,9 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
         ptr = Table[address];
 
         // Searches for the last list node
-        while(ptr->next != (void *) 0) 
+        while(ptr->next != (void *) 0)
             ptr = ptr->next;
-        
+
         // Insert at the end of the list
         ptr->next = node;
     }
@@ -83,7 +83,7 @@ HASH_NODE *hashAdd(char *text, int type) { // Insert the node in the hash table 
     HASH_NODE *node;
 
     int address = hashAddress(text);
-    
+
     // Calc the address and allocates the node
     node = (HASH_NODE *) calloc(sizeof(HASH_NODE),1);
 
@@ -104,9 +104,9 @@ HASH_NODE *hashAdd(char *text, int type) { // Insert the node in the hash table 
         ptr = Table[address];
 
         // Searches for the last list node
-        while(ptr->next != (void *) 0) 
+        while(ptr->next != (void *) 0)
             ptr = ptr->next;
-        
+
         // Insert at the end of the list
         ptr->next = node;
     }
@@ -171,20 +171,22 @@ void hashPrintFull() {
 }
 
 HASH_NODE * makeTemp(void){
-
-	static int nextTemp = 0;
-	char buffer[128];
-	sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
-	return hashInsert(buffer,DECTYPE_SCALAR);
+    static int nextTemp = 0;
+    char buffer[128];
+    sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
+    // Incrementa a variável estática nextTemp para que, na próxima chamada, não fique com o mesmo nome.
+    nextTemp++;
+    return hashInsert(buffer,DECTYPE_SCALAR);
 }
 
-//11/06
 HASH_NODE * makeLabel(void){
 
-	static int nextTemp = 0;
-	char buffer[128];
-	sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
-	return hashInsert(buffer,DECTYPE_LABEL);
+    static int nextTemp = 0;
+    char buffer[128];
+    sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
+    // Incrementa a variável estática nextTemp para que, na próxima chamada, não fique com o mesmo nome.
+    nextTemp++;
+    return hashInsert(buffer,DECTYPE_LABEL);
 }
 
 

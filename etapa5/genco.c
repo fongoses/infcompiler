@@ -48,40 +48,44 @@ TAC * generateCode(ASTREE * node){
         */
 
         case ASTREE_SYMBOL:
-            result = tac_create(TAC_SYMBOL,node->symbol,0,0); //para elem da lista que corresponde ao symbol (que eh um elem folha), insere (em target) o  ptr para sua tab de simbolos
+            result = tac_create(TAC_SYMBOL,node->symbol, 0, 0); //para elem da lista que corresponde ao symbol (que eh um elem folha), insere (em target) o  ptr para sua tab de simbolos
             break;
 
         case ASTREE_LIT_INT:
-            result =  tac_create(TAC_LIT_INT,node->symbol,0,0);
+            result =  tac_create(TAC_LIT_INT,node->symbol, 0, 0);
             break;
 
         case ASTREE_ADD:
-            result = makeBinop(treeSons[0],treeSons[1], TAC_ADD);
+            result = makeBinop(treeSons[0], treeSons[1], TAC_ADD);
             break;
 
         case ASTREE_MIN:
-            result = makeBinop(treeSons[0],treeSons[1], TAC_MIN);
+            result = makeBinop(treeSons[0], treeSons[1], TAC_MIN);
+            break;
+
+        case ASTREE_UMIN:
+            result = makeBinop(treeSons[0], 0, TAC_UMIN);
             break;
 
         case ASTREE_MUL:
-            result = makeBinop(treeSons[0],treeSons[1], TAC_MUL);
+            result = makeBinop(treeSons[0], treeSons[1], TAC_MUL);
             break;
 
         case ASTREE_DIV:
-            result = makeBinop(treeSons[0],treeSons[1], TAC_DIV);
+            result = makeBinop(treeSons[0], treeSons[1], TAC_DIV);
             break;
 
         case ASTREE_SCALAR_ASS:
-            result = tac_join(treeSons[0],tac_create(TAC_MOV,node->symbol,treeSons[0]?treeSons[0]->target:0,0)); //obs, o primeiro filho eh o simbo q ja ta na tab d simbolos
+            result = tac_join(treeSons[0], tac_create(TAC_MOV,node->symbol, treeSons[0]?treeSons[0]->target:0, 0)); //obs, o primeiro filho eh o simbo q ja ta na tab d simbolos
             //fprintf(stderr,"TAC_MOV");
             break;
 
         case ASTREE_LIT_SEQ:
-            result = tac_join(treeSons[0],tac_create(TAC_LIT_SEQ,treeSons[1]->target,0,0));
+            result = tac_join(treeSons[0], tac_create(TAC_LIT_SEQ, treeSons[1]->target, 0, 0));
             break;
 
         case ASTREE_VARDEC:
-            result = tac_create(TAC_VARDEC,node->symbol,treeSons[1]->target,0 );
+            result = tac_create(TAC_VARDEC, node->symbol, treeSons[1]->target, 0);
             break;
 
         case ASTREE_ARGSEQ:
@@ -100,16 +104,19 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_LIT_FALSE:
+            result =  tac_create(TAC_LIT_FALSE, node->symbol, 0, 0);
             break;
 
         case ASTREE_LIT_TRUE:
+            result =  tac_create(TAC_LIT_TRUE, node->symbol, 0, 0);
             break;
 
         case ASTREE_LIT_CHAR:
+            result =  tac_create(TAC_LIT_CHAR, node->symbol, 0, 0);
             break;
 
         case ASTREE_VETORDEC:
-            result = tac_create(TAC_VETORDEC,node->symbol,treeSons[1]->target,0 );
+            result = tac_create(TAC_VETORDEC, node->symbol, treeSons[1]->target, 0);
             break;
 
         case ASTREE_FUNDEC:
@@ -184,30 +191,39 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_LE:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_LE);
             break;
 
         case ASTREE_GE:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_GE);
             break;
 
         case ASTREE_EQ:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_EQ);
             break;
 
         case ASTREE_NE:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_NE);
             break;
 
         case ASTREE_AND:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_AND);
             break;
 
         case ASTREE_OR:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_OR);
             break;
 
         case ASTREE_L:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_L);
             break;
 
         case ASTREE_G:
+            result = makeBinop(treeSons[0], treeSons[1], TAC_G);
             break;
 
         case ASTREE_NOT:
+            result = makeBinop(treeSons[0], 0, TAC_NOT);
             break;
 
         case ASTREE_COMMANDSEQ:
@@ -223,8 +239,6 @@ TAC * generateCode(ASTREE * node){
 
         return result;
 }
-
-
 
 void print_tac_single(TAC*tac){
 
@@ -281,41 +295,11 @@ TAC* makeBinop(TAC * son0, TAC * son1, int type){
     TAC* nova;
     TAC* result;
 
-    switch(type){
-        case TAC_ADD:
-            result = tac_join(son0,son1);
-            nova = tac_create(TAC_ADD,makeTemp(),son0?son0->target:0,son1?son1->target:0);
-            nova->prev=result;
-            result = nova;
-            return result;
-            break;
-         case TAC_MIN:
-            result = tac_join(son0,son1);
-            nova = tac_create(TAC_MIN,makeTemp(),son0?son0->target:0,son1?son1->target:0);
-            nova->prev=result;
-            result = nova;
-            return result;
-            break;
+    result = tac_join(son0, son1);
+    nova = tac_create(type, makeTemp(), son0?son0->target:0, son1?son1->target:0);
+    nova->prev = result;
+    result = nova;
 
-         case TAC_MUL:
-            result = tac_join(son0,son1);
-            nova = tac_create(TAC_MUL,makeTemp(),son0?son0->target:0,son1?son1->target:0);
-            nova->prev=result;
-            result = nova;
-            return result;
-            break;
-
-         case TAC_DIV:
-            result = tac_join(son0,son1);
-            nova = tac_create(TAC_DIV,makeTemp(),son0?son0->target:0,son1?son1->target:0);
-            nova->prev=result;
-            result = nova;
-            return result;
-            break;
-
-
-        default: result= 0;
-    }
     return result;
 }
 

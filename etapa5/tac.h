@@ -5,18 +5,18 @@
 #include "astree.h"
 typedef struct tac {
 
-	int type;
-	HASH_NODE * target;
-	HASH_NODE * op1;
-	HASH_NODE * op2;	
-	struct tac * prev;
-	struct tac * next; // usado hoje: 11/06
+    int type;
+    HASH_NODE * target;
+    HASH_NODE * op1;
+    HASH_NODE * op2;
+    struct tac * prev;
+    struct tac * next; // usado hoje: 11/06
 
 
 } TAC;
 
 
-#define TAC_ADD 1 
+#define TAC_ADD 1
 #define TAC_MIN 2
 #define TAC_MUL 3
 #define TAC_DIV 4
@@ -37,6 +37,21 @@ typedef struct tac {
 #define TAC_VETORDEC 16
 #define TAC_LIT_SEQ 17
 
+// Booleanos
+#define TAC_LIT_TRUE 18
+#define TAC_LIT_FALSE 19
+#define TAC_LE 20
+#define TAC_GE 21
+#define TAC_EQ 22
+#define TAC_NE 23
+#define TAC_AND 24
+#define TAC_OR 25
+#define TAC_L 26
+#define TAC_G 27
+#define TAC_NOT 28
+
+#define TAC_LIT_CHAR 29
+#define TAC_UMIN 30
 
 
 TAC * tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);

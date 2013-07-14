@@ -1,5 +1,5 @@
 /**********************************************************************
- *Arvore Sintatica Abstrata  
+ *Arvore Sintatica Abstrata
  **********************************************************************
  * This code define the abstract syntax tree struct.
  **********************************************************************
@@ -21,15 +21,15 @@
 #define ASTREE_MIN 4
 #define ASTREE_MUL 5
 #define ASTREE_DIV 6
-#define ASTREE_SCALAR_ASS 7 
-#define ASTREE_COMMANDSEQ 8 
-#define ASTREE_LIT_SEQ 9 
-#define ASTREE_VARDEC 10 
-#define ASTREE_ARGSEQ 11 
-#define ASTREE_FUNCALL 12 
-#define ASTREE_VETCALL 13 
+#define ASTREE_SCALAR_ASS 7
+#define ASTREE_COMMANDSEQ 8
+#define ASTREE_LIT_SEQ 9
+#define ASTREE_VARDEC 10
+#define ASTREE_ARGSEQ 11
+#define ASTREE_FUNCALL 12
+#define ASTREE_VETCALL 13
 #define ASTREE_PTRADDR 14
-#define ASTREE_PTRVALUE 15 
+#define ASTREE_PTRVALUE 15
 #define ASTREE_LIT_FALSE 16
 #define ASTREE_LIT_TRUE 17
 #define ASTREE_LIT_CHAR 18
@@ -67,19 +67,18 @@
 #define ASTREE_G 52
 #define ASTREE_NOT 53
 #define ASTREE_PTRDEC 54
+#define ASTREE_UMIN 55
 #define DEC_OK -3
 #define DEC_ERR -4
+
 extern FILE *outputFile;
 
-
 typedef struct astree_node{
-		int type;
-		HASH_NODE * symbol;
-		int lineNumber;
-		struct astree_node * son[MAX_SONS];
+        int type;
+        HASH_NODE * symbol;
+        int lineNumber;
+        struct astree_node * son[MAX_SONS];
 } ASTREE;
-
-
 
 void getSymbolTypeName(char * dstbuffer, int code);
 ASTREE * astreeCreate(int type, ASTREE * s0, ASTREE * S1, ASTREE * S2, ASTREE * S3, HASH_NODE * ptr);
