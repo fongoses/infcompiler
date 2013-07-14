@@ -3,6 +3,8 @@
 
 #include "hashtable.h"
 #include "astree.h"
+
+
 typedef struct tac {
 
     int type;
@@ -54,8 +56,17 @@ typedef struct tac {
 #define TAC_UMIN 30
 
 
-TAC * tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
-TAC * generateCode(ASTREE * node);
-void print_tac_single(TAC*tac);
-TAC * tac_join(TAC *l1, TAC *l2);
+TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
+TAC *tac_join(TAC *l1, TAC *l2);
+TAC *tacReverse(TAC * last);
+
+void print_tac_single(TAC *tac);
+void print_tac(TAC *tac);
+
+// Protótipos do genco.c
+TAC *generateCode(ASTREE *node);
+TAC *makeBinop(TAC *treeSon0, TAC *treeSon1, int type);
+TAC *makeIfThen(TAC *son0, TAC *son1);
+TAC *makeFun(HASH_NODE *symbol, TAC *son3 );
+
 #endif
