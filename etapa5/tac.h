@@ -54,6 +54,7 @@ typedef struct tac {
 
 #define TAC_LIT_CHAR 29
 #define TAC_UMIN 30
+#define TAC_JMP 31 // Desvio incondicional
 
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);

@@ -237,10 +237,41 @@ TAC* makeIfThen(TAC* son0, TAC* son1){
     TAC * nova1;
     TAC * nova2;
     HASH_NODE * label;
+
+    // Cria desvio para a condicao
     label=(HASH_NODE*)makeLabel();
-    nova1= tac_create(TAC_JZ,label,son0?son0->target:0,0);
+
+    // Teste e desvio da condição
+    nova1= tac_create(TAC_JZ,label,son0?son0->target:0,0); // TAC_JZ ou TAC_IF????
+
+    // Caso seja verdadeiro
     nova2= tac_create(TAC_LABEL,label,0,0); //Rever essa linha: nao tenho ctz se esta ok
+
     return tac_join(tac_join(son0,nova1),nova2);
+}
+
+TAC *makeIfThenElse(TAC* condicao, TAC* if_true, TAC* if_false){
+    TAC *tac_if;
+    TAC *tac_pula_else; // JMP inconcicional executado após os comandos caso a condição seja verdadeira que "pula" a parte do else.
+    TAC *tac_lbl_else;
+    TAC *tac_lbl_end;
+
+    HASH_NODE *hash_lbl_else;
+    HASH_NODE *hash_lbl_end;
+
+    // Cria desvio para a condicao
+    hash_lbl_else = (HASH_NODE*) makeLabel();
+    hash_lbl_end = (HASH_NODE*) makeLabel();
+
+    // Teste e desvio da condição
+    tac_if = tac_create(TAC_JZ, hash_lbl_else, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_IF????
+    tac_pula_else = tac_create(TAC_JMP, hash_lbl_end, 0, 0);
+
+    // Caso seja verdadeiro
+    tac_lbl_else = tac_create(TAC_LABEL, hash_lbl_else, 0, 0);
+    tac_lbl_fim = tac_create(TAC_LABEL, hash_lbl_fim, 0, 0);
+
+    return tac_join(tac_join(tac_join(tac_join(tac_join(tac_join(condicao, tac_if), if_true), tac_pula_else), tac_lbl_else), if_false), tac_lbl_end);
 }
 
 TAC * makeFun (HASH_NODE* symbol,TAC * son3 ){ //bloco da funcao eh o filho 3
