@@ -259,19 +259,43 @@ TAC *makeIfThenElse(TAC* condicao, TAC* if_true, TAC* if_false){
     HASH_NODE *hash_lbl_else;
     HASH_NODE *hash_lbl_end;
 
-    // Cria desvio para a condicao
+    // Cria desvio para a condição
     hash_lbl_else = (HASH_NODE*) makeLabel();
     hash_lbl_end = (HASH_NODE*) makeLabel();
 
     // Teste e desvio da condição
-    tac_if = tac_create(TAC_JZ, hash_lbl_else, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_IF????
+    tac_if = tac_create(TAC_JZ, hash_lbl_else, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_IFELSE????
     tac_pula_else = tac_create(TAC_JMP, hash_lbl_end, 0, 0);
 
-    // Caso seja verdadeiro
+    // Róulos para o ELSE
     tac_lbl_else = tac_create(TAC_LABEL, hash_lbl_else, 0, 0);
     tac_lbl_end = tac_create(TAC_LABEL, hash_lbl_end, 0, 0);
 
     return tac_join(tac_join(tac_join(tac_join(tac_join(tac_join(condicao, tac_if), if_true), tac_pula_else), tac_lbl_else), if_false), tac_lbl_end);
+}
+
+TAC *makeLoop(TAC* condicao, TAC* comandos){
+    TAC *tac_loop; // Testa consição e sai do laço
+    TAC *tac_jmp_begin; // JMP inconcicional executado após os comandos e retorna para a condição de teste
+    TAC *tac_lbl_begin;
+    TAC *tac_lbl_end;
+
+    HASH_NODE *hash_lbl_begin;
+    HASH_NODE *hash_lbl_end;
+
+    // Cria desvios
+    hash_lbl_begin = (HASH_NODE*) makeLabel();
+    hash_lbl_end = (HASH_NODE*) makeLabel();
+
+    // Teste e desvio da condição
+    tac_loop = tac_create(TAC_JZ, hash_lbl_end, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_LOOP????
+    tac_jmp_begin = tac_create(TAC_JMP, hash_lbl_begin, 0, 0);
+
+    // Rótulos para marcar o bloco do comando
+    tac_lbl_begin = tac_create(TAC_LABEL, hash_lbl_begin, 0, 0);
+    tac_lbl_end = tac_create(TAC_LABEL, hash_lbl_end, 0, 0);
+
+    return tac_join(tac_join(tac_join(tac_join(tac_join(tac_lbl_begin, condicao), tac_loop), comandos), tac_jmp_begin), tac_lbl_end);
 }
 
 TAC * makeFun (HASH_NODE* symbol,TAC * son3 ){ //bloco da funcao eh o filho 3
