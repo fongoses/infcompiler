@@ -269,7 +269,7 @@ TAC *makeIfThenElse(TAC* condicao, TAC* if_true, TAC* if_false){
 
     // Caso seja verdadeiro
     tac_lbl_else = tac_create(TAC_LABEL, hash_lbl_else, 0, 0);
-    tac_lbl_fim = tac_create(TAC_LABEL, hash_lbl_fim, 0, 0);
+    tac_lbl_end = tac_create(TAC_LABEL, hash_lbl_end, 0, 0);
 
     return tac_join(tac_join(tac_join(tac_join(tac_join(tac_join(condicao, tac_if), if_true), tac_pula_else), tac_lbl_else), if_false), tac_lbl_end);
 }
