@@ -122,7 +122,7 @@ program: globalseq {
         if (astreeCheckNature($$) == DATATYPE_INVALID) error = 1;
         mainTAC = generateCode($$);
         print_tac(mainTAC);
-            //astreePrintTree($$,0);
+        //astreePrintTree($$,0);
     ;};
 
 

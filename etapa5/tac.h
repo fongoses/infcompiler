@@ -51,10 +51,12 @@ typedef struct tac {
 #define TAC_L 26
 #define TAC_G 27
 #define TAC_NOT 28
-
 #define TAC_LIT_CHAR 29
 #define TAC_UMIN 30
 #define TAC_JMP 31 // Desvio incondicional
+#define TAC_FUNDEC 32
+#define TAC_BEGINF 33
+#define TAC_ENDF 34
 
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
@@ -68,6 +70,6 @@ void print_tac(TAC *tac);
 TAC *generateCode(ASTREE *node);
 TAC *makeBinop(TAC *treeSon0, TAC *treeSon1, int type);
 TAC *makeIfThen(TAC *son0, TAC *son1);
-TAC *makeFun(HASH_NODE *symbol, TAC *son3 );
+TAC *makeFun(HASH_NODE *symbol, TAC * son1, TAC *son3 );
 
 #endif

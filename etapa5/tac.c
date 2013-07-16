@@ -23,12 +23,11 @@ TAC * tac_join(TAC *l1, TAC *l2){
 
     if(!l1) return l2;
     if(!l2) return l1;
-
+   
     //percorre ateh ultimo
     for(tac=l2; tac->prev;tac=tac->prev);
-
     tac->prev = l1;
-
+   
     return l2;
 }
 
@@ -64,8 +63,18 @@ void print_tac_single(TAC*tac){
         case TAC_MOV:
             fprintf(stderr,"TAC(TAC_MOV,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);
             break;
+        
+        /*case TAC_BEGINF:
+             fprintf(stderr,"TAC(TAC_BEGINF)");
+             break;
 
+        case TAC_VARDEC:
+             fprintf(stderr,"TAC(TAC_VARDEC)",tac->target);
+             break;
+*/
+       
         default: break;
+
     }
 }
 

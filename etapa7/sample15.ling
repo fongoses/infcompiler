@@ -1,0 +1,8 @@
+word a:0;
+word b:1;
+
+word main(){
+    a[1]=c;
+    b[1]=c;
+}
+ 
