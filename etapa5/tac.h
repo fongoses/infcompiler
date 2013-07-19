@@ -33,11 +33,11 @@ typedef struct tac {
 #define TAC_ARG 12 //argumento de funcao para ir em BEGINFUN
 
 //para vetores
-#define TAC_VECTORWRITE 13 //quando vetor esta do lado esq do assign
-#define TAC_VECTORREAD 14 //quando vetor esta do lado dir do assign
+//#define TAC_VECTORWRITE 13 //quando vetor esta do lado esq do assign
+//#define TAC_VECTORREAD 14 //quando vetor esta do lado dir do assign
 #define TAC_VARDEC 15
 #define TAC_VETORDEC 16
-#define TAC_LIT_SEQ 17
+#define TAC_LIT_SEQ 17 //especifica de vetor
 
 // Booleanos
 #define TAC_LIT_TRUE 18
@@ -54,9 +54,21 @@ typedef struct tac {
 #define TAC_LIT_CHAR 29
 #define TAC_UMIN 30
 #define TAC_JMP 31 // Desvio incondicional
-#define TAC_FUNDEC 32
+//#define TAC_FUNDEC 32
 #define TAC_BEGINF 33
 #define TAC_ENDF 34
+#define TAC_FUNCALL 35
+#define TAC_LIT_STRING 36
+#define TAC_PTRADDR 37
+#define TAC_PTRVALUE 39
+#define TAC_INPUT 40
+#define TAC_VETCALL 41
+#define TAC_PARAM 42
+#define TAC_PTRPARAM 43
+#define TAC_BEGINEXP 44
+#define TAC_ENDEXP 45
+#define TAC_OUTPUT 46
+#define TAC_RETURN 47
 
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
@@ -71,5 +83,11 @@ TAC *generateCode(ASTREE *node);
 TAC *makeBinop(TAC *treeSon0, TAC *treeSon1, int type);
 TAC *makeIfThen(TAC *son0, TAC *son1);
 TAC *makeFun(HASH_NODE *symbol, TAC * son1, TAC *son3 );
+TAC *makeVetcall(TAC* son0, HASH_NODE *symbol );
+TAC *makeExpression(TAC * son0, HASH_NODE * symbol);
+TAC *makeVetass(TAC* son0,TAC * son1, HASH_NODE *symbol );
+TAC* makeIfThen(TAC* son0, TAC* son1);
+TAC* makeIfThenElse(TAC* son0, TAC* son1, TAC* son2);
+TAC* makeLoop(TAC* son0, TAC* son1);
 
 #endif

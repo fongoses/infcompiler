@@ -7,37 +7,29 @@ TAC * generateCode(ASTREE * node){
     TAC * result;
     TAC * nova;
 
-    if(!node) return;
-    result=0;
+    if(!node){
+           fprintf(stderr,"NULL node\n");
+         return 0;
+    }
     //process children first recursivelly
     for(i=0;i<MAX_SONS;i++)
         if(node->son[i])
             treeSons[i]=generateCode(node->son[i]);
-
+        else treeSons[i]=0;
+    
     //proccess this node
     switch(node->type)
     {
-        /*case ASTREE_ADD:
-        result =  tac_join(treeSons[0],
-            tac_join(treeSons[1],
-                tac_create(TAC_ADD,makeTemp(),
-                        treeSons[0]?treeSons[0]->target:0,
-                            treeSons[1]?treeSons[1]->target:0)));
-
-        break;
-        */
-
+       
         case ASTREE_SYMBOL:
             result = tac_create(TAC_SYMBOL,node->symbol, 0, 0); //para elem da lista que corresponde ao symbol (que eh um elem folha), insere (em target) o  ptr para sua tab de simbolos
             break;
 
         case ASTREE_LIT_INT:
-            fprintf(stderr,"LIT_INT\n");
             result =  tac_create(TAC_LIT_INT,node->symbol, 0, 0);
             break;
 
         case ASTREE_ADD:
-            fprintf(stderr,"ADD\n");
             result = makeBinop(treeSons[0], treeSons[1], TAC_ADD);
             break;
 
@@ -58,9 +50,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_SCALAR_ASS:
-            fprintf(stderr,"SCALAR_ASS\n");
-            result = tac_join(treeSons[0], tac_create(TAC_MOV,node->symbol, treeSons[0]?treeSons[0]->target:0, 0)); //obs, o primeiro filho eh o simbo q ja ta na tab d simbolos
-            //fprintf(stderr,"TAC_MOV\n");
+            result = tac_join(treeSons[0], tac_create(TAC_MOV,node->symbol, treeSons[0]?treeSons[0]->target:0, 0)); //obs, o target de TAC_MOV eh o simbo q ja ta na tab d simbolos
             break;
 
         case ASTREE_LIT_SEQ:
@@ -68,23 +58,30 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_VARDEC:
-            fprintf(stderr,"VARDEC\n");
+            //fprintf(stderr,"VARDEC\n");
             result = tac_create(TAC_VARDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0);
             break;
 
         case ASTREE_ARGSEQ:
+            result = tac_join(treeSons[0],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
             break;
 
         case ASTREE_FUNCALL:
+            //concatena argumentos com parametros. Obs, o target eh o retorno da funcao, para isso eh usado uma variavel temporaria
+            result = tac_join(treeSons[0],tac_create(TAC_FUNCALL,makeTemp(),node->symbol,0));
             break;
 
         case ASTREE_VETCALL:
+            result = makeVetcall(treeSons[0],node->symbol);
             break;
 
         case ASTREE_PTRADDR:
+            //retorno da expressao de deref eh armazenado em uma temp
+            result = tac_create(TAC_PTRADDR,makeTemp(),node->symbol,0);
             break;
 
-        case ASTREE_PTRVALUE:
+        case ASTREE_PTRVALUE:    
+            result = tac_create(TAC_PTRVALUE,makeTemp(),node->symbol,0);
             break;
 
         case ASTREE_LIT_FALSE:
@@ -104,19 +101,31 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_FUNDEC:
-            fprintf(stderr,"FUNDEC\n");
+            //fprintf(stderr,"FUNDEC. Params: %p\n",treeSons[1]);
             result = makeFun(node->symbol,treeSons[1],treeSons[3]);
             break;
 
         case ASTREE_PARAMSEQ:
+            //fprintf(stderr,"PARAMSEQ\n");
 		    result = tac_join(treeSons[0],treeSons[1]);
             break;
+
+        case ASTREE_PARAM:
+            result = tac_create(TAC_PARAM,node->symbol,0,0);           
+            break;
+
+        case ASTREE_PTRPARAM:
+            result = tac_create(TAC_PTRPARAM,node->symbol,0,0);
+            break;
+
 
         case ASTREE_LOCALDECSEQ:
             result = tac_join(treeSons[0],treeSons[1]);
             break;
 
-        case ASTREE_KWWORD:
+        //com as 3 keywords abaixo nada a ser feito
+        /*case ASTREE_KWWORD:
+            result = 
             break;
 
         case ASTREE_KWBOOL:
@@ -124,64 +133,70 @@ TAC * generateCode(ASTREE * node){
 
         case ASTREE_KWBYTE:
             break;
-
+        */
         case ASTREE_PROGRAM:
-            fprintf(stderr,"PROGRAM\n");
+            //fprintf(stderr,"PROGRAM\n");
             result= treeSons[0];
             break;
 
-        case ASTREE_LIT_STRING:
+        case ASTREE_LIT_STRING:            
+            result =  tac_create(TAC_LIT_STRING,node->symbol, 0, 0);
             break;
 
         case ASTREE_GLOBALSEQ:
-            fprintf(stderr,"GLOBALSEQ\n");
+            //fprintf(stderr,"GLOBALSEQ\n");
             result = tac_join(treeSons[0],treeSons[1]);
             break;
 
-        case ASTREE_INPUT:
+        case ASTREE_INPUT:            
+            result =  tac_create(TAC_INPUT,node->symbol, 0, 0);
             break;
 
         case ASTREE_OUTPUT:
+            result = tac_join(treeSons[0],tac_create(TAC_OUTPUT,treeSons[0]?treeSons[0]->target:0,0,0));
             break;
 
         case ASTREE_RETURN:
+            result = tac_create(TAC_RETURN,treeSons[0]?treeSons[0]->target:0,0,0);
             break;
 
         case ASTREE_PTR_ASS:
-            break;
+           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, treeSons[0]?treeSons[0]->target:0));
+           break;
 
         case ASTREE_DEREF_ASS:
-            break;
+           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, treeSons[0]?treeSons[0]->target:0)); 
+           break;
 
-        case ASTREE_VET_ASS:
+        case ASTREE_VET_ASS:           
+            result = makeVetass(treeSons[0],treeSons[1],node->symbol);
             break;
-
+ 
         case ASTREE_EXPRESSION:
+            result= makeExpression(treeSons[0],node->symbol);
             break;
 
         case ASTREE_OUTPUTSEQ:
+            result=tac_join(treeSons[0],treeSons[1]);
             break;
 
         case ASTREE_IF:
+            result = makeIfThen(treeSons[0],treeSons[1]);
             break;
 
         case ASTREE_IF_ELSE:
+            result = makeIfThenElse(treeSons[0],treeSons[1],treeSons[2]);
             break;
 
         case ASTREE_LOOP:
+            result = makeLoop(treeSons[0],treeSons[1]);
             break;
 
         case ASTREE_BLOCK:
             result = treeSons[0];
             break;
 
-        case ASTREE_PARAM:
-            break;
-
-        case ASTREE_PTRPARAM:
-            break;
-
-        case ASTREE_LE:
+                case ASTREE_LE:
             result = makeBinop(treeSons[0], treeSons[1], TAC_LE);
             break;
 
@@ -218,14 +233,8 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_COMMANDSEQ:
-            fprintf(stderr,"COMMANDSEQ\n");	
             result = tac_join(treeSons[0],treeSons[1]);
             break;
-
-        case ASTREE_PTRDEC:
-            break;
-
-
 
         default:
             result = 0;
@@ -280,7 +289,7 @@ TAC *makeIfThenElse(TAC* condicao, TAC* if_true, TAC* if_false){
     hash_lbl_else = (HASH_NODE*) makeLabel();
     hash_lbl_end = (HASH_NODE*) makeLabel();
 
-    // Teste e desvio da condição
+    /// Teste e desvio da condição
     tac_if = tac_create(TAC_JZ, hash_lbl_else, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_IFELSE????
     tac_pula_else = tac_create(TAC_JMP, hash_lbl_end, 0, 0);
 
@@ -319,24 +328,39 @@ TAC * makeFun (HASH_NODE* symbol,TAC * son1, TAC * son3 ){ //parametros eh o fil
 
 	TAC * begin;
 	TAC * end;
-    TAC * temp1, *temp2;
 
 	begin = tac_create(TAC_BEGINF,symbol,0,0);
 	end = tac_create(TAC_ENDF,symbol,0,0);
-    fprintf(stderr,"makeFun()\n");	
-
-    //fprintf(stderr,"    son1: %p, begin: %p\n",son1,begin);	
-    temp1 = tac_join(son1,begin);
-    //fprintf(stderr,"    temp1: %p, son3: %p\n",temp1,son3);	
-    //temp2 = tac_join(temp1,son3); 
-    fprintf(stderr,"    temp2\n");
-    fprintf(stderr,"    temp3\n");	
-   	
-    return tac_join(temp1,end);
-	//return tac_join(tac_join(tac_join(son1,begin),son3),end);
+    
+   	return tac_join(tac_join(tac_join(son1,begin),son3),end);
 }
 
+TAC* makeVetcall(TAC * son0, HASH_NODE * symbol){
+    TAC* result;
+    result = tac_create(TAC_VETCALL, makeTemp() ,symbol,son0?son0->target:0);
+    return result;
+}
 
+TAC * makeVetass(TAC * son0, TAC* son1, HASH_NODE * symbol){
+    
+    TAC * ladoesquerdo;
+    TAC * ladodireito;
+        
+    //ladoesquerdo eh um vetcall. Aqui a gente cria esse vetcall, pois o analisador sintatico, por default, nao cria um vetcall como filho de um um vet_ass, mas sim apenas vetcall no lado direito de expressoes.
 
+    ladoesquerdo = makeVetcall(son0,symbol);
+    ladodireito = son1;
+    return tac_join(ladoesquerdo, tac_create(TAC_MOV,ladoesquerdo?ladoesquerdo->target:0, ladodireito?ladodireito->target:0,0)); 
 
+}
 
+TAC * makeExpression (TAC* son0,HASH_NODE* symbol){ //parametros eh o filho 1, bloco da funcao eh o filho 3
+
+	TAC * begin;
+	TAC * end;
+
+	begin = tac_create(TAC_BEGINEXP,symbol,0,0);
+	end = tac_create(TAC_ENDEXP,symbol,0,0);
+    
+   	return tac_join(tac_join(son0,begin),end);
+}
