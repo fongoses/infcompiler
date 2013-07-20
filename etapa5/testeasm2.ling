@@ -4,10 +4,15 @@ word a:0;
 word v[9]: 10 20 30 40 50 60 70 80 90; 
 bool x:TRUE;
 word i:'a';
-
+word f (word m)
+  { 
+  return m; 
+  }
+ 
 word main()
   {
   output "digite um numero";
+  a=i;
   input i;
   loop (a<9)
     {
@@ -18,9 +23,5 @@ word main()
   return 0;
   }
 
-word f (word m)
-  { 
-  return m; 
-  }
-  
+ 
 

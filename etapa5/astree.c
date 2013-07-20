@@ -257,6 +257,7 @@ int astreeSetDeclarations(ASTREE * node){
     HASH_NODE *tempNode;
 
     if (!node) return DEC_ERR;
+    if (!node->symbol) return DEC_ERR;
 
     tempNode=hashFind(node->symbol->text);
     if(!tempNode) return DEC_OK;
@@ -480,18 +481,22 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
                 fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
 
                 error=1; //variavel nao declarada
-            }
+            }           
 
             if(!tempNode->declared){
                 fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
+                return;
             }
 
-            if (tempNode->dataType != DECTYPE_VECTOR ) {
-                fprintf(stderr,"error at line %d : symbol '%s' is beeing used as a vector but its not declared as a vector.\n",node->lineNumber,node->symbol->text);
+            if (tempNode->dataType != DECTYPE_SCALAR ) {
+                fprintf(stderr,"error at line %d : symbol '%s' is beeing used as scalar but its not declared as a scalar.\n",node->lineNumber,node->symbol->text);
                 error=1;
-                    }
+            }
             break;
+
+
+    break;
 
     default: return;
 
@@ -579,7 +584,35 @@ void astreeCheckRedeclarations(ASTREE * node){
             else node->symbol->paramNum = 0;
             break;
 
+       
+        //Cada param eh uma declaracao de variavel
+        case ASTREE_PARAM:
 
+            tempNode=hashFind(node->symbol->text);
+            //TODO: ajustar para analisar o campo declaration do no
+            if(!tempNode) return;
+
+            if(tempNode->declared)  {
+                fprintf(stdout,"error at line %d : Var '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                error=1;
+                return;
+            }
+           break;
+
+       case ASTREE_PTRPARAM:
+            
+            tempNode=hashFind(node->symbol->text);
+            //TODO: ajustar para analisar o campo declaration do no
+            if(!tempNode) return;
+
+            if(tempNode->declared)  {
+                fprintf(stdout,"error at line %d : Var $'%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                error=1;
+                return;
+            }
+            break;
+
+            
         default: return;
     }
 
@@ -625,9 +658,9 @@ int astreeCheckNature(ASTREE * node){
         }
         return result;
 
-        case ASTREE_PTRADDR: return DECTYPE_POINTER;
+    case ASTREE_PTRADDR: return DECTYPE_POINTER;
 
-        case ASTREE_PTRVALUE: return DECTYPE_POINTER;
+    case ASTREE_PTRVALUE: return DECTYPE_POINTER;
 
     case ASTREE_SYMBOL: return node->symbol->decType;
 
@@ -716,12 +749,19 @@ int astreeCheckNature(ASTREE * node){
 
     case ASTREE_VARDEC:
         temp=astreeCheckNature(node->son[1]);
+        
         if (node->symbol->decType == temp) return DATATYPE_VALID;
+
+        if((node->symbol->decType == DATATYPE_WORD) && (temp == DATATYPE_BYTE)) return DATATYPE_VALID;
+
         fprintf(stderr,"error at line %d : declaration type mismatch of its initialization.\n",node->symbol->lineNumber);
         return DATATYPE_INVALID;
 
 
     case ASTREE_VETORDEC:
+        
+        if(!node->son[2]) return DATATYPE_VALID;
+
         if(node->son[2]){
             itemNum = strtol(node->son[1]->symbol->text,&ptrl,16);
             if(itemNum != getSeqSize(node->son[2])){

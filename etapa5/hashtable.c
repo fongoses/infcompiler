@@ -55,7 +55,9 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
 
     node->text = (char *) calloc(strlen(text) + 1, sizeof(char));
     strcpy(node->text, text);
-
+    node->declared = 0;
+    node->dataType =0;
+    node->decType =0;
     node->type = type;
     node->lineNumber= getLineNumber();
     node->next = (void *) 0;
