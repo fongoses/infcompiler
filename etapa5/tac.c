@@ -49,57 +49,57 @@ void print_tac_single(TAC*tac){
 
     switch(tac->type){
         case TAC_ADD:
-            fprintf(stderr,"TAC(TAC_ADD,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         break;
+            fprintf(stderr,"TAC(TAC_ADD,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
 
         case TAC_MIN:
-            fprintf(stderr,"TAC(TAC_MIN,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         break;
+            fprintf(stderr,"TAC(TAC_MIN,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
 
         case TAC_MUL:
-            fprintf(stderr,"TAC(TAC_MUL,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         break;
+            fprintf(stderr,"TAC(TAC_MUL,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
 
         case TAC_DIV:
-            fprintf(stderr,"TAC(TAC_DIV,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         break;
+            fprintf(stderr,"TAC(TAC_DIV,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
 
         case TAC_LE:
-            fprintf(stderr,"TAC(TAC_LE,temp,%s,%s)\n",tac->op1->text,tac->op2->text);        
+            fprintf(stderr,"TAC(TAC_LE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);        
             break;
 
 
         case TAC_GE:
-            fprintf(stderr,"TAC(TAC_GE,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         
+            fprintf(stderr,"TAC(TAC_GE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
             break;
 
         case TAC_EQ:
-            fprintf(stderr,"TAC(TAC_EQ,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         
+            fprintf(stderr,"TAC(TAC_EQ,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
             break;
 
         case TAC_NE:
-            fprintf(stderr,"TAC(TAC_NE,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         
+            fprintf(stderr,"TAC(TAC_NE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
             break;
 
 
         case TAC_AND:
-            fprintf(stderr,"TAC(TAC_AND,temp,%s,%s)\n",tac->op1->text,tac->op2->text);        
+            fprintf(stderr,"TAC(TAC_AND,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);        
             break;
 
 
          case TAC_OR:
-            fprintf(stderr,"TAC(TAC_OR,temp,%s,%s)\n",tac->op1->text,tac->op2->text);          
+            fprintf(stderr,"TAC(TAC_OR,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);          
             break;
 
          case TAC_L:
-            fprintf(stderr,"TAC(TAC_L,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         
+            fprintf(stderr,"TAC(TAC_L,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
             break;
 
         case TAC_G:
-            fprintf(stderr,"TAC(TAC_G,temp,%s,%s)\n",tac->op1->text,tac->op2->text);         
+            fprintf(stderr,"TAC(TAC_G,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
             break;
     
-
+/*
         case TAC_NOT:
-            fprintf(stderr,"TAC(TAC_NOT,temp,%s,0)\n",tac->op1->text);
+            fprintf(stderr,"TAC(TAC_NOT,%s,%s,0)\n",tac->target->text,tac->op1->text);
             break;
-
+*/
       case TAC_SYMBOL:
             fprintf(stderr,"TAC(TAC_SYMBOL,%s,NULL,NULL)\n",tac->target->text);
             break;
@@ -132,10 +132,11 @@ void print_tac_single(TAC*tac){
         case TAC_JMP:
             fprintf(stderr,"TAC(TAC_JMP,%s,NULL,NULL)\n",tac->target->text);
             break;
-        
-        
-        //case TAC_JZ
-       
+ 
+        case TAC_JFALSE:
+            fprintf(stderr,"TAC(TAC_JFALSE,%s,NULL,NULL)\n",tac->target->text);
+            break;       
+         
         case TAC_MOV:
             fprintf(stderr,"TAC(TAC_MOV,%s,%s)\n",tac->target->text,tac->op1->text,0);
             break;
@@ -148,10 +149,28 @@ void print_tac_single(TAC*tac){
              fprintf(stderr,"TAC(TAC_ARG,%s,0,0)\n",tac->target->text);
              break;  
 
+        case TAC_PARAM:
+             fprintf(stderr,"TAC(TAC_PARAM,%s,0,0)\n",tac->target->text);
+             break;  
+
+        case TAC_PTRPARAM:
+             fprintf(stderr,"TAC(TAC_PARAM,%s,0,0)\n",tac->target->text);
+             break;  
+
+
+
         case TAC_VARDEC:
              fprintf(stderr,"TAC(TAC_VARDEC,%s,0,0)\n",tac->target->text);
              break;
   
+        case TAC_VETORDEC:
+             fprintf(stderr,"TAC(TAC_VETORDEC,%s,0,0)\n",tac->target->text);
+             break;
+
+        case TAC_LIT_SEQ:
+             fprintf(stderr,"TAC(TAC_ARG,%s,0,0)\n",tac->target->text);
+             break;
+
         case TAC_ARG:
              fprintf(stderr,"TAC(TAC_ARG,%s,0,0)\n",tac->target->text);
              break;
@@ -176,6 +195,21 @@ void print_tac_single(TAC*tac){
              fprintf(stderr,"TAC(TAC_INPUT,%s,0,0)\n",tac->target->text);
              break;
 
+        case TAC_BEGINEXP:
+             fprintf(stderr,"TAC(TAC_BEGINEXP,%s,0,0)\n",tac->target->text);
+             break;
+
+        case TAC_ENDEXP:
+             fprintf(stderr,"TAC(TAC_ENDEXP,%s,0,0)\n",tac->target->text);
+             break;
+
+        case TAC_OUTPUT:
+             fprintf(stderr,"TAC(TAC_OUTPUT,%s,0,0)\n",tac->target->text);
+             break;
+
+        case TAC_RETURN:
+             fprintf(stderr,"TAC(TAC_RETURN,%s,0,0)\n",tac->target->text);
+             break;
        
         default: break;
 

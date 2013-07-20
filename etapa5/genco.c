@@ -54,7 +54,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_LIT_SEQ:
-            result = tac_join(treeSons[0], tac_create(TAC_LIT_SEQ, treeSons[1]->target, 0, 0));
+            result = tac_join(treeSons[0], tac_create(TAC_LIT_SEQ, treeSons[1]->target, 0, 0));//especifico de vetor (lit_seq)
             break;
 
         case ASTREE_VARDEC:
@@ -117,7 +117,6 @@ TAC * generateCode(ASTREE * node){
         case ASTREE_PTRPARAM:
             result = tac_create(TAC_PTRPARAM,node->symbol,0,0);
             break;
-
 
         case ASTREE_LOCALDECSEQ:
             result = tac_join(treeSons[0],treeSons[1]);
@@ -227,11 +226,11 @@ TAC * generateCode(ASTREE * node){
         case ASTREE_G:
             result = makeBinop(treeSons[0], treeSons[1], TAC_G);
             break;
-
+/*
         case ASTREE_NOT:
             result = makeBinop(treeSons[0], 0, TAC_NOT);
             break;
-
+*/
         case ASTREE_COMMANDSEQ:
             result = tac_join(treeSons[0],treeSons[1]);
             break;
@@ -267,7 +266,7 @@ TAC* makeIfThen(TAC* son0, TAC* son1){
     label=(HASH_NODE*)makeLabel();
 
     // Teste e desvio da condição
-    nova1= tac_create(TAC_JFALSE,label,son0?son0->target:0,0); // TAC_JZ ou TAC_IF????
+    nova1= tac_create(TAC_JFALSE,label,son0?son0->target:0,0); 
 
     // Caso seja verdadeiro
     nova2= tac_create(TAC_LABEL,label,0,0); //Rever essa linha: nao tenho ctz se esta ok

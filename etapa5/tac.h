@@ -28,8 +28,10 @@ typedef struct tac {
 #define TAC_MOV 7 //instrucao mov
 #define TAC_JFALSE 8
 #define TAC_LABEL 9
-#define TAC_BEGINFUN 10 //solicitado pelo pro. Deve haver tb o nome da funcao nesse elem da tac
-#define TAC_ENDFUN 11 // ||
+
+//BEGINFUN E ENDFUN estao definidos mais abaixo como BEGINF e ENDF
+//#define TAC_BEGINFUN 10 //solicitado pelo pro. Deve haver tb o nome da funcao nesse elem da tac
+//#define TAC_ENDFUN 11 // 
 #define TAC_ARG 12 //argumento de funcao para ir em BEGINFUN
 
 //para vetores
@@ -50,7 +52,7 @@ typedef struct tac {
 #define TAC_OR 25
 #define TAC_L 26
 #define TAC_G 27
-#define TAC_NOT 28
+//#define TAC_NOT 28
 #define TAC_LIT_CHAR 29
 #define TAC_UMIN 30
 #define TAC_JMP 31 // Desvio incondicional
