@@ -1,8 +1,9 @@
 word a:1;
 word b:2;
+word c:1;
 word main(){
 
-a=a+1;
-b=a;
-
+    a=a+1;
+    b=a;
+    b=c;
 }

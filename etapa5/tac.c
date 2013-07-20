@@ -142,11 +142,11 @@ void print_tac_single(TAC*tac){
             break;
         
         case TAC_BEGINF:
-             fprintf(stderr,"TAC(TAC_BEGINF)\n");
+             fprintf(stderr,"TAC(TAC_BEGINF,%s,0,0)\n",tac->target->text);
              break;
        
         case TAC_ENDF:
-             fprintf(stderr,"TAC(TAC_ARG,%s,0,0)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_ENDF,%s,0,0)\n",tac->target->text);
              break;  
 
         case TAC_PARAM:
@@ -154,7 +154,7 @@ void print_tac_single(TAC*tac){
              break;  
 
         case TAC_PTRPARAM:
-             fprintf(stderr,"TAC(TAC_PARAM,%s,0,0)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_PTRPARAM,%s,0,0)\n",tac->target->text);
              break;  
 
 
