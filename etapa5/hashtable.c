@@ -183,7 +183,7 @@ HASH_NODE * makeLabel(void){
 
     static int nextTemp = 0;
     char buffer[128];
-    sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
+    sprintf(buffer,"__label%d",nextTemp);
     // Incrementa a variável estática nextTemp para que, na próxima chamada, não fique com o mesmo nome.
     nextTemp++;
     return hashInsert(buffer,DECTYPE_LABEL);

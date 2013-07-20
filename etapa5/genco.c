@@ -258,7 +258,6 @@ TAC* makeBinop(TAC * son0, TAC * son1, int type){
 }
 
 
-
 TAC* makeIfThen(TAC* son0, TAC* son1){
     TAC * nova1;
     TAC * nova2;
@@ -268,7 +267,7 @@ TAC* makeIfThen(TAC* son0, TAC* son1){
     label=(HASH_NODE*)makeLabel();
 
     // Teste e desvio da condição
-    nova1= tac_create(TAC_JZ,label,son0?son0->target:0,0); // TAC_JZ ou TAC_IF????
+    nova1= tac_create(TAC_JFALSE,label,son0?son0->target:0,0); // TAC_JZ ou TAC_IF????
 
     // Caso seja verdadeiro
     nova2= tac_create(TAC_LABEL,label,0,0); //Rever essa linha: nao tenho ctz se esta ok
@@ -290,7 +289,7 @@ TAC *makeIfThenElse(TAC* condicao, TAC* if_true, TAC* if_false){
     hash_lbl_end = (HASH_NODE*) makeLabel();
 
     /// Teste e desvio da condição
-    tac_if = tac_create(TAC_JZ, hash_lbl_else, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_IFELSE????
+    tac_if = tac_create(TAC_JFALSE, hash_lbl_else, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_IFELSE????
     tac_pula_else = tac_create(TAC_JMP, hash_lbl_end, 0, 0);
 
     // Róulos para o ELSE
@@ -314,13 +313,13 @@ TAC *makeLoop(TAC* condicao, TAC* comandos){
     hash_lbl_end = (HASH_NODE*) makeLabel();
 
     // Teste e desvio da condição
-    tac_loop = tac_create(TAC_JZ, hash_lbl_end, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_LOOP????
+    tac_loop = tac_create(TAC_JFALSE, hash_lbl_end, condicao?condicao->target:0, 0); // TAC_JZ ou TAC_LOOP????
     tac_jmp_begin = tac_create(TAC_JMP, hash_lbl_begin, 0, 0);
 
     // Rótulos para marcar o bloco do comando
     tac_lbl_begin = tac_create(TAC_LABEL, hash_lbl_begin, 0, 0);
     tac_lbl_end = tac_create(TAC_LABEL, hash_lbl_end, 0, 0);
-
+    //concatena label_begin com a tac da expressao da condicao, logo em seguida com a tac_loop (tac com o teste da condicao), logo em seguida com a tac dos comandos a serem executados caso seja true e logo em seguida com os a tac_jmp_begin (tac para recomeco do loop) e logo em seguida com a tac de fim do loop
     return tac_join(tac_join(tac_join(tac_join(tac_join(tac_lbl_begin, condicao), tac_loop), comandos), tac_jmp_begin), tac_lbl_end);
 }
 
@@ -364,3 +363,33 @@ TAC * makeExpression (TAC* son0,HASH_NODE* symbol){ //parametros eh o filho 1, b
     
    	return tac_join(tac_join(son0,begin),end);
 }
+
+
+/*
+TAC * makeIf(TAC* expr, TAC* THEN, TAC* ELSE) {
+    HASH_NODE* targetElse = makeLabel();
+    HASH_NODE* targetEnd = makeLabel();
+
+    TAC* jumpElse = tacCreate(TAC_JFALSE, targetElse, expr->res, 0);
+    TAC* jumpEnd = tacCreate(TAC_JUMP, targetEnd, 0, 0);
+
+    TAC* labelElse = tacCreate(TAC_LABEL, targetElse, 0, 0);
+    TAC* labelEnd = tacCreate(TAC_LABEL, targetEnd, 0, 0);
+
+
+    return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(expr, jumpElse), THEN), jumpEnd), labelElse), ELSE), labelEnd);
+}
+
+TAC* makeLoop(TAC* expr, TAC* cmd) {
+    HASH_NODE* targetBegin = makeLabel();
+    HASH_NODE* targetEnd = makeLabel();
+
+    TAC* jumpBegin = tacCreate(TAC_JUMP, targetBegin, 0, 0);
+    TAC* jumpEnd = tacCreate(TAC_JFALSE, targetEnd, expr->res, 0);
+
+    TAC* labelBegin = tacCreate(TAC_LABEL, targetBegin, 0, 0);
+    TAC* labelEnd = tacCreate(TAC_LABEL, targetEnd, 0, 0);
+
+
+    return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(labelBegin, expr), jumpEnd), cmd), jumpBegin), labelEnd);
+}*/

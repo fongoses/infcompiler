@@ -26,7 +26,7 @@ typedef struct tac {
 #define TAC_SYMBOL 5
 #define TAC_LIT_INT 6
 #define TAC_MOV 7 //instrucao mov
-#define TAC_JZ 8
+#define TAC_JFALSE 8
 #define TAC_LABEL 9
 #define TAC_BEGINFUN 10 //solicitado pelo pro. Deve haver tb o nome da funcao nesse elem da tac
 #define TAC_ENDFUN 11 // ||

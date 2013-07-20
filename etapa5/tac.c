@@ -128,14 +128,14 @@ void print_tac_single(TAC*tac){
             fprintf(stderr,"TAC(TAC_UMIN,%s,NULL,NULL)\n",tac->target->text);
             break;
 
-        /*
+        
         case TAC_JMP:
-            fprintf(stderr,"TAC(TAC_LIT_CHAR,%s,NULL,NULL)\n",tac->target->text);
+            fprintf(stderr,"TAC(TAC_JMP,%s,NULL,NULL)\n",tac->target->text);
             break;
         
-        Fazer JZ e restantes
-
-        */
+        
+        //case TAC_JZ
+       
         case TAC_MOV:
             fprintf(stderr,"TAC(TAC_MOV,%s,%s)\n",tac->target->text,tac->op1->text,0);
             break;
@@ -149,7 +149,7 @@ void print_tac_single(TAC*tac){
              break;  
 
         case TAC_VARDEC:
-             fprintf(stderr,"TAC(TAC_VARDEC,%s,0,0)\n",tac->target);
+             fprintf(stderr,"TAC(TAC_VARDEC,%s,0,0)\n",tac->target->text);
              break;
   
         case TAC_ARG:
