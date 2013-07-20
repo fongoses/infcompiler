@@ -59,7 +59,7 @@ TAC * generateCode(ASTREE * node){
 
         case ASTREE_VARDEC:
             //fprintf(stderr,"VARDEC\n");
-            result = tac_create(TAC_VARDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0);
+            result = tac_join(treeSons[1],tac_create(TAC_VARDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
             break;
 
         case ASTREE_ARGSEQ:
@@ -97,7 +97,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_VETORDEC:
-            result = tac_create(TAC_VETORDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0);
+            result = tac_join(treeSons[1],tac_create(TAC_VETORDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
             break;
 
         case ASTREE_FUNDEC:
@@ -109,9 +109,10 @@ TAC * generateCode(ASTREE * node){
             //fprintf(stderr,"PARAMSEQ\n");
 		    result = tac_join(treeSons[0],treeSons[1]);
             break;
+        
 
         case ASTREE_PARAM:
-            result = tac_create(TAC_PARAM,node->symbol,0,0);           
+            result = tac_join(treeSons[0],tac_create(TAC_PARAM,node->symbol,0,0)); 
             break;
 
         case ASTREE_PTRPARAM:
@@ -122,17 +123,18 @@ TAC * generateCode(ASTREE * node){
             result = tac_join(treeSons[0],treeSons[1]);
             break;
 
-        //com as 3 keywords abaixo nada a ser feito
-        /*case ASTREE_KWWORD:
-            result = 
+        case ASTREE_KWWORD:
+            result = tac_create(TAC_TWORD,node->symbol,0,0);
             break;
 
         case ASTREE_KWBOOL:
+            result = tac_create(TAC_TBOOL,node->symbol,0,0);
             break;
 
         case ASTREE_KWBYTE:
+            result = tac_create(TAC_TBYTE,node->symbol,0,0);
             break;
-        */
+        
         case ASTREE_PROGRAM:
             //fprintf(stderr,"PROGRAM\n");
             result= treeSons[0];
@@ -148,7 +150,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_INPUT:            
-            result =  tac_create(TAC_INPUT,node->symbol, 0, 0);
+            result = tac_create(TAC_INPUT,node->symbol, 0, 0);
             break;
 
         case ASTREE_OUTPUT:
@@ -156,7 +158,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_RETURN:
-            result = tac_create(TAC_RETURN,treeSons[0]?treeSons[0]->target:0,0,0);
+            result = tac_join(treeSons[0],tac_create(TAC_RETURN,treeSons[0]?treeSons[0]->target:0,0,0));
             break;
 
         case ASTREE_PTR_ASS:

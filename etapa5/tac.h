@@ -72,6 +72,11 @@ typedef struct tac {
 #define TAC_OUTPUT 46
 #define TAC_RETURN 47
 
+//TAC para tipos (utilizado em parametros na declaracao de funcao)
+#define TAC_TWORD 48
+#define TAC_TBYTE 49
+#define TAC_TBOOL 50
+
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
 TAC *tac_join(TAC *l1, TAC *l2);
