@@ -92,6 +92,7 @@ int astreeCheckNature(ASTREE * node);
 int astreeCheckMathExpression(ASTREE * node);
 int astreeSetDeclarations(ASTREE * node);
 int getItemNum(ASTREE * node);
+int getAddDectype(ASTREE * node); 
 void setType(ASTREE * node);
 void setItemType(ASTREE * node);
 void astreeCheckUndeclaredAndDatatype(ASTREE * node);

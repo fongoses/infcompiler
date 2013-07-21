@@ -28,7 +28,7 @@ TAC * tac_join(TAC *l1, TAC *l2){
     //percorre ateh ultimo
     for(tac=l2; tac->prev;tac=tac->prev);
     tac->prev = l1;
-   
+    l1->next = l2;   
     return l2;
 }
 
@@ -36,8 +36,8 @@ TAC * tac_join(TAC *l1, TAC *l2){
 TAC * tacReverse(TAC * last){
     TAC * first = 0;
 
+    
     if(!last) return 0;
-    fprintf(stderr,"Revertendo\n");
     for(first=last;first->prev;first=first->prev)
        first->prev->next = first;
 
@@ -238,4 +238,14 @@ void print_tac(TAC*tac){
 
     print_tac_single(tac);
     print_tac(tac->prev);
+}
+
+
+void print_tac_reverse(TAC*tac){
+
+
+    if(!tac) return;
+
+    print_tac_single(tac);
+    print_tac_reverse(tac->next);
 }

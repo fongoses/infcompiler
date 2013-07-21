@@ -84,6 +84,7 @@ TAC *tacReverse(TAC * last);
 
 void print_tac_single(TAC *tac);
 void print_tac(TAC *tac);
+void print_tac_reverse(TAC *tac);
 
 // Protótipos do genco.c
 TAC *generateCode(ASTREE *node);
