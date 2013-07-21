@@ -300,6 +300,65 @@ void astreeCheckDeclarationsSingle(ASTREE * node){
     astreeCheckUndeclaredAndDatatype(node);
 
 }
+
+int getAddDectype(ASTREE *node){
+    int *son0,*son1;
+
+    if(!node) result = DEC_ERR;
+
+    switch(node->type) {
+        case ASTREE_ADD :
+            //obtem Dectype dos filhos
+            son0 = getAddDectype(node->son[0]);
+            son1 = getAddDectype(node->son[1]);
+            if((son0 == DECTYPE_POINTER) && (son1 == DECTYPE_POINTER)) 
+                result = DEC_ERR;
+            else {
+                if(son0 == DECTYPE_PONTER) result = son0;
+                else if (son1 == DECTYPE_POINER) result = son1;
+                else if ((son0 == DECTYPE_SCALAR) && (son1 == DECTYPE_SCALAR)) result = DECTYPE_SCALAR;
+                else result = DEC_ERR; 
+            }    
+            break;
+
+        case ASTREE_SUB:
+        case ASTREE_MUL:
+        case ASTREE_DIV:
+             //obtem Dectype dos filhos
+            son0 = getAddDectype(node->son[0]);
+            son1 = getAddDectype(node->son[1]);
+            if((son0 == DECTYPE_POINTER) || (son1 == DECTYPE_POINTER)) 
+                result = DEC_ERR;
+             else {
+                if(son0 == DECTYPE_PONTER) result = son0;
+                else if (son1 == DECTYPE_POINER) result = son1;
+                else if ((son0 == DECTYPE_SCALAR) && (son1 == DECTYPE_SCALAR)) result = DECTYPE_SCALAR;
+                else result = DEC_ERR; 
+            }    
+            break;
+        
+        case ASTREE_LIT_INT: 
+            result = DECTYPE_SCALAR;
+            break;
+
+        case ASTREE_EXPRESSION:
+            result = getAddDectype(node->son[0]);
+            break;
+
+        case ASTREE_FUNCALL:
+        case ASTREE_PTRADDR:
+        case ASTREE_PTRVALUE:
+        case ASTREE_SYMBOL:
+        case ASTREE_VETCALL:
+            result = node->symbol->dataType;
+            break;
+
+        default: return DEC_ERR;
+    }
+
+    return result;
+}
+
 void astreeCheckUndeclaredAndDatatype(ASTREE * node){
 
     /*  1) Verifica variaveis nao declaradas
@@ -412,12 +471,27 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
                 break;
             }
 
-            if (tempNode->dataType == DECTYPE_POINTER) 
-                if ((node->son[0]->type != ASTREE_PTRADDR) && (node->son[0]->type != ASTREE_ADD)) {
+            if (tempNode->dataType == DECTYPE_POINTER) { 
+                if ((node->son[0]->type == ASTREE_SYMBOL) && ((node->son[0]->symbol?node->son[0]->symbol->dataType:0) == DECTYPE_POINTER)) {
+                    // Teste:
+                    // word $a:1; byte $b:0; a = b;
+                    // Esta condição é verdadeira e deve pular o erro
+                    break;
+                }
+                if (node->son[0]->type == ASTREE_LIT_INT) {
+                    // Teste:
+                    // word $a:0; a = 1;
+                    // Esta condição é verdadeira e deve pular o erro
+                    break;
+                }
+ 
+                if ((node->son[0]->type != ASTREE_PTRADDR) && (getAddDectype(node->son[0]) != DECTYPE_POINTER )) {
                     fprintf(stderr,"error at line %d : symbol '%s' is beeing used as pointer but its not declared as a pointer.\n",node->lineNumber,node->symbol->text);
                     error=1;
                     break;
-                }else break;
+                } else 
+                    break;
+            }
 
             if (tempNode->dataType != DECTYPE_SCALAR) { 
                 fprintf(stderr,"error at line %d : symbol '%s' is beeing used as scalar but its not declared as a scalar.\n",node->lineNumber,node->symbol->text);
