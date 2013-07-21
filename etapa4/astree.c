@@ -318,7 +318,7 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             if(!tempNode) error=1; //variavel nao declarada
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
                 return;
             }
@@ -334,7 +334,7 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
 
             if(!tempNode) error=1; //variavel nao declarada
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : vector '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : vector '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
                     if(tempNode->dataType != DECTYPE_VECTOR) {
@@ -350,12 +350,12 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-                fprintf(stdout,"error at line %d : function '%s()' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : function '%s()' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
             }
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : function '%s()' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : function '%s()' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
             break;
@@ -365,12 +365,12 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-                fprintf(stdout,"error at line %d : var &%s not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var &%s not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
             }
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
             break;
@@ -380,12 +380,12 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-                fprintf(stdout,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
             }
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
 
@@ -397,12 +397,12 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
             }
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
 
@@ -419,12 +419,12 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-                fprintf(stdout,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
             }
 
                     if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
             break;
@@ -434,12 +434,12 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-                fprintf(stdout,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
             }
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
 
@@ -456,13 +456,13 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-            fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+            fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
 
             error=1; //variavel nao declarada
             }
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
             }
 
@@ -477,13 +477,13 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
 
                 error=1; //variavel nao declarada
             }           
 
             if(!tempNode->declared){
-                fprintf(stdout,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
                 return;
             }
@@ -529,7 +529,7 @@ void astreeCheckRedeclarations(ASTREE * node){
             if(!tempNode) return;
 
             if(tempNode->declared){
-                fprintf(stdout,"error at line %d : Var '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                fprintf(stderr,"error at line %d : Var '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
                 error=1;
                 return;
             }
@@ -543,7 +543,7 @@ void astreeCheckRedeclarations(ASTREE * node){
             if(!tempNode) return;
 
             if(tempNode->declared)  {
-                fprintf(stdout,"error at line %d : Var $'%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                fprintf(stderr,"error at line %d : Var $'%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
                 error=1;
                 return;
             }
@@ -557,7 +557,7 @@ void astreeCheckRedeclarations(ASTREE * node){
             if(!tempNode) return;
 
             if(tempNode->declared)  {
-                fprintf(stdout,"error at line %d : Vector '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                fprintf(stderr,"error at line %d : Vector '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
                 error=1;
                 return;
             }
@@ -572,7 +572,7 @@ void astreeCheckRedeclarations(ASTREE * node){
             if(!tempNode) return;
 
             if(tempNode->declared)  {
-                fprintf(stdout,"error at line %d : Function '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                fprintf(stderr,"error at line %d : Function '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
                 error=1;
                 return;
             }
@@ -592,7 +592,7 @@ void astreeCheckRedeclarations(ASTREE * node){
             if(!tempNode) return;
 
             if(tempNode->declared)  {
-                fprintf(stdout,"error at line %d : Var '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                fprintf(stderr,"error at line %d : Var '%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
                 error=1;
                 return;
             }
@@ -605,7 +605,7 @@ void astreeCheckRedeclarations(ASTREE * node){
             if(!tempNode) return;
 
             if(tempNode->declared)  {
-                fprintf(stdout,"error at line %d : Var $'%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
+                fprintf(stderr,"error at line %d : Var $'%s' already declared at line %d.\n",node->lineNumber,tempNode->text,tempNode->lineNumber);
                 error=1;
                 return;
             }
@@ -867,65 +867,65 @@ void astreePrintSingle(ASTREE * node){
 
     if(!node) return ;
 
-    fprintf(stdout,"ASTREE(");
+    fprintf(stderr,"ASTREE(");
     switch( node->type){
-        case  ASTREE_SYMBOL: fprintf(stdout,"ASTREE_SYMBOL {%s}",node->symbol->text); break;
-        case  ASTREE_LIT_INT: fprintf(stdout,"ASTREE_LIT_INT {%s}",node->symbol->text); break;
-        case  ASTREE_ADD: fprintf(stdout,"ASTREE_ADD"); break;
-        case  ASTREE_MIN: fprintf(stdout,"ASTREE_MIN"); break;
-        case  ASTREE_UMIN: fprintf(stdout,"ASTREE_UMIN"); break;
-        case  ASTREE_MUL: fprintf(stdout,"ASTREE_MUL"); break;
-        case  ASTREE_DIV: fprintf(stdout,"ASTREE_DIV"); break;
-        case  ASTREE_SCALAR_ASS: fprintf(stdout,"ASTREE_SCALAR_ASS {%s}",node->symbol->text); break;
-        case  ASTREE_LIT_SEQ: fprintf(stdout,"ASTREE_LIT_SEQ"); break;
-        case  ASTREE_VARDEC: fprintf(stdout,"ASTREE_VARDEC {%s}",node->symbol->text); break;
-        case  ASTREE_ARGSEQ: fprintf(stdout,"ASTREE_ARGSEQ"); break;
-        case  ASTREE_FUNCALL: fprintf(stdout,"ASTREE_FUNCALL {%s}",node->symbol->text); break;
-        case  ASTREE_VETCALL: fprintf(stdout,"ASTREE_VETCALL {%s}",node->symbol->text); break;
-        case  ASTREE_PTRADDR: fprintf(stdout,"ASTREE_PTRADDR {%s}",node->symbol->text); break;
-        case  ASTREE_PTRVALUE: fprintf(stdout,"ASTREE_PTRVALUE {%s}",node->symbol->text); break;
-        case  ASTREE_LIT_FALSE: fprintf(stdout,"ASTREE_LIT_FALSE {%s}",node->symbol->text); break;
-        case  ASTREE_LIT_TRUE: fprintf(stdout,"ASTREE_LIT_TRUE {%s}",node->symbol->text); break;
-        case  ASTREE_LIT_CHAR: fprintf(stdout,"ASTREE_LIT_CHAR {%s}",node->symbol->text); break;
-        case  ASTREE_VETORDEC: fprintf(stdout,"ASTREE_VETORDEC {%s}",node->symbol->text); break;
-        case  ASTREE_FUNDEC: fprintf(stdout,"ASTREE_FUNDEC {%s}",node->symbol->text); break;
-        case  ASTREE_PARAMSEQ: fprintf(stdout,"ASTREE_PARAMSEQ"); break;
-        case  ASTREE_LOCALDECSEQ: fprintf(stdout,"ASTREE_LOCALDECSEQ"); break;
-        case  ASTREE_KWWORD: fprintf(stdout,"ASTREE_KWWORD"); break;
-        case  ASTREE_KWBOOL: fprintf(stdout,"ASTREE_KWBOOL"); break;
-        case  ASTREE_KWBYTE: fprintf(stdout,"ASTREE_KWBYTE"); break;
-        case  ASTREE_PROGRAM: fprintf(stdout,"ASTREE_PROGRAM"); break;
-        case  ASTREE_LIT_STRING: fprintf(stdout,"ASTREE_LIT_STRING {%s}",node->symbol->text); break;
-        case  ASTREE_GLOBALSEQ: fprintf(stdout,"ASTREE_GLOBALSEQ"); break;
-        case  ASTREE_INPUT: fprintf(stdout,"ASTREE_INPUT {%s}",node->symbol->text); break;
-        case  ASTREE_OUTPUT: fprintf(stdout,"ASTREE_OUTPUT"); break;
-        case  ASTREE_RETURN: fprintf(stdout,"ASTREE_RETURN"); break;
-        case  ASTREE_PTR_ASS: fprintf(stdout,"ASTREE_PTR_ASS {%s}",node->symbol->text); break;
-        case  ASTREE_DEREF_ASS: fprintf(stdout,"ASTREE_DEREF_ASS {%s}",node->symbol->text); break;
-        case  ASTREE_VET_ASS: fprintf(stdout,"ASTREE_VET_ASS {%s}",node->symbol->text); break;
-        case  ASTREE_EXPRESSION: fprintf(stdout,"ASTREE_EXPRESSION"); break;
-        case  ASTREE_OUTPUTSEQ: fprintf(stdout,"ASTREE_OUTPUTSEQ"); break;
-        case  ASTREE_IF: fprintf(stdout,"ASTREE_IF"); break;
-        case  ASTREE_IF_ELSE: fprintf(stdout,"ASTREE_IF_ELSE"); break;
-        case  ASTREE_LOOP: fprintf(stdout,"ASTREE_LOOP"); break;
-        case  ASTREE_BLOCK: fprintf(stdout,"ASTREE_BLOCK"); break;
-        case  ASTREE_PARAM: fprintf(stdout,"ASTREE_PARAM {%s}",node->symbol->text); break;
-        case  ASTREE_PTRPARAM: fprintf(stdout,"ASTREE_PTRPARAM {%s}",node->symbol->text); break;
-        case  ASTREE_LE: fprintf(stdout,"ASTREE_LE"); break;
-        case  ASTREE_GE: fprintf(stdout,"ASTREE_GE"); break;
-        case  ASTREE_EQ: fprintf(stdout,"ASTREE_EQ"); break;
-        case  ASTREE_NE: fprintf(stdout,"ASTREE_NE"); break;
-        case  ASTREE_AND: fprintf(stdout,"ASTREE_AND"); break;
-        case  ASTREE_OR: fprintf(stdout,"ASTREE_OR"); break;
-        case  ASTREE_L: fprintf(stdout,"ASTREE_L"); break;
-        case  ASTREE_G: fprintf(stdout,"ASTREE_G"); break;
-        case  ASTREE_NOT: fprintf(stdout,"ASTREE_NOT"); break;
-        case  ASTREE_COMMANDSEQ: fprintf(stdout,"ASTREE_COMMANDSEQ"); break;
-        case  ASTREE_PTRDEC: fprintf(stdout,"ASTREE_PTRDEC {%s}",node->symbol->text); break;
-        default: fprintf(stdout, "ASTREE UNKNOWN"); break;
+        case  ASTREE_SYMBOL: fprintf(stderr,"ASTREE_SYMBOL {%s}",node->symbol->text); break;
+        case  ASTREE_LIT_INT: fprintf(stderr,"ASTREE_LIT_INT {%s}",node->symbol->text); break;
+        case  ASTREE_ADD: fprintf(stderr,"ASTREE_ADD"); break;
+        case  ASTREE_MIN: fprintf(stderr,"ASTREE_MIN"); break;
+        case  ASTREE_UMIN: fprintf(stderr,"ASTREE_UMIN"); break;
+        case  ASTREE_MUL: fprintf(stderr,"ASTREE_MUL"); break;
+        case  ASTREE_DIV: fprintf(stderr,"ASTREE_DIV"); break;
+        case  ASTREE_SCALAR_ASS: fprintf(stderr,"ASTREE_SCALAR_ASS {%s}",node->symbol->text); break;
+        case  ASTREE_LIT_SEQ: fprintf(stderr,"ASTREE_LIT_SEQ"); break;
+        case  ASTREE_VARDEC: fprintf(stderr,"ASTREE_VARDEC {%s}",node->symbol->text); break;
+        case  ASTREE_ARGSEQ: fprintf(stderr,"ASTREE_ARGSEQ"); break;
+        case  ASTREE_FUNCALL: fprintf(stderr,"ASTREE_FUNCALL {%s}",node->symbol->text); break;
+        case  ASTREE_VETCALL: fprintf(stderr,"ASTREE_VETCALL {%s}",node->symbol->text); break;
+        case  ASTREE_PTRADDR: fprintf(stderr,"ASTREE_PTRADDR {%s}",node->symbol->text); break;
+        case  ASTREE_PTRVALUE: fprintf(stderr,"ASTREE_PTRVALUE {%s}",node->symbol->text); break;
+        case  ASTREE_LIT_FALSE: fprintf(stderr,"ASTREE_LIT_FALSE {%s}",node->symbol->text); break;
+        case  ASTREE_LIT_TRUE: fprintf(stderr,"ASTREE_LIT_TRUE {%s}",node->symbol->text); break;
+        case  ASTREE_LIT_CHAR: fprintf(stderr,"ASTREE_LIT_CHAR {%s}",node->symbol->text); break;
+        case  ASTREE_VETORDEC: fprintf(stderr,"ASTREE_VETORDEC {%s}",node->symbol->text); break;
+        case  ASTREE_FUNDEC: fprintf(stderr,"ASTREE_FUNDEC {%s}",node->symbol->text); break;
+        case  ASTREE_PARAMSEQ: fprintf(stderr,"ASTREE_PARAMSEQ"); break;
+        case  ASTREE_LOCALDECSEQ: fprintf(stderr,"ASTREE_LOCALDECSEQ"); break;
+        case  ASTREE_KWWORD: fprintf(stderr,"ASTREE_KWWORD"); break;
+        case  ASTREE_KWBOOL: fprintf(stderr,"ASTREE_KWBOOL"); break;
+        case  ASTREE_KWBYTE: fprintf(stderr,"ASTREE_KWBYTE"); break;
+        case  ASTREE_PROGRAM: fprintf(stderr,"ASTREE_PROGRAM"); break;
+        case  ASTREE_LIT_STRING: fprintf(stderr,"ASTREE_LIT_STRING {%s}",node->symbol->text); break;
+        case  ASTREE_GLOBALSEQ: fprintf(stderr,"ASTREE_GLOBALSEQ"); break;
+        case  ASTREE_INPUT: fprintf(stderr,"ASTREE_INPUT {%s}",node->symbol->text); break;
+        case  ASTREE_OUTPUT: fprintf(stderr,"ASTREE_OUTPUT"); break;
+        case  ASTREE_RETURN: fprintf(stderr,"ASTREE_RETURN"); break;
+        case  ASTREE_PTR_ASS: fprintf(stderr,"ASTREE_PTR_ASS {%s}",node->symbol->text); break;
+        case  ASTREE_DEREF_ASS: fprintf(stderr,"ASTREE_DEREF_ASS {%s}",node->symbol->text); break;
+        case  ASTREE_VET_ASS: fprintf(stderr,"ASTREE_VET_ASS {%s}",node->symbol->text); break;
+        case  ASTREE_EXPRESSION: fprintf(stderr,"ASTREE_EXPRESSION"); break;
+        case  ASTREE_OUTPUTSEQ: fprintf(stderr,"ASTREE_OUTPUTSEQ"); break;
+        case  ASTREE_IF: fprintf(stderr,"ASTREE_IF"); break;
+        case  ASTREE_IF_ELSE: fprintf(stderr,"ASTREE_IF_ELSE"); break;
+        case  ASTREE_LOOP: fprintf(stderr,"ASTREE_LOOP"); break;
+        case  ASTREE_BLOCK: fprintf(stderr,"ASTREE_BLOCK"); break;
+        case  ASTREE_PARAM: fprintf(stderr,"ASTREE_PARAM {%s}",node->symbol->text); break;
+        case  ASTREE_PTRPARAM: fprintf(stderr,"ASTREE_PTRPARAM {%s}",node->symbol->text); break;
+        case  ASTREE_LE: fprintf(stderr,"ASTREE_LE"); break;
+        case  ASTREE_GE: fprintf(stderr,"ASTREE_GE"); break;
+        case  ASTREE_EQ: fprintf(stderr,"ASTREE_EQ"); break;
+        case  ASTREE_NE: fprintf(stderr,"ASTREE_NE"); break;
+        case  ASTREE_AND: fprintf(stderr,"ASTREE_AND"); break;
+        case  ASTREE_OR: fprintf(stderr,"ASTREE_OR"); break;
+        case  ASTREE_L: fprintf(stderr,"ASTREE_L"); break;
+        case  ASTREE_G: fprintf(stderr,"ASTREE_G"); break;
+        case  ASTREE_NOT: fprintf(stderr,"ASTREE_NOT"); break;
+        case  ASTREE_COMMANDSEQ: fprintf(stderr,"ASTREE_COMMANDSEQ"); break;
+        case  ASTREE_PTRDEC: fprintf(stderr,"ASTREE_PTRDEC {%s}",node->symbol->text); break;
+        default: fprintf(stderr, "ASTREE UNKNOWN"); break;
     }
 
-    fprintf(stdout,")\n");
+    fprintf(stderr,")\n");
     return;
 }
 
@@ -934,7 +934,7 @@ void astreePrintTree(ASTREE * node, int level) {
 
     if(!node) return;
     for(i=0;i< level; i++)
-        fprintf(stdout,"    ");
+        fprintf(stderr,"    ");
 
     astreePrintSingle(node);
 

@@ -16,13 +16,13 @@ lex: scanner.l
 	gcc -o scanner.obj -c scanner.yy.c
 
 main:   yacc lex hashtable astree main.c
-	gcc -o etapa4 main.c yac.obj scanner.obj hashtable.obj astree.obj -Wall
+	gcc -o etapa4.o main.c yac.obj scanner.obj hashtable.obj astree.obj -Wall
 clean:
 	rm scanner.yy.c
 	rm y.tab.c
 	rm y.tab.h
 	rm *.obj
 	rm y.output
-	rm etapa4
+	rm etapa4.o
 		
 
