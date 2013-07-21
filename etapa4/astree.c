@@ -399,17 +399,27 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             if(!tempNode){
                 fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
+                break;
             }
 
             if(!tempNode->declared){
                 fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
+                break;
             }
 
-            if (tempNode->dataType != DECTYPE_SCALAR ) {
+            if (tempNode->dataType == DECTYPE_POINTER) 
+                if (node->son[0]->type != ASTREE_PTRADDR) {
+                    fprintf(stderr,"error at line %d : symbol '%s' is beeing used as pointer but its not declared as a pointer.\n",node->lineNumber,node->symbol->text);
+                    error=1;
+                    break;
+                }else break;
+
+            if (tempNode->dataType != DECTYPE_SCALAR) { 
                 fprintf(stderr,"error at line %d : symbol '%s' is beeing used as scalar but its not declared as a scalar.\n",node->lineNumber,node->symbol->text);
                 error=1;
-            }
+                break;
+            }     
 
             break;
 
@@ -421,11 +431,13 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             if(!tempNode){
                 fprintf(stderr,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
+                break;
             }
 
-                    if(!tempNode->declared){
+           if(!tempNode->declared){
                 fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
+                break;
             }
             break;
 
@@ -436,17 +448,22 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             if(!tempNode){
                 fprintf(stderr,"error at line %d : var *%s not declared.\n",node->lineNumber,node->symbol->text);
                 error=1; //variavel nao declarada
+                break;
             }
 
             if(!tempNode->declared){
                 fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
+                break;
             }
 
-                if (tempNode->dataType != DECTYPE_POINTER ) {
-                        fprintf(stderr,"error at line %d : symbol '%s' is beeing used as a deref but its not declared as a pointer.\n",node->lineNumber,node->symbol->text);
-                        error=1;
-                    }
+            if (tempNode->dataType != DECTYPE_POINTER ) {
+                fprintf(stderr,"error at line %d : symbol '%s' is beeing used as a deref but its not declared as a pointer.\n",node->lineNumber,node->symbol->text);
+                error=1;
+                break;
+            }
+    
+                        
             break;
 
 
@@ -456,19 +473,22 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
             tempNode=hashFind(node->symbol->text);
 
             if(!tempNode){
-            fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
+                fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
 
-            error=1; //variavel nao declarada
+                error=1; //variavel nao declarada
+                break;
             }
 
             if(!tempNode->declared){
                 fprintf(stderr,"error at line %d : var '%s' not declared.\n",node->lineNumber,node->symbol->text);
                 error=1;
+                break;
             }
 
             if (tempNode->dataType != DECTYPE_VECTOR ) {
                         fprintf(stderr,"error at line %d : symbol '%s' is beeing used as a vector but its not declared as a vector.\n",node->lineNumber,node->symbol->text);
                         error=1;
+                        break;
                     }
             break;
 

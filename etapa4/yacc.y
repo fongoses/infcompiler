@@ -230,7 +230,7 @@ controlefluxo: condif { $$ = $1;}
 			
 			if(DEBUG) fprintf(stdout,"Var %s recebe um valor\n",(char*)$1); //astreePrint() 
 	}
-	   | '&' TK_IDENTIFIER '=' expressao  { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2);
+	   |  '&' TK_IDENTIFIER '=' expressao { if(DEBUG) fprintf(stdout,"Var %s recebe uma string\n",(char*)$2);
 	
 		$$ = astreeCreate(ASTREE_PTR_ASS,$4,0,0,0,$2); //ajustar alterar, nao eh SCALAR_ASS
 	 }
