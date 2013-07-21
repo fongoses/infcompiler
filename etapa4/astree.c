@@ -382,12 +382,10 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
                 return;
             }
             
-            
-            if ((tempNode->dataType != DECTYPE_SCALAR ) && (tempNode->dataType != DECTYPE_POINTER)) {
-                
-                 fprintf(stderr,"error at line %d : symbol '%s' is beeing used as scalar but its not declared as a scalar.\n",node->lineNumber,node->symbol->text);
-                 error=1;
-                 break;
+                if ((tempNode->dataType != DECTYPE_SCALAR ) && (tempNode->dataType != DECTYPE_POINTER)) {                
+                        fprintf(stderr,"error at line %d : symbol '%s' is beeing used as scalar but its not declared as a scalar.\n",node->lineNumber,node->symbol->text);
+                        error=1;
+                        break;
             }
             break;
 

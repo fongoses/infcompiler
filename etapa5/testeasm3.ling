@@ -1,30 +1,30 @@
 // UFRGS - Compiladores - Marcelo Johann - 2013/1
 
 word a:0;
-word v[9]: 10 20 30 40 50 60 70 80 90; 
+word v[9]: 10 20 30 40 50 60 70 80 90;
 bool x:TRUE;
 word i:'a';
-word a: 3;
-word b: FALSE;
+word a: 3;                              // NOK; Redeclaração da linha 3
+word b: FALSE;                          // NOK: Tipo != Inicialização
 word $c:2;
 
 word f (word m)
-  { 
-  return m; 
+  {
+  return m;
   }
- 
+
 word main()
-  word a:2;
+  word a:2;                             // NOK: Redeclaração da linha 3
   {
   output "digite um numero";
   a=i;
   input i;
-  a=var_inexistente;
-  a=funcao_inexistente();
-  a=f(1,2);
-  a=f(arg_inexistente);
+  a=var_inexistente;                    // NOK: var_inexistente não declarada
+  a=funcao_inexistente();               // NOK: função inexixtente não declarada
+  a=f(1,2);                             // NOK: f espera um parâmetro, mas foram passados 2
+  a=f(arg_inexistente);                 // NOK: arg_inexistente não declarado & f recebe parâmetro de tipo inválido
   *c=1;
-  c=&a; 
+  c=&a;
   *c=a;
   *c=*c+1;
   c=c+1;
@@ -36,10 +36,10 @@ word main()
     a = a + f(1);
     };
 
-  var_inexistente2=1;
-  
+  var_inexistente2=1;                   // NOK: var_inexistente não declarada
+
   return 0;
   }
 
- 
+
 

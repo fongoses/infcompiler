@@ -14,6 +14,7 @@ TAC * tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2){
     tac->op1= op1;
     tac->op2= op2;
     tac->prev=0;
+    tac->next=0;
 
 }
 
@@ -36,7 +37,7 @@ TAC * tacReverse(TAC * last){
     TAC * first = 0;
 
     if(!last) return 0;
-
+    fprintf(stderr,"Revertendo\n");
     for(first=last;first->prev;first=first->prev)
        first->prev->next = first;
 

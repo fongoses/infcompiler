@@ -121,7 +121,8 @@ program: globalseq {
         astreeCheckDeclarations($$);
         if (astreeCheckNature($$) == DATATYPE_INVALID) error = 1;
         mainTAC = generateCode($$);
-        print_tac(mainTAC);
+        //print_tac(mainTAC);
+        print_tac(tacReverse(mainTAC));
         //astreePrintTree($$,0);
     ;};
 

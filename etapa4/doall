@@ -1,6 +1,6 @@
 #!/bin/bash
 make clean
-tar cvzf etapa4.tgz hashtable.c hashtable.h scanner.l yacc.y astree.h astree.c main.c Makefile
+tar cvzf etapa4.tgz hashtable.c hashtable.h scanner.l yacc.y astree.h astree.c main.c Makefile etapa4
 #para o scp abaixo funcionar automaticamente, eh necessario utilizar
 # autenticacao por chave do ssh
 echo "Realizando o upload para o servidor html do inf..."

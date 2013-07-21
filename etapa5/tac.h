@@ -12,7 +12,7 @@ typedef struct tac {
     HASH_NODE * op1;
     HASH_NODE * op2;
     struct tac * prev;
-    struct tac * next; // usado hoje: 11/06
+    struct tac * next;
 
 
 } TAC;

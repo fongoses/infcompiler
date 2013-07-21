@@ -26,7 +26,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_LIT_INT:
-            result =  tac_create(TAC_LIT_INT,node->symbol, 0, 0);
+            result =  tac_create(TAC_LIT_INT,node->symbol, 0, 0);            
             break;
 
         case ASTREE_ADD:
