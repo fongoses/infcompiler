@@ -96,5 +96,6 @@ void setType(ASTREE * node);
 void setItemType(ASTREE * node);
 void astreeCheckUndeclaredAndDatatype(ASTREE * node);
 void astreeCheckRedeclarations(ASTREE * node);
+int getAddDectype(ASTREE * node);
 ASTREE * nodeFind(ASTREE * tree,int type,char * text);
 #endif

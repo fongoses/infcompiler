@@ -124,7 +124,7 @@ int getDataType (ASTREE * node){
             return DECTYPE_VECTOR;
 
         case ASTREE_VETCALL:
-            return DECTYPE_VECTOR;
+            return DECTYPE_SCALAR; //scalar
 
         case ASTREE_FUNDEC:
             return  DECTYPE_FUNCTION;
@@ -302,8 +302,8 @@ void astreeCheckDeclarationsSingle(ASTREE * node){
 }
 
 int getAddDectype(ASTREE *node){
-    int *son0,*son1;
-
+    int son0,son1;
+    int result;
     if(!node) result = DEC_ERR;
 
     switch(node->type) {
@@ -314,14 +314,14 @@ int getAddDectype(ASTREE *node){
             if((son0 == DECTYPE_POINTER) && (son1 == DECTYPE_POINTER)) 
                 result = DEC_ERR;
             else {
-                if(son0 == DECTYPE_PONTER) result = son0;
-                else if (son1 == DECTYPE_POINER) result = son1;
+                if(son0 == DECTYPE_POINTER) result = son0;
+                else if (son1 == DECTYPE_POINTER) result = son1;
                 else if ((son0 == DECTYPE_SCALAR) && (son1 == DECTYPE_SCALAR)) result = DECTYPE_SCALAR;
                 else result = DEC_ERR; 
             }    
             break;
 
-        case ASTREE_SUB:
+        case ASTREE_MIN:
         case ASTREE_MUL:
         case ASTREE_DIV:
              //obtem Dectype dos filhos
@@ -330,8 +330,8 @@ int getAddDectype(ASTREE *node){
             if((son0 == DECTYPE_POINTER) || (son1 == DECTYPE_POINTER)) 
                 result = DEC_ERR;
              else {
-                if(son0 == DECTYPE_PONTER) result = son0;
-                else if (son1 == DECTYPE_POINER) result = son1;
+                if(son0 == DECTYPE_POINTER) result = son0;
+                else if (son1 == DECTYPE_POINTER) result = son1;
                 else if ((son0 == DECTYPE_SCALAR) && (son1 == DECTYPE_SCALAR)) result = DECTYPE_SCALAR;
                 else result = DEC_ERR; 
             }    
@@ -486,7 +486,7 @@ void astreeCheckUndeclaredAndDatatype(ASTREE * node){
                 }
  
                 if ((node->son[0]->type != ASTREE_PTRADDR) && (getAddDectype(node->son[0]) != DECTYPE_POINTER )) {
-                    fprintf(stderr,"error at line %d : symbol '%s' is beeing used as pointer but its not declared as a pointer.\n",node->lineNumber,node->symbol->text);
+                    fprintf(stderr,"error at line %d : symbol '%s'. invalid pointer operation on assign.\n",node->lineNumber,node->symbol->text);
                     error=1;
                     break;
                 } else 

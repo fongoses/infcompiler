@@ -51,6 +51,15 @@ word main()
   c=d*3; //nao ok (apenas soma de aritmetico com ponteiro funciona)
   c=d/3; //nao ok
   c=d-3; //nao ok
+  c=(d+d)+1; //nao ok : soma de ponteiros
+  c=d+1+3*4; // ok
+  c=1+d+3*4; // ok
+  c=(d+1)+((3*4)+1); //ok
+  c=f(1)+d+3*4; // ok
+  c=f(1)-d; // nao ok: subtracao de ponteiros
+  c=d+v[0]; //ok
+  c=d-f(1); //nao ok: sub
+
   
 
   loop (a<9)
