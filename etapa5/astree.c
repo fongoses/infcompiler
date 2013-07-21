@@ -41,7 +41,6 @@ int getLitSeqType(ASTREE * node){
 
 //dado um nodo do tipo dec, retorna o tipo da declaracao.Funcao auxiliar a getDeclarationType
 int getType(ASTREE * node){
-
     if(!node) return DATATYPE_INVALID;
     if(!node->son[0]) return DATATYPE_INVALID;
     switch (node->son[0]->type){
