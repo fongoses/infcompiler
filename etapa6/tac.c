@@ -172,11 +172,15 @@ void print_tac_single(TAC*tac){
              break; 
 
         case TAC_VARDEC:
-             fprintf(stderr,"TAC(TAC_VARDEC,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_VARDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
-  
+        
+        case TAC_PTRDEC:
+             fprintf(stderr,"TAC(TAC_PTRDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
+             break;
+
         case TAC_VETORDEC:
-             fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_VETORDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
 
         case TAC_LIT_SEQ:

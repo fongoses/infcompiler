@@ -77,6 +77,7 @@ typedef struct tac {
 #define TAC_TBYTE 49
 #define TAC_TBOOL 50
 
+#define TAC_PTRDEC 51
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
 TAC *tac_join(TAC *l1, TAC *l2);

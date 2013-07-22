@@ -61,6 +61,11 @@ TAC * generateCode(ASTREE * node){
             //fprintf(stderr,"VARDEC\n");
             result = tac_join(treeSons[1],tac_create(TAC_VARDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
             break;
+        
+        case ASTREE_PTRDEC:
+            //fprintf(stderr,"VARDEC\n");
+            result = tac_join(treeSons[1],tac_create(TAC_PTRDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
+            break;
 
         case ASTREE_ARGSEQ:
             result = tac_join(treeSons[0],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));

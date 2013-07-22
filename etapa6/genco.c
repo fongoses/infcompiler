@@ -63,6 +63,10 @@ TAC * generateCode(ASTREE * node){
             //fprintf(stderr,"VARDEC\n");
             result = tac_join(treeSons[1],tac_create(TAC_VARDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
             break;
+        case ASTREE_PTRDEC:
+            //fprintf(stderr,"VARDEC\n");
+            result = tac_join(treeSons[1],tac_create(TAC_PTRDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
+            break;
 
         case ASTREE_ARGSEQ:
             result = tac_join(treeSons[0],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
@@ -427,6 +431,20 @@ void generateASM(TAC * first){
 				
 			break;
 
+            case TAC_VARDEC:
+                 fprintf(fout,"",tac->target->text);
+                 break;
+      
+            case TAC_VETORDEC:
+                 fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
+                 break;
+
+            case TAC_LIT_SEQ:
+                 fprintf(stderr,"TAC(TAC_LITSEQ,%s,null,null)\n",tac->target->text);
+                 break;
+
+
+
 
             case TAC_MIN:
                 fprintf(stderr,"TAC(TAC_MIN,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
@@ -533,18 +551,6 @@ void generateASM(TAC * first){
             case TAC_PTRPARAM:
                  fprintf(stderr,"TAC(TAC_PTRPARAM,%s,null,null)\n",tac->target->text);
                  break; 
-
-            case TAC_VARDEC:
-                 fprintf(stderr,"TAC(TAC_VARDEC,%s,null,null)\n",tac->target->text);
-                 break;
-      
-            case TAC_VETORDEC:
-                 fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
-                 break;
-
-            case TAC_LIT_SEQ:
-                 fprintf(stderr,"TAC(TAC_LITSEQ,%s,null,null)\n",tac->target->text);
-                 break;
 
             case TAC_ARG:
                  fprintf(stderr,"TAC(TAC_ARG,%s,null,null)\n",tac->target->text);

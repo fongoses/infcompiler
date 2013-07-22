@@ -65,7 +65,6 @@ void print_tac_single(TAC*tac){
             fprintf(stderr,"TAC(TAC_LE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);        
             break;
 
-
         case TAC_GE:
             fprintf(stderr,"TAC(TAC_GE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
             break;
@@ -171,11 +170,16 @@ void print_tac_single(TAC*tac){
              break; 
 
         case TAC_VARDEC:
-             fprintf(stderr,"TAC(TAC_VARDEC,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_VARDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
+             break;
+
+        case TAC_PTRDEC:
+             fprintf(stderr,"TAC(TAC_PTRDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
   
+
         case TAC_VETORDEC:
-             fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_VETORDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
 
         case TAC_LIT_SEQ:
