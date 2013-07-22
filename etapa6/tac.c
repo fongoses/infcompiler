@@ -3,8 +3,7 @@
 
 //tac Global
 TAC * mainTAC;
-TAC * reversedTAC;
-
+TAC * reversedTAC; //tac na ordem reversa (que eh a ordem correta de apresentacao)
 //em tac.c ? (professor criou arquivo tac.c)
 TAC * tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2){
 
@@ -65,7 +64,6 @@ void print_tac_single(TAC*tac){
         case TAC_LE:
             fprintf(stderr,"TAC(TAC_LE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);        
             break;
-
 
         case TAC_GE:
             fprintf(stderr,"TAC(TAC_GE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
@@ -174,17 +172,18 @@ void print_tac_single(TAC*tac){
         case TAC_VARDEC:
              fprintf(stderr,"TAC(TAC_VARDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
-        
+
         case TAC_PTRDEC:
              fprintf(stderr,"TAC(TAC_PTRDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
+  
 
         case TAC_VETORDEC:
              fprintf(stderr,"TAC(TAC_VETORDEC,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
 
         case TAC_LIT_SEQ:
-             fprintf(stderr,"TAC(TAC_LITSEQ,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_LITSEQ,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
 
         case TAC_ARG:
@@ -208,7 +207,7 @@ void print_tac_single(TAC*tac){
              break;
 
         case TAC_INPUT:
-             fprintf(stderr,"TAC(TAC_INPUT,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_INPUT,%s,null,null)\n",tac->target?tac->target->text:0);
              break;
 
         case TAC_BEGINEXP:

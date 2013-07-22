@@ -1,0 +1,8 @@
+error at line 10 : Var 'a' already declared at line 3.
+error at line 16 : function 'incn()' not declared.
+error at line 19 : var 'x' not declared.
+error at line 4 : vector size differs from the vector initialization.
+TAC(TAC_LIT_INT,0,null,null)
+TAC(TAC_VARDEC,a,0,null)
+TAC(TAC_LIT_INT,10,null,null)
+TAC(TAC_VETORDEC,v,10,null)

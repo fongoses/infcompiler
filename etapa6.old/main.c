@@ -46,10 +46,10 @@ int main(int argc , char ** argv){
 	yyparse();
 	//yyerror (in yacc.y) handles erros, exiting 3		
 	if(!error){
-		fprintf(stdout,"Compilation successfull.\n");
+		fprintf(stderr,"Compilation successfull.\n");
 		exit(0);
 	}else {		
-		fprintf(stdout,"Failed to compilate the code.\n");
+		fprintf(stderr,"Failed to compilate the code.\n");
 		exit(3);
 	}
 

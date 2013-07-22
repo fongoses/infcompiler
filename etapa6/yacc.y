@@ -88,7 +88,7 @@
     extern FILE * outputFile;
     extern ASTREE * TREE ; //no com a lista de declaracoes globais
     extern TAC * mainTAC; //tac global
-    extern TAC * reversedTAC; //tac na ordem correta (reverso da tac inicial que ja eh revertida)
+    extern TAC * reversedTAC;
 %}
 
 
@@ -116,8 +116,7 @@
 
 
 program: globalseq {
-        $$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);        
-        //astreePrintTree($$,0);
+        $$ = astreeCreate(ASTREE_PROGRAM,$1,0,0,0,0);
         TREE = $$->son[0]; //armazena arvore em variavel global, ja que algumas declaracoes precisam ser recuperadas durante o percurso da arvore
         if(outputFile) astreeCreateCode($$,0);
         astreeCheckDeclarations($$);
@@ -126,10 +125,9 @@ program: globalseq {
         //print_tac(mainTAC);
         //puts("----------");
         reversedTAC = tacReverse(mainTAC);
-        print_tac_reverse(reversedTAC); 
-        //lembrando que reversedTAC representa a ordem correta das TACs
+        //print_tac_reverse(reversedTAC);
         generateASM(reversedTAC);
-        
+        //astreePrintTree($$,0);
     ;};
 
 

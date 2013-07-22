@@ -76,8 +76,8 @@ typedef struct tac {
 #define TAC_TWORD 48
 #define TAC_TBYTE 49
 #define TAC_TBOOL 50
-
 #define TAC_PTRDEC 51
+
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
 TAC *tac_join(TAC *l1, TAC *l2);
@@ -89,14 +89,16 @@ void print_tac_reverse(TAC *tac);
 
 // Protótipos do genco.c
 TAC *generateCode(ASTREE *node);
-void generateASM(TAC * first);
 TAC *makeBinop(TAC *treeSon0, TAC *treeSon1, int type);
 TAC *makeIfThen(TAC *son0, TAC *son1);
-TAC *makeFun(HASH_NODE *symbol, TAC * son1, TAC *son3 );
+TAC *makeFun(HASH_NODE *symbol, TAC * son1, TAC * son2, TAC *son3 );
 TAC *makeVetcall(TAC* son0, HASH_NODE *symbol );
 TAC *makeExpression(TAC * son0, HASH_NODE * symbol);
 TAC *makeVetass(TAC* son0,TAC * son1, HASH_NODE *symbol );
 TAC* makeIfThen(TAC* son0, TAC* son1);
 TAC* makeIfThenElse(TAC* son0, TAC* son1, TAC* son2);
 TAC* makeLoop(TAC* son0, TAC* son1);
+TAC* makeVetordec(TAC* son1, TAC* son2,HASH_NODE * symbol);
+void * setTargetLitSeq(TAC*first,HASH_NODE * target);
+void generateASM(TAC * first);
 #endif

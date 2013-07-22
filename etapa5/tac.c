@@ -183,7 +183,7 @@ void print_tac_single(TAC*tac){
              break;
 
         case TAC_LIT_SEQ:
-             fprintf(stderr,"TAC(TAC_LITSEQ,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_LITSEQ,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
              break;
 
         case TAC_ARG:
@@ -207,7 +207,7 @@ void print_tac_single(TAC*tac){
              break;
 
         case TAC_INPUT:
-             fprintf(stderr,"TAC(TAC_INPUT,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_INPUT,%s,null,null)\n",tac->target?tac->target->text:0);
              break;
 
         case TAC_BEGINEXP:

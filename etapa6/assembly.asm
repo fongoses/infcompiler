@@ -26,8 +26,6 @@ main:
    movl    %esp, %ebp
    .cfi_def_cfa_register 5
   OUTPUT
-  SOMA
-  SOMA
   OUTPUT
   SOMA
    popl    %ebp

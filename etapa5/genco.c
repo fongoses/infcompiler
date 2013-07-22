@@ -54,7 +54,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_LIT_SEQ:
-            result = tac_join(treeSons[0], tac_create(TAC_LIT_SEQ, treeSons[1]->target, 0, 0));//especifico de vetor (lit_seq)
+            result = tac_join(treeSons[0], tac_create(TAC_LIT_SEQ,treeSons[1]?treeSons[1]->target:0,0,0));//especifico de vetor (lit_seq)
             break;
 
         case ASTREE_VARDEC:
@@ -102,12 +102,12 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_VETORDEC:
-            result = tac_join(treeSons[1],tac_create(TAC_VETORDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
+            result = makeVetordec(treeSons[1],treeSons[2],node->symbol);
             break;
 
         case ASTREE_FUNDEC:
             //fprintf(stderr,"FUNDEC. Params: %p\n",treeSons[1]);
-            result = makeFun(node->symbol,treeSons[1],treeSons[3]);
+            result = makeFun(node->symbol,treeSons[1],treeSons[2],treeSons[3]);
             break;
 
         case ASTREE_PARAMSEQ:
@@ -155,7 +155,7 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_INPUT:            
-            result = tac_create(TAC_INPUT,node->symbol, 0, 0);
+            result = tac_join(treeSons[0],tac_create(TAC_INPUT,node->symbol, 0, 0));
             break;
 
         case ASTREE_OUTPUT:
@@ -329,7 +329,7 @@ TAC *makeLoop(TAC* condicao, TAC* comandos){
     return tac_join(tac_join(tac_join(tac_join(tac_join(tac_lbl_begin, condicao), tac_loop), comandos), tac_jmp_begin), tac_lbl_end);
 }
 
-TAC * makeFun (HASH_NODE* symbol,TAC * son1, TAC * son3 ){ //parametros eh o filho 1, bloco da funcao eh o filho 3
+TAC * makeFun (HASH_NODE* symbol,TAC * son1, TAC* son2, TAC * son3 ){ //parametros eh o filho 1, bloco da funcao eh o filho 3
 
 	TAC * begin;
 	TAC * end;
@@ -337,7 +337,7 @@ TAC * makeFun (HASH_NODE* symbol,TAC * son1, TAC * son3 ){ //parametros eh o fil
 	begin = tac_create(TAC_BEGINF,symbol,0,0);
 	end = tac_create(TAC_ENDF,symbol,0,0);
     
-   	return tac_join(tac_join(tac_join(son1,begin),son3),end);
+   	return tac_join(tac_join(tac_join(tac_join(son1,begin),son2),son3),end);
 }
 
 TAC* makeVetcall(TAC * son0, HASH_NODE * symbol){
@@ -370,32 +370,28 @@ TAC * makeExpression (TAC* son0,HASH_NODE* symbol){ //parametros eh o filho 1, b
    	return tac_join(tac_join(son0,begin),end);
 }
 
-
-/*
-TAC * makeIf(TAC* expr, TAC* THEN, TAC* ELSE) {
-    HASH_NODE* targetElse = makeLabel();
-    HASH_NODE* targetEnd = makeLabel();
-
-    TAC* jumpElse = tacCreate(TAC_JFALSE, targetElse, expr->res, 0);
-    TAC* jumpEnd = tacCreate(TAC_JUMP, targetEnd, 0, 0);
-
-    TAC* labelElse = tacCreate(TAC_LABEL, targetElse, 0, 0);
-    TAC* labelEnd = tacCreate(TAC_LABEL, targetEnd, 0, 0);
-
-
-    return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(expr, jumpElse), THEN), jumpEnd), labelElse), ELSE), labelEnd);
+void * setTargetLitSeq(TAC*litseq,HASH_NODE * target){
+    
+    TAC* first;
+    first = litseq;
+    
+    if(!first) return;
+    
+    while(first->type == TAC_LIT_SEQ){
+        first->op1 = first->target;
+        first->target = target;
+        first=first->prev;
+        if(!first) break;
+    }
+    
 }
 
-TAC* makeLoop(TAC* expr, TAC* cmd) {
-    HASH_NODE* targetBegin = makeLabel();
-    HASH_NODE* targetEnd = makeLabel();
+TAC * makeVetordec(TAC* son1, TAC * son2, HASH_NODE * symbol){
+    
+    
+    setTargetLitSeq(son2,symbol); //seta target de todos elementos do vetor como o simbolo atual 
+    return tac_join(son1,tac_join(son2,tac_create(TAC_VETORDEC, symbol, son1?son1->target:0, son2?son2->target:0)));
 
-    TAC* jumpBegin = tacCreate(TAC_JUMP, targetBegin, 0, 0);
-    TAC* jumpEnd = tacCreate(TAC_JFALSE, targetEnd, expr->res, 0);
-
-    TAC* labelBegin = tacCreate(TAC_LABEL, targetBegin, 0, 0);
-    TAC* labelEnd = tacCreate(TAC_LABEL, targetEnd, 0, 0);
+}
 
 
-    return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(labelBegin, expr), jumpEnd), cmd), jumpBegin), labelEnd);
-}*/
