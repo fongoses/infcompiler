@@ -1,7 +1,5 @@
 #ifndef HASH_HEADER
 #define HASH_HEADER
-
-
 typedef struct hash_node {
     char *text;
     int type;
@@ -13,6 +11,9 @@ typedef struct hash_node {
     struct hash_node *next;
    } HASH_NODE;
 
+#ifndef HASH_HEADER
+#define HASH_HEADER
+#endif
 // Tamanho maximo da tabela hash
 #define HASH_SIZE 997 
 
@@ -34,8 +35,6 @@ typedef struct hash_node {
 #define DATATYPE_VALID 12
 #define DATATYPE_INVALID -1
 
-
-#define DECTYPE_LABEL 13 //11/06
 HASH_NODE * makeTemp(void);
 void hashInit();
 void initMe(); //adicionado( haviamos esquecido na etapa anterior)
@@ -44,6 +43,4 @@ HASH_NODE *hashInsert(char *, int);
 HASH_NODE *hashFind(char *);
 void hashPrint();
 void hashPrintFull();
-
-
 #endif

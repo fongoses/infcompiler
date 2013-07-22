@@ -45,19 +45,17 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
     HASH_NODE *node;
 
     node = hashFind(text);
-    if (node != (void*)0) return node;
+    if (node != (void*)0) return node; 
 
 
     int address = hashAddress(text);
-
+    
     // Calc the address and allocates the node
     node = (HASH_NODE *) calloc(sizeof(HASH_NODE),1);
 
     node->text = (char *) calloc(strlen(text) + 1, sizeof(char));
     strcpy(node->text, text);
-    node->declared = 0;
-    node->dataType =0;
-    node->decType =0;
+
     node->type = type;
     node->lineNumber= getLineNumber();
     node->next = (void *) 0;
@@ -72,9 +70,9 @@ HASH_NODE *hashInsert(char *text, int type) { // Insert the node in the hash tab
         ptr = Table[address];
 
         // Searches for the last list node
-        while(ptr->next != (void *) 0)
+        while(ptr->next != (void *) 0) 
             ptr = ptr->next;
-
+        
         // Insert at the end of the list
         ptr->next = node;
     }
@@ -85,7 +83,7 @@ HASH_NODE *hashAdd(char *text, int type) { // Insert the node in the hash table 
     HASH_NODE *node;
 
     int address = hashAddress(text);
-
+    
     // Calc the address and allocates the node
     node = (HASH_NODE *) calloc(sizeof(HASH_NODE),1);
 
@@ -106,9 +104,9 @@ HASH_NODE *hashAdd(char *text, int type) { // Insert the node in the hash table 
         ptr = Table[address];
 
         // Searches for the last list node
-        while(ptr->next != (void *) 0)
+        while(ptr->next != (void *) 0) 
             ptr = ptr->next;
-
+        
         // Insert at the end of the list
         ptr->next = node;
     }
@@ -169,27 +167,75 @@ void hashPrintFull() {
         }
         printf("\n");
     }
+}
+void generateDeclarations(FILE * fout) {
+    HASH_NODE *node;
+
+    int i;
+
+	//declaracao de var
+	fprintf(fout,"movl    a, %eax"
+        	     "movl    %eax, 4(%esp)"
+        	     "movl    $.LC0, (%esp)"
+        	     "call    printf");
+
+
+
+	
+    for(i = 0; i < HASH_SIZE; i++) {
+	for(node=Table[i];node;node=node->next)
+		switch(node->type)
+		{
+			case SYMBOL_SCALAR:
+			fprintf(fout,"%s:\t.long 0\n",node->text);
+			break;
+				
+			case SYMBOL_LIT_INTEGER:
+			fprintf(fout,"%s:\t.long %s\n",node->text,node->text); 
+
+		}
+ 
+	}
+
+
+
 
 }
-
 HASH_NODE * makeTemp(void){
-    static int nextTemp = 0;
-    char buffer[128];
-    sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
-    // Incrementa a variável estática nextTemp para que, na próxima chamada, não fique com o mesmo nome.
-    nextTemp++;
-    return hashInsert(buffer,DECTYPE_SCALAR);
+
+	static int nextTemp = 0;
+	char buffer[128];
+	sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
+	return hashInsert(buffer,SYMBOL_SCALAR);	
 }
 
+//11/06
 HASH_NODE * makeLabel(void){
 
-    static int nextTemp = 0;
-    char buffer[128];
-    sprintf(buffer,"__label%d",nextTemp);
-    // Incrementa a variável estática nextTemp para que, na próxima chamada, não fique com o mesmo nome.
-    nextTemp++;
-    return hashInsert(buffer,DECTYPE_LABEL);
+	static int nextTemp = 0;
+	char buffer[128];
+	sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
+	return hashInsert(buffer,SYMBOL_LABEL);	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
