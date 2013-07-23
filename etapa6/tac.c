@@ -4,6 +4,7 @@
 //tac Global
 TAC * mainTAC;
 TAC * reversedTAC;
+
 //em tac.c ? (professor criou arquivo tac.c)
 TAC * tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2){
 

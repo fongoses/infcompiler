@@ -1,0 +1,38 @@
+// UFRGS - Compiladores - Marcelo Johann - 2013/1
+
+word a:0;
+word v[9]: 10 20 30 40 50 60 70 80 90; 
+bool x:TRUE;
+word i:'a';
+word k:1;
+word j:2;
+
+word f (word m)
+  { 
+  return m; 
+  }
+
+word g (word n1, word n2)
+  {
+  return n1 + n2;
+  }
+ 
+word main()
+  {
+  output "digite um numero";
+  a=i;
+  input i;
+  loop (a<9)
+    {
+    v[a] = v[a] + 1;
+    output v[a];
+    a = a + f(1);
+    };
+
+  output "resultado de f(g(k, j)):", f(g(k,j));
+  return 0;
+  }
+
+
+ 
+

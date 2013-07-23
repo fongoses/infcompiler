@@ -72,11 +72,11 @@ TAC * generateCode(ASTREE * node){
         case ASTREE_ARGSEQ:
             if(treeSons[0]) {
                 if(treeSons[0]->type != TAC_ARG){
-                    result=tac_join(tac_create(TAC_ARG,treeSons[0]?treeSons[0]->target:0,0,0),tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
+                    result=tac_join(tac_join(treeSons[0],tac_create(TAC_ARG,treeSons[0]?treeSons[0]->target:0,0,0)),tac_join(treeSons[1],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0)));
                     break;
                 }       
             }           
-            result = tac_join(treeSons[0],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
+            result = tac_join(treeSons[0],tac_join(treeSons[1],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0)));
             break;            
             
 
@@ -430,10 +430,12 @@ TAC * makeVetordec(TAC* son1, TAC * son2, HASH_NODE * symbol){
 
 TAC * makeFuncall(TAC * son0, HASH_NODE * symbol){
 
+    TAC * newSon;
 //concatena argumentos com parametros. Obs, o target eh o retorno da funcao, para isso eh usado uma variavel temporaria
     if(son0)
         if(son0->type != TAC_ARG){
-            return tac_join(tac_create(TAC_ARG,son0?son0->target:0,0,0),tac_create(TAC_FUNCALL,makeTemp(),symbol,0));            
+            newSon = tac_join(son0,tac_create(TAC_ARG,son0->target,0,0));
+            return tac_join(newSon,tac_create(TAC_FUNCALL,makeTemp(),symbol,0));            
         }
    
    return tac_join(son0,tac_create(TAC_FUNCALL,makeTemp(),symbol,0));
@@ -449,7 +451,6 @@ TAC * makeOutput(TAC* son0, HASH_NODE * symbol){
             }
    return tac_join(son0,tac_create(TAC_OUTPUT,son0->target,0,0));
 }
-
 
 //Etapa 6 
 //ASSEMBLER.

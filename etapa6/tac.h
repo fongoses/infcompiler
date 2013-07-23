@@ -104,6 +104,4 @@ TAC* makeVetordec(TAC* son1, TAC* son2,HASH_NODE * symbol);
 void * setTargetLitSeq(TAC*first,HASH_NODE * target);
 TAC * makeFuncall(TAC * son0, HASH_NODE * symbol);
 TAC * makeOutput(TAC * son0, HASH_NODE * symbol);
-void generateASM(TAC * first);
-int mySizeOf(HASH_NODE*symbol);
 #endif

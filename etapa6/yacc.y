@@ -124,10 +124,11 @@ program: globalseq {
         mainTAC = generateCode($$);
         //print_tac(mainTAC);
         //puts("----------");
-         reversedTAC = tacReverse(mainTAC);
+        reversedTAC = tacReverse(mainTAC);
         //print_tac_reverse(reversedTAC);
         generateASM(reversedTAC);
         //astreePrintTree($$,0);
+    
     ;};
 
 

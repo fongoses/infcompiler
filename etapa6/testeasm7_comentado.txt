@@ -1,0 +1,108 @@
+TAC(TAC_LIT_INT,0,null,null)
+TAC(TAC_VARDEC,a,0,null)
+
+TAC(TAC_LITSEQ,v,10,null)
+TAC(TAC_LITSEQ,v,20,null)
+TAC(TAC_LITSEQ,v,30,null)
+TAC(TAC_LITSEQ,v,40,null)
+TAC(TAC_LITSEQ,v,50,null)
+TAC(TAC_LITSEQ,v,60,null)
+TAC(TAC_LITSEQ,v,70,null)
+TAC(TAC_LITSEQ,v,80,null)
+TAC(TAC_LITSEQ,v,90,null)
+TAC(TAC_LIT_INT,9,null,null)
+TAC(TAC_VETORDEC,v,9,null)
+
+TAC(TAC_LIT_TRUE,TRUE,null,null)
+TAC(TAC_VARDEC,x,TRUE,null)
+
+TAC(TAC_LIT_CHAR,'a',null,null)
+TAC(TAC_VARDEC,i,'a',null)
+
+TAC(TAC_LIT_INT,1,null,null)
+TAC(TAC_VARDEC,k,1,null)
+
+TAC(TAC_LIT_INT,2,null,null)
+TAC(TAC_VARDEC,j,2,null)
+
+// f()
+
+TAC(TAC_TWORD,null,null,null)
+TAC(TAC_PARAM,m,null,null)
+TAC(TAC_BEGINF,f,null,null)
+TAC(TAC_SYMBOL,m,null,null)
+TAC(TAC_RETURN,m,null,null)
+TAC(TAC_ENDF,f,null,null)
+
+// g()
+
+TAC(TAC_TWORD,null,null,null)
+TAC(TAC_PARAM,n1,null,null)
+TAC(TAC_TWORD,null,null,null)
+TAC(TAC_PARAM,n2,null,null)
+TAC(TAC_BEGINF,g,null,null)
+TAC(TAC_SYMBOL,n1,null,null)
+TAC(TAC_SYMBOL,n2,null,null)
+TAC(TAC_ADD,__ScarryTeMpORaRy0,n1,n2)
+TAC(TAC_RETURN,__ScarryTeMpORaRy0,null,null)
+TAC(TAC_ENDF,g,null,null)
+
+// main()
+
+TAC(TAC_BEGINF,main,null,null)
+
+TAC(TAC_LIT_STRING,"digite um numero",null,null)
+TAC(TAC_OUTPUT,"digite um numero",null,null)
+
+TAC(TAC_SYMBOL,i,null,null)
+TAC(TAC_MOV,a,i)
+
+TAC(TAC_INPUT,i,null,null)
+
+// BEGIN loop
+
+TAC(TAC_LABEL,__label0,null,null)
+
+TAC(TAC_SYMBOL,a,null,null)
+TAC(TAC_LIT_INT,9,null,null)
+TAC(TAC_L,__ScarryTeMpORaRy1,a,9)
+
+TAC(TAC_JFALSE,__label1,null,null)
+
+// v[a] = v[a] + 1 ------------> VER AQUI
+TAC(TAC_VETCALL,__ScarryTeMpORaRy4,null,null)
+TAC(TAC_MOV,__ScarryTeMpORaRy4,__ScarryTeMpORaRy3)
+TAC(TAC_VETCALL,__ScarryTeMpORaRy5,null,null)
+// ----------------------------> FIM VER
+
+TAC(TAC_OUTPUT,__ScarryTeMpORaRy5,null,null)
+
+// a = a + f(1) ---------------> VER AQUI
+TAC(TAC_SYMBOL,a,null,null)
+TAC(TAC_LIT_INT,1,null,null) // cade a TAC_ARG???
+TAC(TAC_FUNCALL,__ScarryTeMpORaRy6,f,null)
+TAC(TAC_ADD,__ScarryTeMpORaRy7,a,__ScarryTeMpORaRy6)
+TAC(TAC_MOV,a,__ScarryTeMpORaRy7)
+//-----------------------------> FIM VER
+
+TAC(TAC_JMP,__label0,null,null)
+
+TAC(TAC_LABEL,__label1,null,null)
+
+// END loop
+
+TAC(TAC_LIT_STRING,"resultado de f(g(k, j)):",null,null)
+
+TAC(TAC_SYMBOL,k,null,null) // TAC_ARG do primeiro argumento???
+TAC(TAC_ARG,j,null,null)
+TAC(TAC_FUNCALL,__ScarryTeMpORaRy8,g,null)
+// __ScarryTeMpORaRy8 deveria ser o TAC_ARG de f()
+TAC(TAC_FUNCALL,__ScarryTeMpORaRy9,f,null)
+
+TAC(TAC_OUTPUT,__ScarryTeMpORaRy9,null,null)
+
+TAC(TAC_LIT_INT,0,null,null)
+TAC(TAC_RETURN,0,null,null)
+
+TAC(TAC_ENDF,main,null,null)
+
