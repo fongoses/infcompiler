@@ -211,11 +211,11 @@ void print_tac_single(TAC*tac){
              break;
 
         case TAC_BEGINEXP:
-             fprintf(stderr,"TAC(TAC_BEGINEXP,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_BEGINEXP,null,null,null)\n");
              break;
 
         case TAC_ENDEXP:
-             fprintf(stderr,"TAC(TAC_ENDEXP,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_ENDEXP,%s,null,null)\n",tac->target?tac->target->text:0);
              break;
 
         case TAC_OUTPUT:

@@ -179,7 +179,7 @@ TAC * generateCode(ASTREE * node){
             break;
  
         case ASTREE_EXPRESSION:
-            result= makeExpression(treeSons[0],node->symbol);
+            result= makeExpression(treeSons[0],makeTemp());
             break;
 
         case ASTREE_OUTPUTSEQ:
