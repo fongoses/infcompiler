@@ -164,8 +164,9 @@ TAC * generateCode(ASTREE * node){
             result = tac_join(treeSons[0],tac_create(TAC_INPUT,node->symbol, 0, 0));
             break;
 
-        case ASTREE_OUTPUT:
-            result = tac_join(treeSons[0],tac_create(TAC_OUTPUT,treeSons[0]?treeSons[0]->target:0,0,0));
+        case ASTREE_OUTPUT:            
+            //result = tac_join(treeSons[0],tac_create(TAC_OUTPUT,treeSons[0],node->symbol,0,0);
+            result = makeOutput(treeSons[0],makeTemp());
             break;
 
         case ASTREE_RETURN:
@@ -189,7 +190,16 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_OUTPUTSEQ:
-            result=tac_join(treeSons[0],treeSons[1]);
+             if(treeSons[0]) {
+                if(treeSons[0]->type != TAC_OUTPUTSEQ){
+                    result=tac_join(tac_create(TAC_OUTPUTSEQ,treeSons[0]?treeSons[0]->target:0,0,0),tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
+                    break;
+                }       
+            }           
+            result = tac_join(treeSons[0],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
+
+            //result= makeOutputseq(treeSons[0],treeSons[1],node->symbol);
+            //result=tac_join(treeSons[0],treeSons[1]);
             break;
 
         case ASTREE_IF:
@@ -392,6 +402,22 @@ void * setTargetLitSeq(TAC*litseq,HASH_NODE * target){
     
 }
 
+void * setTargetOutputSeq(TAC*outputseq,HASH_NODE * target){
+    
+    TAC* first;
+    first = outputseq;
+    
+    if(!first) return;
+    
+    while(first->type == TAC_OUTPUTSEQ){
+        first->op1 = first->target;
+        first->target = target;
+        first=first->prev;
+        if(!first) break;
+    }
+    
+}
+
 TAC * makeVetordec(TAC* son1, TAC * son2, HASH_NODE * symbol){
     
     
@@ -411,4 +437,13 @@ TAC * makeFuncall(TAC * son0, HASH_NODE * symbol){
    return tac_join(son0,tac_create(TAC_FUNCALL,makeTemp(),symbol,0));
 }
 
+TAC * makeOutput(TAC* son0, HASH_NODE * symbol){
 
+    setTargetOutputSeq(son0,symbol);
+    if(son0)
+        if(son0->type != TAC_OUTPUTSEQ){
+            return tac_join(tac_create(TAC_OUTPUTSEQ,son0?son0->target:0,0,0),tac_create(TAC_OUTPUT,symbol,0,0));            
+        }
+
+   return tac_join(son0,tac_create(TAC_OUTPUT,symbol,0,0));
+}

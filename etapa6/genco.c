@@ -70,12 +70,18 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_ARGSEQ:
+            if(treeSons[0]) {
+                if(treeSons[0]->type != TAC_ARG){
+                    result=tac_join(tac_create(TAC_ARG,treeSons[0]?treeSons[0]->target:0,0,0),tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
+                    break;
+                }       
+            }           
             result = tac_join(treeSons[0],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
-            break;
+            break;            
+            
 
         case ASTREE_FUNCALL:
-            //concatena argumentos com parametros. Obs, o target eh o retorno da funcao, para isso eh usado uma variavel temporaria
-            result = tac_join(treeSons[0],tac_create(TAC_FUNCALL,makeTemp(),node->symbol,0));
+                       result = makeFuncall(treeSons[0],node->symbol);
             break;
 
         case ASTREE_VETCALL:
@@ -169,11 +175,11 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_PTR_ASS:
-           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, treeSons[0]?treeSons[0]->target:0));
+           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, 0));
            break;
 
         case ASTREE_DEREF_ASS:
-           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, treeSons[0]?treeSons[0]->target:0)); 
+           result = tac_join(treeSons[0], tac_create(TAC_MOV,node->symbol,treeSons[0]?treeSons[0]->target:0,0)); 
            break;
 
         case ASTREE_VET_ASS:           
@@ -181,7 +187,7 @@ TAC * generateCode(ASTREE * node){
             break;
  
         case ASTREE_EXPRESSION:
-            result= makeExpression(treeSons[0],node->symbol);
+            result= makeExpression(treeSons[0],makeTemp());
             break;
 
         case ASTREE_OUTPUTSEQ:
@@ -369,7 +375,7 @@ TAC * makeExpression (TAC* son0,HASH_NODE* symbol){ //parametros eh o filho 1, b
 	begin = tac_create(TAC_BEGINEXP,symbol,0,0);
 	end = tac_create(TAC_ENDEXP,symbol,0,0);
     
-   	return tac_join(tac_join(son0,begin),end);
+   	return tac_join(tac_join(begin,son0),end);
 }
 
 void * setTargetLitSeq(TAC*litseq,HASH_NODE * target){
@@ -392,8 +398,19 @@ TAC * makeVetordec(TAC* son1, TAC * son2, HASH_NODE * symbol){
     
     
     setTargetLitSeq(son2,symbol); //seta target de todos elementos do vetor como o simbolo atual 
-    return tac_join(son1,tac_join(son2,tac_create(TAC_VETORDEC, symbol, son1?son1->target:0, son2?son2->target:0)));
+    return tac_join(son2,tac_join(son1,tac_create(TAC_VETORDEC, symbol, son1?son1->target:0, son2?son2->target:0)));
 
+}
+
+TAC * makeFuncall(TAC * son0, HASH_NODE * symbol){
+
+//concatena argumentos com parametros. Obs, o target eh o retorno da funcao, para isso eh usado uma variavel temporaria
+    if(son0)
+        if(son0->type != TAC_ARG){
+            return tac_join(tac_create(TAC_ARG,son0?son0->target:0,0,0),tac_create(TAC_FUNCALL,makeTemp(),symbol,0));            
+        }
+   
+   return tac_join(son0,tac_create(TAC_FUNCALL,makeTemp(),symbol,0));
 }
 
 //Etapa 6 

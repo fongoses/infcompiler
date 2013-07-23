@@ -222,6 +222,11 @@ void print_tac_single(TAC*tac){
              fprintf(stderr,"TAC(TAC_OUTPUT,%s,null,null)\n",tac->target->text);
              break;
 
+        case TAC_OUTPUTSEQ:
+             fprintf(stderr,"TAC(TAC_OUTPUTSEQ,%s,%s,null)\n",tac->target?tac->target->text:0,tac->op1?tac->op1->text:0);
+             break;
+
+
         case TAC_RETURN:
              fprintf(stderr,"TAC(TAC_RETURN,%s,null,null)\n",tac->target->text);
              break;
