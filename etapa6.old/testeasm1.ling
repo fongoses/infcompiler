@@ -1,0 +1,20 @@
+// UFRGS - Compiladores - Marcelo Johann - 2013/1
+
+word a:0;
+word v[10]; 
+bool x:TRUE;
+word i:'a';
+
+word main()
+  {
+  input a;
+  loop (a<10)
+    {
+    output a;
+    a = a + 1;
+    };
+  if (a<10)
+  then output a
+  else output 1000;
+  return 0;
+  }
