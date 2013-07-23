@@ -390,7 +390,7 @@ TAC * makeVetordec(TAC* son1, TAC * son2, HASH_NODE * symbol){
     
     
     setTargetLitSeq(son2,symbol); //seta target de todos elementos do vetor como o simbolo atual 
-    return tac_join(son1,tac_join(son2,tac_create(TAC_VETORDEC, symbol, son1?son1->target:0, son2?son2->target:0)));
+    return tac_join(son2,tac_join(son1,tac_create(TAC_VETORDEC, symbol, son1?son1->target:0, son2?son2->target:0)));
 
 }
 
