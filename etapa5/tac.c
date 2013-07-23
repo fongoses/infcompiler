@@ -150,7 +150,7 @@ void print_tac_single(TAC*tac){
             break;       
          
         case TAC_MOV:
-            fprintf(stderr,"TAC(TAC_MOV,%s,%s)\n",tac->target->text,tac->op1->text,0);
+            fprintf(stderr,"TAC(TAC_MOV,%s,%s,null)\n",tac->target->text,tac->op1->text);
             break;
         
         case TAC_BEGINF:
@@ -191,7 +191,7 @@ void print_tac_single(TAC*tac){
              break;
  
         case TAC_VETCALL:
-             fprintf(stderr,"TAC(TAC_VETCALL,%s,null,null)\n",tac->target->text);
+             fprintf(stderr,"TAC(TAC_VETCALL,%s,%s,%s)\n",tac->target->text,tac->op1?tac->op1->text:0,tac->op2?tac->op2->text:0);
              break;
        
         case TAC_FUNCALL:
@@ -211,7 +211,7 @@ void print_tac_single(TAC*tac){
              break;
 
         case TAC_BEGINEXP:
-             fprintf(stderr,"TAC(TAC_BEGINEXP,null,null,null)\n");
+             fprintf(stderr,"TAC(TAC_BEGINEXP,%s,null,null)\n",tac->target?tac->target->text:0);
              break;
 
         case TAC_ENDEXP:

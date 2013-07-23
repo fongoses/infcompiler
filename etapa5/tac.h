@@ -100,4 +100,5 @@ TAC* makeIfThenElse(TAC* son0, TAC* son1, TAC* son2);
 TAC* makeLoop(TAC* son0, TAC* son1);
 TAC* makeVetordec(TAC* son1, TAC* son2,HASH_NODE * symbol);
 void * setTargetLitSeq(TAC*first,HASH_NODE * target);
+TAC * makeFuncall(TAC * son0, HASH_NODE * symbol);
 #endif
