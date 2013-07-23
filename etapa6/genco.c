@@ -455,10 +455,21 @@ void generateASM(TAC * first){
 
 				
 			break;
-
+            
             case TAC_VARDEC:
-                 fprintf(fout,"",tac->target->text);
-                 break;
+                fprintf(fout,
+                "   .globl  %s\n"        
+                "   .data\n"
+                "   .align 4\n"
+                "   .type   %s, @object\n"
+                "   .size   %s, %d\n"
+                "%s:\n"
+                "   .long   %s\n\n", tac->target->text,
+                tac->target->text,
+                tac->target->text,mySizeOf(tac->target),
+                tac->target->text,
+                tac->target->text);
+                break;
       
             case TAC_VETORDEC:
                  fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
@@ -623,3 +634,29 @@ void generateASM(TAC * first){
 	}
 }
 
+
+int mySizeOf(HASH_NODE* symbol){
+
+    if(!symbol) {
+        return DATATYPE_INVALID;
+    }
+
+        //fprintf(stderr,"Tipo da declaracao: %d\n",symbol->decType);
+    switch(symbol->decType){ //no nosso trabalho, decType esta trocado por dataType, infelizemente.
+
+        case DATATYPE_WORD: 
+            return 4;
+            break;
+
+        case DATATYPE_BYTE: 
+            return 1;
+            break;
+
+        case DATATYPE_BOOL: 
+            return 1;
+            break;
+
+        default: return DATATYPE_INVALID;
+            
+    }
+}

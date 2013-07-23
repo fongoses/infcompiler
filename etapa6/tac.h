@@ -101,4 +101,5 @@ TAC* makeLoop(TAC* son0, TAC* son1);
 TAC* makeVetordec(TAC* son1, TAC* son2,HASH_NODE * symbol);
 void * setTargetLitSeq(TAC*first,HASH_NODE * target);
 void generateASM(TAC * first);
+int mySizeOf(HASH_NODE*symbol);
 #endif
