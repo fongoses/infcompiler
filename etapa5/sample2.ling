@@ -5,6 +5,9 @@ word v[10]:0 0 0 0 0 0 0 0 0 0;
 word mat[1000];
 word $pt:0;
 
+word incn (word x, word n)
+  { return x+n; }
+ 
 word main()
   word i:'a';
   byte a:5;
@@ -22,9 +25,6 @@ word main()
   output "A resposta eh",i,a,2f,"\n";
   }
 
-word incn (word x, word n)
-  { return x+n; }
-  
 word outra () {}
 
 word maisuma ()

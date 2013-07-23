@@ -33,7 +33,7 @@ int main(int argc , char ** argv){
 
 	yyin=fopen(argv[1],"r");
  
-	if(yyin <= 0) {
+	if(!yyin) {
 		fprintf(stderr,"Error opening the file\n");
 		exit(3);
 	}
