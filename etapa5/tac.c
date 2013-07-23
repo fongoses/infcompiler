@@ -152,7 +152,12 @@ void print_tac_single(TAC*tac){
         case TAC_MOV:
             fprintf(stderr,"TAC(TAC_MOV,%s,%s,null)\n",tac->target->text,tac->op1->text);
             break;
-        
+       
+        case TAC_VETMOV:
+            fprintf(stderr,"TAC(TAC_VETMOV,%s,%s,%s)\n",tac->target->text,tac->op1?tac->op1->text:0,tac->op2?tac->op2->text:0);
+            break;      
+
+ 
         case TAC_BEGINF:
              fprintf(stderr,"TAC(TAC_BEGINF,%s,null,null)\n",tac->target->text);
              break;

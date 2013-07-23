@@ -78,6 +78,7 @@ typedef struct tac {
 #define TAC_TBOOL 50
 #define TAC_PTRDEC 51
 #define TAC_OUTPUTSEQ 52
+#define TAC_VETMOV 53
 
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);

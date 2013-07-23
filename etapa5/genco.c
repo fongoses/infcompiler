@@ -369,9 +369,9 @@ TAC * makeVetass(TAC * son0, TAC* son1, HASH_NODE * symbol){
         
     //ladoesquerdo eh um vetcall. Aqui a gente cria esse vetcall, pois o analisador sintatico, por default, nao cria um vetcall como filho de um um vet_ass, mas sim apenas vetcall no lado direito de expressoes.
 
-    ladoesquerdo = makeVetcall(son0,symbol);
+    ladoesquerdo = son0;//makeVetcall(son0,symbol);
     ladodireito = son1;
-    return tac_join(ladoesquerdo, tac_create(TAC_MOV,ladoesquerdo?ladoesquerdo->target:0, ladodireito?ladodireito->target:0,0)); 
+    return tac_join(tac_join(ladoesquerdo,ladodireito),tac_create(TAC_VETMOV,symbol,ladoesquerdo?ladoesquerdo->target:0, ladodireito?ladodireito->target:0)); 
 
 }
 
