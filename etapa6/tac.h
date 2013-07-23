@@ -77,6 +77,8 @@ typedef struct tac {
 #define TAC_TBYTE 49
 #define TAC_TBOOL 50
 #define TAC_PTRDEC 51
+#define TAC_OUTPUTSEQ 52
+#define TAC_VETMOV 53
 
 
 TAC *tac_create(int type, HASH_NODE * target, HASH_NODE *op1, HASH_NODE *op2);
@@ -101,6 +103,7 @@ TAC* makeLoop(TAC* son0, TAC* son1);
 TAC* makeVetordec(TAC* son1, TAC* son2,HASH_NODE * symbol);
 void * setTargetLitSeq(TAC*first,HASH_NODE * target);
 TAC * makeFuncall(TAC * son0, HASH_NODE * symbol);
+TAC * makeOutput(TAC * son0, HASH_NODE * symbol);
 void generateASM(TAC * first);
 int mySizeOf(HASH_NODE*symbol);
 #endif

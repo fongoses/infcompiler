@@ -56,25 +56,32 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_LIT_SEQ:
-            result = tac_join(treeSons[0], tac_create(TAC_LIT_SEQ, treeSons[1]?treeSons[1]->target:0, 0, 0));//especifico de vetor (lit_seq)
+            result = tac_join(treeSons[0], tac_create(TAC_LIT_SEQ,treeSons[1]?treeSons[1]->target:0,0,0));//especifico de vetor (lit_seq)
             break;
 
         case ASTREE_VARDEC:
             //fprintf(stderr,"VARDEC\n");
             result = tac_join(treeSons[1],tac_create(TAC_VARDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
             break;
+        
         case ASTREE_PTRDEC:
             //fprintf(stderr,"VARDEC\n");
             result = tac_join(treeSons[1],tac_create(TAC_PTRDEC, node->symbol, treeSons[1]?treeSons[1]->target:0, 0));
             break;
 
         case ASTREE_ARGSEQ:
+            if(treeSons[0]) {
+                if(treeSons[0]->type != TAC_ARG){
+                    result=tac_join(tac_create(TAC_ARG,treeSons[0]?treeSons[0]->target:0,0,0),tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
+                    break;
+                }       
+            }           
             result = tac_join(treeSons[0],tac_create(TAC_ARG,treeSons[1]?treeSons[1]->target:0,0,0));
-            break;
+            break;            
+            
 
         case ASTREE_FUNCALL:
-            //concatena argumentos com parametros. Obs, o target eh o retorno da funcao, para isso eh usado uma variavel temporaria
-            result = tac_join(treeSons[0],tac_create(TAC_FUNCALL,makeTemp(),node->symbol,0));
+                       result = makeFuncall(treeSons[0],node->symbol);
             break;
 
         case ASTREE_VETCALL:
@@ -168,11 +175,11 @@ TAC * generateCode(ASTREE * node){
             break;
 
         case ASTREE_PTR_ASS:
-           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, treeSons[0]?treeSons[0]->target:0));
+           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, 0));
            break;
 
         case ASTREE_DEREF_ASS:
-           result = tac_join(treeSons[0], tac_create(TAC_MOV,makeTemp(),node->symbol, treeSons[0]?treeSons[0]->target:0)); 
+           result = tac_join(treeSons[0], tac_create(TAC_MOV,node->symbol,treeSons[0]?treeSons[0]->target:0,0)); 
            break;
 
         case ASTREE_VET_ASS:           
@@ -180,7 +187,7 @@ TAC * generateCode(ASTREE * node){
             break;
  
         case ASTREE_EXPRESSION:
-            result= makeExpression(treeSons[0],node->symbol);
+            result= makeExpression(treeSons[0],makeTemp());
             break;
 
         case ASTREE_OUTPUTSEQ:
@@ -330,7 +337,7 @@ TAC *makeLoop(TAC* condicao, TAC* comandos){
     return tac_join(tac_join(tac_join(tac_join(tac_join(tac_lbl_begin, condicao), tac_loop), comandos), tac_jmp_begin), tac_lbl_end);
 }
 
-TAC * makeFun (HASH_NODE* symbol,TAC * son1,TAC * son2, TAC * son3 ){ //parametros eh o filho 1, bloco da funcao eh o filho 3
+TAC * makeFun (HASH_NODE* symbol,TAC * son1, TAC* son2, TAC * son3 ){ //parametros eh o filho 1, bloco da funcao eh o filho 3
 
 	TAC * begin;
 	TAC * end;
@@ -368,14 +375,44 @@ TAC * makeExpression (TAC* son0,HASH_NODE* symbol){ //parametros eh o filho 1, b
 	begin = tac_create(TAC_BEGINEXP,symbol,0,0);
 	end = tac_create(TAC_ENDEXP,symbol,0,0);
     
-   	return tac_join(tac_join(son0,begin),end);
+   	return tac_join(tac_join(begin,son0),end);
 }
 
-TAC * makeVetordec(TAC * son1,TAC * son2,HASH_NODE * symbol){
+void * setTargetLitSeq(TAC*litseq,HASH_NODE * target){
     
-    return tac_join(son1,tac_create(TAC_VETORDEC, symbol, son1?son1->target:0, son2?son2->target:0));
+    TAC* first;
+    first = litseq;
+    
+    if(!first) return;
+    
+    while(first->type == TAC_LIT_SEQ){
+        first->op1 = first->target;
+        first->target = target;
+        first=first->prev;
+        if(!first) break;
+    }
+    
+}
+
+TAC * makeVetordec(TAC* son1, TAC * son2, HASH_NODE * symbol){
+    
+    
+    setTargetLitSeq(son2,symbol); //seta target de todos elementos do vetor como o simbolo atual 
+    return tac_join(son2,tac_join(son1,tac_create(TAC_VETORDEC, symbol, son1?son1->target:0, son2?son2->target:0)));
 
 }
+
+TAC * makeFuncall(TAC * son0, HASH_NODE * symbol){
+
+//concatena argumentos com parametros. Obs, o target eh o retorno da funcao, para isso eh usado uma variavel temporaria
+    if(son0)
+        if(son0->type != TAC_ARG){
+            return tac_join(tac_create(TAC_ARG,son0?son0->target:0,0,0),tac_create(TAC_FUNCALL,makeTemp(),symbol,0));            
+        }
+   
+   return tac_join(son0,tac_create(TAC_FUNCALL,makeTemp(),symbol,0));
+}
+
 //Etapa 6 
 //ASSEMBLER.
 
@@ -435,10 +472,21 @@ void generateASM(TAC * first){
 
 				
 			break;
-
+            
             case TAC_VARDEC:
-                 fprintf(fout,"",tac->target->text);
-                 break;
+                fprintf(fout,
+                "   .globl  %s\n"        
+                "   .data\n"
+                "   .align 4\n"
+                "   .type   %s, @object\n"
+                "   .size   %s, %d\n"
+                "%s:\n"
+                "   .long   %s\n\n", tac->target->text,
+                tac->target->text,
+                tac->target->text,mySizeOf(tac->target),
+                tac->target->text,
+                tac->target->text);
+                break;
       
             case TAC_VETORDEC:
                  fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
@@ -601,4 +649,31 @@ void generateASM(TAC * first){
 
 		}
 	}
+}
+
+
+int mySizeOf(HASH_NODE* symbol){
+
+    if(!symbol) {
+        return DATATYPE_INVALID;
+    }
+
+        //fprintf(stderr,"Tipo da declaracao: %d\n",symbol->decType);
+    switch(symbol->decType){ //no nosso trabalho, decType esta trocado por dataType, infelizemente.
+
+        case DATATYPE_WORD: 
+            return 4;
+            break;
+
+        case DATATYPE_BYTE: 
+            return 1;
+            break;
+
+        case DATATYPE_BOOL: 
+            return 1;
+            break;
+
+        default: return DATATYPE_INVALID;
+            
+    }
 }

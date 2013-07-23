@@ -166,8 +166,9 @@ TAC * generateCode(ASTREE * node){
             result = tac_join(treeSons[0],tac_create(TAC_INPUT,node->symbol, 0, 0));
             break;
 
-        case ASTREE_OUTPUT:
-            result = tac_join(treeSons[0],tac_create(TAC_OUTPUT,treeSons[0]?treeSons[0]->target:0,0,0));
+        case ASTREE_OUTPUT:            
+            //result = tac_join(treeSons[0],tac_create(TAC_OUTPUT,treeSons[0],node->symbol,0,0);
+            result = makeOutput(treeSons[0],makeTemp());
             break;
 
         case ASTREE_RETURN:
@@ -190,8 +191,17 @@ TAC * generateCode(ASTREE * node){
             result= makeExpression(treeSons[0],makeTemp());
             break;
 
-        case ASTREE_OUTPUTSEQ:
-            result=tac_join(treeSons[0],treeSons[1]);
+        case ASTREE_OUTPUTSEQ:                       
+           /* 
+            if(treeSons[0]) result = tac_join(tac_join(treeSons[0],tac_create(TAC_OUTPUTSEQ,treeSons[0]?treeSons[0]->target:0,0,0)),tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
+            else result = tac_join(treeSons[1],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
+*/
+            if(treeSons[0])
+                if(treeSons[0]->type != TAC_OUTPUTSEQ){
+                        result = tac_join(tac_join(treeSons[0],tac_create(TAC_OUTPUTSEQ,treeSons[0]->target,0,0)),tac_join(treeSons[1],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0)));
+                    break;
+                    }
+            result = tac_join(treeSons[0],tac_join(treeSons[1],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0)));
             break;
 
         case ASTREE_IF:
@@ -361,9 +371,9 @@ TAC * makeVetass(TAC * son0, TAC* son1, HASH_NODE * symbol){
         
     //ladoesquerdo eh um vetcall. Aqui a gente cria esse vetcall, pois o analisador sintatico, por default, nao cria um vetcall como filho de um um vet_ass, mas sim apenas vetcall no lado direito de expressoes.
 
-    ladoesquerdo = makeVetcall(son0,symbol);
+    ladoesquerdo = son0;//makeVetcall(son0,symbol);
     ladodireito = son1;
-    return tac_join(ladoesquerdo, tac_create(TAC_MOV,ladoesquerdo?ladoesquerdo->target:0, ladodireito?ladodireito->target:0,0)); 
+    return tac_join(tac_join(ladoesquerdo,ladodireito),tac_create(TAC_VETMOV,symbol,ladoesquerdo?ladoesquerdo->target:0, ladodireito?ladodireito->target:0)); 
 
 }
 
@@ -394,6 +404,22 @@ void * setTargetLitSeq(TAC*litseq,HASH_NODE * target){
     
 }
 
+void * setTargetOutputSeq(TAC*outputseq,HASH_NODE * target){
+    
+    TAC* first;
+    first = outputseq;
+    
+    if(!first) return;
+    
+    while(first->type == TAC_OUTPUTSEQ){
+        first->op1 = first->target;
+        first->target = target;
+        first=first->prev;
+        if(!first) break;
+    }
+    
+}
+
 TAC * makeVetordec(TAC* son1, TAC * son2, HASH_NODE * symbol){
     
     
@@ -412,6 +438,18 @@ TAC * makeFuncall(TAC * son0, HASH_NODE * symbol){
    
    return tac_join(son0,tac_create(TAC_FUNCALL,makeTemp(),symbol,0));
 }
+
+TAC * makeOutput(TAC* son0, HASH_NODE * symbol){
+   TAC * newSon;  
+ 
+   if(son0)
+        if(son0->type != TAC_OUTPUTSEQ){
+            newSon = tac_join(son0,tac_create(TAC_OUTPUTSEQ,son0->target,0,0));
+            return tac_join(newSon,tac_create(TAC_OUTPUT,son0->target,0,0));
+            }
+   return tac_join(son0,tac_create(TAC_OUTPUT,son0->target,0,0));
+}
+
 
 //Etapa 6 
 //ASSEMBLER.
