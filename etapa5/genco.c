@@ -189,16 +189,17 @@ TAC * generateCode(ASTREE * node){
             result= makeExpression(treeSons[0],makeTemp());
             break;
 
-        case ASTREE_OUTPUTSEQ:
-             if(treeSons[0]) {
+        case ASTREE_OUTPUTSEQ:                       
+           /* 
+            if(treeSons[0]) result = tac_join(tac_join(treeSons[0],tac_create(TAC_OUTPUTSEQ,treeSons[0]?treeSons[0]->target:0,0,0)),tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
+            else result = tac_join(treeSons[1],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
+*/
+            if(treeSons[0])
                 if(treeSons[0]->type != TAC_OUTPUTSEQ){
-                    treeSons[0]->type = TAC_OUTPUTSEQ;
-                }       
-            }           
-            result = tac_join(treeSons[0],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
-
-            //result= makeOutputseq(treeSons[0],treeSons[1],node->symbol);
-            //result=tac_join(treeSons[0],treeSons[1]);
+                        result = tac_join(tac_join(treeSons[0],tac_create(TAC_OUTPUTSEQ,treeSons[0]->target,0,0)),tac_join(treeSons[1],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0)));
+                    break;
+                    }
+            result = tac_join(treeSons[0],tac_join(treeSons[1],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0)));
             break;
 
         case ASTREE_IF:
@@ -437,13 +438,12 @@ TAC * makeFuncall(TAC * son0, HASH_NODE * symbol){
 }
 
 TAC * makeOutput(TAC* son0, HASH_NODE * symbol){
-
-    TAC * newOutputseq;
-
-    if(son0)
+   TAC * newSon;  
+ 
+   if(son0)
         if(son0->type != TAC_OUTPUTSEQ){
-            son0->type = TAC_OUTPUTSEQ;
-        }
-   setTargetOutputSeq(son0,symbol);
-   return tac_join(son0,tac_create(TAC_OUTPUT,symbol,0,0));
+            newSon = tac_join(son0,tac_create(TAC_OUTPUTSEQ,son0->target,0,0));
+            return tac_join(newSon,tac_create(TAC_OUTPUT,son0->target,0,0));
+            }
+   return tac_join(son0,tac_create(TAC_OUTPUT,son0->target,0,0));
 }
