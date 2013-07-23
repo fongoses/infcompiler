@@ -22,7 +22,7 @@ lex: scanner.l
 	gcc -o scanner.obj -c scanner.yy.c
 
 main: yacc lex hashtable astree tac genco main.c
-	gcc -o etapa5 main.c yac.obj scanner.obj hashtable.obj astree.obj tac.obj genco.obj -Wall
+	gcc -o etapa5 main.c yac.obj scanner.obj hashtable.obj astree.obj tac.obj genco.obj -Wall -Wextra
 
 clean:
 	rm scanner.yy.c
