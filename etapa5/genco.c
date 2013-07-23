@@ -192,8 +192,7 @@ TAC * generateCode(ASTREE * node){
         case ASTREE_OUTPUTSEQ:
              if(treeSons[0]) {
                 if(treeSons[0]->type != TAC_OUTPUTSEQ){
-                    result=tac_join(tac_create(TAC_OUTPUTSEQ,treeSons[0]?treeSons[0]->target:0,0,0),tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
-                    break;
+                    treeSons[0]->type = TAC_OUTPUTSEQ;
                 }       
             }           
             result = tac_join(treeSons[0],tac_create(TAC_OUTPUTSEQ,treeSons[1]?treeSons[1]->target:0,0,0));
@@ -439,11 +438,12 @@ TAC * makeFuncall(TAC * son0, HASH_NODE * symbol){
 
 TAC * makeOutput(TAC* son0, HASH_NODE * symbol){
 
-    setTargetOutputSeq(son0,symbol);
+    TAC * newOutputseq;
+
     if(son0)
         if(son0->type != TAC_OUTPUTSEQ){
-            return tac_join(tac_create(TAC_OUTPUTSEQ,son0?son0->target:0,0,0),tac_create(TAC_OUTPUT,symbol,0,0));            
+            son0->type = TAC_OUTPUTSEQ;
         }
-
+   setTargetOutputSeq(son0,symbol);
    return tac_join(son0,tac_create(TAC_OUTPUT,symbol,0,0));
 }
