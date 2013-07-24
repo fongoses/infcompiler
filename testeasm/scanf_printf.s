@@ -47,7 +47,7 @@ main:
     call    scanf
 
 ### printf(LC1_enxerto, a);
-    movl    a, %eax                     # Variável a ser impressa 'a' (que também é um label)
+        movl    a, %eax                     # Variável a ser impressa 'a' (que também é um label)
     movl    %eax, 4(%esp)               # Coloca %eax na pilha %esp, eax tem 32bits ou 4 bytes 
     movl    $.LC1_enxerto, (%esp)       # Pega o endereço da string (essa string tem %d) e coloca na pilha %esp
     call    printf                      # Chama printf
