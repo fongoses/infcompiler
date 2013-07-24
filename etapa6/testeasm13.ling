@@ -1,0 +1,11 @@
+word a:0;
+
+word main()
+    {
+    loop(a < 10)
+        {
+        output "Valor de a: ", a;
+        a = a + 1;
+        }
+    output "Fim, a: ", a;
+    }
