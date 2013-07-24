@@ -1,0 +1,8 @@
+word a: 10;
+word b: 9;
+
+word ab(){
+
+    a = a+b;    
+
+}

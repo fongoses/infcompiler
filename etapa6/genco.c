@@ -515,7 +515,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     "\tmovb\t%s, %%eax\n"
                     "\tmovb\t%%eax, %s",tac->op1->text,tac->target->text);
 
-                if(tac->target->decType == DATATYPE_BOOL)
+                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,            
                     "\tmovb\t%s, %%eax\n"
                     "\tmovb\t%%eax, %s",tac->op1->text,tac->target->text);
@@ -554,11 +554,34 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
        
            
 
-			case TAC_ADD: 	
-				/*fprintf(fout,"  SOMA\n"/* movl    a, %%eax\n"
-        				"addl    $2, %%eax"
-        				"movl    %%eax, a");*/
-			
+			case TAC_ADD: 					            
+                if(tac->target->decType == DATATYPE_WORD)
+                    fprintf(fout, 
+                    "\tmovl\t%s, %%edx\n"
+                    "\tmovl\t%s, %%eax\n"
+                    "\taddl\t%%edx, %%eax",
+                    "\tmovl\t%%eax,%s",tac->op1->text,
+                    tac->op2->text,
+                    tac->target->text);
+
+	            if(tac->target->decType == DATATYPE_BYTE)
+                    fprintf(fout, 
+                    "\tmovb\t%s, %%edx\n"
+                    "\tmovb\t%s, %%eax\n"
+                    "\taddb\t%%edx, %%eax",
+                    "\tmovb\t%%eax,%s",tac->op1->text,
+                    tac->op2->text,
+                    tac->target->text);
+
+                if(tac->target->decType == DATATYPE_BOOL)
+                    fprintf(fout, 
+                    "\tmovl\t%s, %%edx\n"
+                    "\tmovl\t%s, %%eax\n"
+                    "\taddl\t%%edx, %%eax",
+                    "\tmovl\t%%eax,%s",tac->op1->text,
+                    tac->op2->text,
+                    tac->target->text);	
+
 			break;
 
             case TAC_INPUT:                
