@@ -4,6 +4,6 @@ word b:2;
 
 word main(){
 
-    output "Hello!";
+    output "Hello World\n";
 
 }

@@ -494,7 +494,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
 
             case TAC_ENDF:
                 fprintf(fout,
-                "\tpopl\t%%ebp\n"
+                //"\tpopl\t%%ebp\n" //essa pop causa problema na main
                 "\t.cfi_restore 5\n"
                 "\t.cfi_def_cfa 4, 4\n"
                 "\tret\n"
@@ -505,7 +505,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
             break;                    
 
 			case TAC_MOV:
-                if(tac->target->decType == DATATYPE_WORD)
+                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,            
                     "\tmovl\t%s, %%eax\n"
                     "\tmovl\t%%eax, %s",tac->op1->text,tac->target->text);
@@ -526,17 +526,17 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
             case TAC_VETMOV:
                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,
-                    "\tmovl\t$_%s, %%eax\n"
+                    "\tmovl\t$%s, %%eax\n"
                     "\tmovl\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
                  
                 if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,
-                    "\tmovb\t$_%s, %%eax\n"
+                    "\tmovb\t$%s, %%eax\n"
                     "\tmovb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
                 
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,
-                    "\tmovb\t$_%s, %%eax"
+                    "\tmovb\t$%s, %%eax"
                     "\tmovb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
 
             break;
@@ -565,7 +565,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     fprintf(fout,
                     "\t$-16, %%esp\n"
                     "\tsubl\t$16, %%esp\n"
-                    "\tmovl\t$_%s, 4(%%esp)\n"
+                    "\tmovl\t$%s, 4(%%esp)\n"
                     "\tmovl\t$.PoRcEnToD, (%%esp)\n"
                     "\tcall\tscanf\n",tac->target->text);
                    
@@ -573,7 +573,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     fprintf(fout,
                     "\t$-16, %%esp\n"
                     "\tsubl\t$16, %%esp\n"
-                    "\tmovl\t$_%s, 1(%%esp)\n"
+                    "\tmovl\t$:%s, 1(%%esp)\n"
                     "\tmovl\t$.PoRcEnToD, (%%esp)\n"
                     "\tcall\tscanf\n",tac->target->text); 
                 
@@ -581,7 +581,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     fprintf(fout,
                     "\t$-16, %%esp\n"
                     "\tsubl\t$16, %%esp\n"
-                    "\tmovl\t$_%s, 1(%%esp)\n"
+                    "\tmovl\t$%s, 1(%%esp)\n"
                     "\tmovl\t$.PoRcEnToD, (%%esp)\n"
                     "\tcall\tscanf\n",tac->target->text); 
 
@@ -591,7 +591,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     fprintf(fout,
                     "\t$-16, %%esp\n"
                     "\tsubl\t$16, %%esp\n"
-                    "\tmovl\t$_%s, 4(%%esp)\n"
+                    "\tmovl\t$%s, 4(%%esp)\n"
                     "\tmovl\t$.PoRcEnToS, (%%esp)\n"
                     "\tcall\tscanf\n",tempString);
 
@@ -604,7 +604,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
 			case TAC_OUTPUT:
                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,
-                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t%s, %%eax\n"
                     "\tmovl\t%%eax, 4(%%esp)\n"
                     "\tmovl\t$.PoRcEnToD, (%%esp)\n"
                     "\tcall\tprintf\n"
@@ -614,7 +614,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
 
                 if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,
-                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t%s, %%eax\n"
                     "\tmovl\t%%eax, 4(%%esp)\n"
                     "\tmovl\t$.PoRcEnToD, (%%esp)\n"
                     "\tcall\tprintf\n"
@@ -622,7 +622,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
  
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,
-                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t%s, %%eax\n"
                     "\tmovl\t%%eax, 4(%%esp)\n"
                     "\tmovl\t$.PoRcEnToD, (%%esp)\n"
                     "\tcall\tprintf\n"
@@ -632,8 +632,8 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     clearTempString();
                     getLabelFromString(tempString,tac->target->text);
                     fprintf(fout,
-                    "\tmovl\t$_%s, %%eax\n"
-                    "\tmovl\t$.PoRcEnToS, (%%esp)\n"
+                    "\tmovl\t$%s, (%%esp)\n"
+                    //"\tmovl\t$.PoRcEnToS, (%%esp)\n"
                     "\tcall\tprintf\n"
                     "\tleave\n",tempString); 
 							
@@ -813,7 +813,7 @@ void generateDeclaratives(FILE * fout){
                 //case SYMBOL_SCALAR:
                 case SYMBOL_LIT_INTEGER:
                     fprintf(fout,
-                    "_%s:\n\t.value %s\n",
+                    "%s:\n\t.value %s\n",
                     node->text,
                     node->text);
                     break;
@@ -822,21 +822,21 @@ void generateDeclaratives(FILE * fout){
                     clearTempString();
                     getLabelFromString(tempString,node->text);
                     fprintf(fout,
-                    "_%s:\n\t.string%s\n",
+                    "%s:\n\t.string %s\n",
                     tempString,
                     node->text);          
                     break;
                 
                 case SYMBOL_LIT_CHAR:
                     fprintf(fout,
-                    "_%s:\n\t.byte %s\n",
+                    "%s:\n\t.byte %s\n",
                     node->text,
                     node->text);
                     break;
 
                 case DATATYPE_TEMP: //Usei o datatype mesmo para indicar as scarryTemporary
                     fprintf(fout,
-                    "_%s:\n\t.value 0\n",
+                    "%s:\n\t.value 0\n",
                     node->text);
                     break;
  
@@ -955,6 +955,7 @@ void getLabelFromString(char * dst,char * src){
     for(i=1;i<size-1;i++){  
         if(src[i] == '\0') break;
         if(src[i] == ' ') dst[i]= '_';
+        else if(src[i] == '\\') dst[i]= '_';
         else dst[i] = src[i];       
     }
 

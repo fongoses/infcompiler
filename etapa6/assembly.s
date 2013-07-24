@@ -3,14 +3,14 @@
 	.string "%d\12\0"
 .PoRcEnToS:
 	.string "%s\12\0"
-___ScarryTeMpORaRy0:
+__ScarryTeMpORaRy0:
 	.value 0
-_2:
+2:
 	.value 2
-_3:
+3:
 	.value 3
-__Hello_:
-	.string"Hello!"
+_Hello_World__:
+	.string "Hello World\n"
 
 	.globl  a
 	.data
@@ -38,11 +38,9 @@ main:
 	.cfi_offset 5, -8
 	movl	%esp, %ebp
  	.cfi_def_cfa_register 5
-	movl	$__Hello_, %eax
-	movl	$.PoRcEnToS, (%esp)
+	movl	$_Hello_World__, (%esp)
 	call	printf
 	leave
-	popl	%ebp
 	.cfi_restore 5
 	.cfi_def_cfa 4, 4
 	ret
