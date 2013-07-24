@@ -1,0 +1,9 @@
+word a:3;
+word b:2;
+
+
+word main(){
+
+    output "Hello!";
+
+}

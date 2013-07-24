@@ -45,6 +45,7 @@
 %token SYMBOL_LIT_CHAR 5
 %token SYMBOL_LIT_STRING 6
 %token SYMBOL_IDENTIFIER 7
+%token SYMBOL_TEMP 8
 
  //tipos dos valores a serem associados , pelo parser, a essas expressoes
 %type <tree> literal  // 07/05 : identificador e number sao as mesmas coisas. Associados a eles temos o ponteiro para a tab de simbolos

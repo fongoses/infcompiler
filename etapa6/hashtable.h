@@ -15,7 +15,7 @@ typedef struct hash_node {
 
 // Tamanho maximo da tabela hash
 #define HASH_SIZE 997 
-
+#define STRING_MAX_SIZE 100 //tamanho maximo para uma string nessa linguagem. Esse tamanho eh utilizado na hora da criacao dos labels para as strings.
 /* etapa4, valores a serem acrescentados na tabela de simbolos,
     para identificacao do tipo de uma variavel                                 
 */
@@ -32,8 +32,8 @@ typedef struct hash_node {
 #define DATATYPE_STRING 10
 #define DATATYPE_ASSIGN 11
 #define DATATYPE_VALID 12
+#define DATATYPE_TEMP 13
 #define DATATYPE_INVALID -1
-
 
 #define DECTYPE_LABEL 13 //11/06
 HASH_NODE * makeTemp(void);
@@ -45,6 +45,7 @@ HASH_NODE *hashInsert(char *, int);
 HASH_NODE *hashFind(char *);
 void hashPrint();
 void hashPrintFull();
-
+void getLabelFromString(char *dst,char * src);
+void clearTempString();
 
 #endif

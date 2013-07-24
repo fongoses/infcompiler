@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include "tac.h"
 #include "hashtable.h"
 #include "y.tab.h"
 int labelCount = 0;
 extern HASH_NODE *Table[HASH_SIZE];
-
+char tempString[STRING_MAX_SIZE];
 TAC * generateCode(ASTREE * node){
     int i;
     TAC * treeSons[MAX_SONS];
@@ -471,53 +472,53 @@ void generateASM(TAC*first){
 void generateASM_OTHERS(FILE * fout,TAC * first){
 
 	TAC * tac=0;   
-
+    fprintf(fout,"\t.text\n");    
 	for(tac=first;tac;tac=tac->next){
 		switch(tac->type){
 
             case TAC_BEGINF: 
                 fprintf(fout,
-                "   .globl %s\n"
-                "   .type  %s, @function\n"
+                "\t.globl %s\n"
+                "\t.type  %s, @function\n"
                 "%s:\n" //label da funcao
                 ".LFB%d:\n"
-                "   .cfi_startproc\n"
-                "   pushl   %%ebp\n"                                                   
-                "   .cfi_def_cfa_offset 8\n"
-                "   .cfi_offset 5, -8\n"                                   
-                "   movl    %%esp, %%ebp\n"                
-                "   .cfi_def_cfa_register 5\n"
+                "\t.cfi_startproc\n"
+                "\tpushl\t%%ebp\n"                                                   
+                "\t.cfi_def_cfa_offset 8\n"
+                "\t.cfi_offset 5, -8\n"                                   
+                "\tmovl\t%%esp, %%ebp\n"                
+                " \t.cfi_def_cfa_register 5\n"
                 ,tac->target->text,tac->target->text,tac->target->text,labelCount);
 
             break;
 
             case TAC_ENDF:
                 fprintf(fout,
-                "   popl    %%ebp\n"
-                "   .cfi_restore 5\n"
-                "   .cfi_def_cfa 4, 4\n"
-                "   ret\n"
-                "   .cfi_endproc\n"
+                "\tpopl\t%%ebp\n"
+                "\t.cfi_restore 5\n"
+                "\t.cfi_def_cfa 4, 4\n"
+                "\tret\n"
+                "\t.cfi_endproc\n"
                 ".LFE%d:\n"
-                "   .size   %s, .-%s\n",labelCount,tac->target->text,tac->target->text);                
+                "\t.size\t%s, .-%s\n",labelCount,tac->target->text,tac->target->text);                
                 labelCount++;
             break;                    
 
 			case TAC_MOV:
                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,            
-                    "movl    %s, %%eax"
-                    "movl    %%eax, %s",tac->op1->text,tac->target->text);
+                    "\tmovl\t%s, %%eax\n"
+                    "\tmovl\t%%eax, %s",tac->op1->text,tac->target->text);
                 
                  if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,            
-                    "movb    %s, %%eax"
-                    "movb    %%eax, %s",tac->op1->text,tac->target->text);
+                    "\tmovb\t%s, %%eax\n"
+                    "\tmovb\t%%eax, %s",tac->op1->text,tac->target->text);
 
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,            
-                    "movb    %s, %%eax"
-                    "movb    %%eax, %s",tac->op1->text,tac->target->text);
+                    "\tmovb\t%s, %%eax\n"
+                    "\tmovb\t%%eax, %s",tac->op1->text,tac->target->text);
 
             
             break;
@@ -525,99 +526,116 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
             case TAC_VETMOV:
                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,
-                    "movl\t$_%s, %%eax"
-                    "movl\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text)*atoi(tac->op1->text));
+                    "\tmovl\t$_%s, %%eax\n"
+                    "\tmovl\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
                  
                 if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,
-                    "movb\t$_%s, %%eax"
-                    "movb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text)*atoi(tac->op1->text));
+                    "\tmovb\t$_%s, %%eax\n"
+                    "\tmovb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
                 
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,
-                    "movb\t$_%s, %%eax"
-                    "movb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text)*atoi(tac->op1->text));
+                    "\tmovb\t$_%s, %%eax"
+                    "\tmovb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
 
             break;
  
            case TAC_VETCALL:
-                 fprintf(stderr,"TAC(TAC_VETCALL,%s,null,null)\n",tac->target->text);
-                 break;
+                if(tac->target->decType == DATATYPE_WORD)
+                    fprintf(fout,
+                    "\tmovl\t%s, %%eax\n"
+                    "\tmovl\t%s(,%%eax,%d), %%eax\n"
+                    "\tmovl\t%%eax,%s\n", //move para scarryTemporary
+                    tac->op2->text,mySizeOf(tac->target),
+                    tac->target->text);       
+                break;
        
            
 
 			case TAC_ADD: 	
-				fprintf(fout,"  SOMA\n"/* movl    a, %%eax\n"
+				/*fprintf(fout,"  SOMA\n"/* movl    a, %%eax\n"
         				"addl    $2, %%eax"
-        				"movl    %%eax, a"*/);
+        				"movl    %%eax, a");*/
 			
 			break;
 
             case TAC_INPUT:                
                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,
-                    "$-16, %%esp\n"
-                    "subl\t$16, %%esp\n"
-                    "movl\t$_%s, 4(%%esp)\n"
-                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
-                    "call\tscanf",tac->target->text);
+                    "\t$-16, %%esp\n"
+                    "\tsubl\t$16, %%esp\n"
+                    "\tmovl\t$_%s, 4(%%esp)\n"
+                    "\tmovl\t$.PoRcEnToD, (%%esp)\n"
+                    "\tcall\tscanf\n",tac->target->text);
                    
                 if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,
-                    "$-16, %%esp\n"
-                    "subl\t$16, %%esp\n"
-                    "movl\t$_%s, 1(%%esp)\n"
-                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
-                    "call\tscanf",tac->target->text); 
+                    "\t$-16, %%esp\n"
+                    "\tsubl\t$16, %%esp\n"
+                    "\tmovl\t$_%s, 1(%%esp)\n"
+                    "\tmovl\t$.PoRcEnToD, (%%esp)\n"
+                    "\tcall\tscanf\n",tac->target->text); 
                 
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,
-                    "$-16, %%esp\n"
-                    "subl\t$16, %%esp\n"
-                    "movl\t$_%s, 1(%%esp)\n"
-                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
-                    "call\tscanf",tac->target->text); 
+                    "\t$-16, %%esp\n"
+                    "\tsubl\t$16, %%esp\n"
+                    "\tmovl\t$_%s, 1(%%esp)\n"
+                    "\tmovl\t$.PoRcEnToD, (%%esp)\n"
+                    "\tcall\tscanf\n",tac->target->text); 
 
-                if(tac->target->decType == DATATYPE_STRING)
+                if(tac->target->decType == DATATYPE_STRING){
+                    clearTempString();
+                    getLabelFromString(tempString,tac->target->text);
                     fprintf(fout,
-                    "$-16, %%esp\n"
-                    "subl\t$16, %%esp\n"
-                    "movl\t$_%s, 4(%%esp)\n"
-                    "movl\t$__PoRcEnTo_S, (%%esp)\n"
-                    "call\tscanf",tac->target->text);       
+                    "\t$-16, %%esp\n"
+                    "\tsubl\t$16, %%esp\n"
+                    "\tmovl\t$_%s, 4(%%esp)\n"
+                    "\tmovl\t$.PoRcEnToS, (%%esp)\n"
+                    "\tcall\tscanf\n",tempString);
+
+                    
+                }
+    
              break;
                 
 
 			case TAC_OUTPUT:
                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,
-                    "movl\t$_%s, 4(%%eax)\n"
-                    "movl\t%%eax, 4(%%esp)\n"
-                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
-                    "call\tprintf",tac->target->text);
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t%%eax, 4(%%esp)\n"
+                    "\tmovl\t$.PoRcEnToD, (%%esp)\n"
+                    "\tcall\tprintf\n"
+                    "\tleave\n"
+                    ,tac->target->text);
  
 
                 if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,
-                    "movl\t$_%s, 4(%%eax)\n"
-                    "movl\t%%eax, 4(%%esp)\n"
-                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
-                    "call\tprintf",tac->target->text);
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t%%eax, 4(%%esp)\n"
+                    "\tmovl\t$.PoRcEnToD, (%%esp)\n"
+                    "\tcall\tprintf\n"
+                    "\tleave\n",tac->target->text);
  
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,
-                    "movl\t$_%s, 4(%%eax)\n"
-                    "movl\t%%eax, 4(%%esp)\n"
-                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
-                    "call\tprintf",tac->target->text);
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t%%eax, 4(%%esp)\n"
+                    "\tmovl\t$.PoRcEnToD, (%%esp)\n"
+                    "\tcall\tprintf\n"
+                    "\tleave\n",tac->target->text);
  
                 if(tac->target->decType == DATATYPE_STRING)
+                    clearTempString();
+                    getLabelFromString(tempString,tac->target->text);
                     fprintf(fout,
-                    "$-16, %%esp"
-                    "subl\t$16, %%esp\n"
-                    "movl\t$_%s, 1(%%esp)\n"
-                    "movl\t$__PoRcEnTo_S, (%%esp)\n"
-                    "call\tscanf",tac->target->text); 
+                    "\tmovl\t$_%s, %%eax\n"
+                    "\tmovl\t$.PoRcEnToS, (%%esp)\n"
+                    "\tcall\tprintf\n"
+                    "\tleave\n",tempString); 
 							
 			break;
         
@@ -781,11 +799,11 @@ void generateDeclaratives(FILE * fout){
     HASH_NODE * node;
     fprintf(fout,
             ".data \n"
-            "__PoRcEnTo_D:\n"
+            ".PoRcEnToD:\n"
             "\t.string \"%%d\\12\\0\"\n");
     
     fprintf(fout,
-            "__PoRcEnTo_S:\n"
+            ".PoRcEnToS:\n"
             "\t.string \"%%s\\12\\0\"\n");
     
 
@@ -801,9 +819,11 @@ void generateDeclaratives(FILE * fout){
                     break;
 
                 case SYMBOL_LIT_STRING:
+                    clearTempString();
+                    getLabelFromString(tempString,node->text);
                     fprintf(fout,
                     "_%s:\n\t.string%s\n",
-                    node->text,
+                    tempString,
                     node->text);          
                     break;
                 
@@ -814,9 +834,15 @@ void generateDeclaratives(FILE * fout){
                     node->text);
                     break;
 
-   
+                case DATATYPE_TEMP: //Usei o datatype mesmo para indicar as scarryTemporary
+                    fprintf(fout,
+                    "_%s:\n\t.value 0\n",
+                    node->text);
+                    break;
+ 
                 
             }
+            
 }
 
 //gera vardec e vetordec
@@ -912,4 +938,32 @@ void generateASMALOCASTRING(TAC * first,FILE * fout){
 
         }
     }
+}
+
+void getLabelFromString(char * dst,char * src){
+
+    int i;
+    int size;
+
+    if ((!dst) || (!src)) return;
+   
+
+    size=strlen(src);
+    if (size > STRING_MAX_SIZE) return;
+
+    //substitui espacos em branco
+    for(i=1;i<size-1;i++){  
+        if(src[i] == '\0') break;
+        if(src[i] == ' ') dst[i]= '_';
+        else dst[i] = src[i];       
+    }
+
+    //substitui aspas inicial e final
+    dst[0]='_';
+    dst[i-1]='_';
+
+}
+
+void clearTempString(){
+    memset(tempString,0,STRING_MAX_SIZE);
 }	

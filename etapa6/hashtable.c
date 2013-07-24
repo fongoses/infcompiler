@@ -178,7 +178,7 @@ HASH_NODE * makeTemp(void){
     sprintf(buffer,"__ScarryTeMpORaRy%d",nextTemp);
     // Incrementa a variável estática nextTemp para que, na próxima chamada, não fique com o mesmo nome.
     nextTemp++;
-    return hashInsert(buffer,DECTYPE_SCALAR);
+    return hashInsert(buffer,DATATYPE_TEMP);
 }
 
 HASH_NODE * makeLabel(void){
