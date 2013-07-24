@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include "tac.h"
-
+#include "hashtable.h"
+#include "y.tab.h"
 int labelCount = 0;
+extern HASH_NODE *Table[HASH_SIZE];
 
 TAC * generateCode(ASTREE * node){
     int i;
@@ -454,22 +456,31 @@ TAC * makeOutput(TAC* son0, HASH_NODE * symbol){
 
 //Etapa 6 
 //ASSEMBLER.
-
-//nao eh recursiva
-void generateASM(TAC * first){
-
-	TAC * tac=0;
-	FILE *fout = 0; //arquivo de saida    
-    
+void generateASM(TAC*first){
+    FILE * fout;    
 	fout=fopen("assembly.asm","w+");
+
+    generateDeclaratives(fout);
+    //generateASMVARDEC(fout,first);
+    //generateASMALLOCSTRING(fout,first);
+    //generateASMPORCENTOD(fout); //impressao de inteiros
+    //generateASMOTHERS(fout,first);
+    
+}
+
+
+//nao eh recursiva. //Serah quebrada em diversas funcoes.
+void generateASM_OTHERS(FILE * fout,TAC * first){
+
+	TAC * tac=0;   
 
 	for(tac=first;tac;tac=tac->next){
 		switch(tac->type){
 
-			case TAC_BEGINF: 
+            case TAC_BEGINF: 
                 fprintf(fout,
                 "   .globl %s\n"
-			    "   .type  %s, @function\n"
+                "   .type  %s, @function\n"
                 "%s:\n" //label da funcao
                 ".LFB%d\n"
                 "   .cfi_startproc\n"
@@ -480,9 +491,9 @@ void generateASM(TAC * first){
                 "   .cfi_def_cfa_register 5\n"
                 ,tac->target->text,tac->target->text,tac->target->text,labelCount);
 
-			break;
+            break;
 
-			case TAC_ENDF:
+            case TAC_ENDF:
                 fprintf(fout,
                 "   popl    %%ebp\n"
                 "   .cfi_restore 5\n"
@@ -492,8 +503,7 @@ void generateASM(TAC * first){
                 ".LFE%d:\n"
                 "   .size   %s, .-%s\n",labelCount,tac->target->text,tac->target->text);                
                 labelCount++;
-            break;
-
+            break;                    
 
 			case TAC_MOV: break;
 			case TAC_ADD: 	
@@ -512,30 +522,10 @@ void generateASM(TAC * first){
 				
 			break;
             
-            case TAC_VARDEC:
-                fprintf(fout,
-                "   .globl  %s\n"        
-                "   .data\n"
-                "   .align 4\n"
-                "   .type   %s, @object\n"
-                "   .size   %s, %d\n"
-                "%s:\n"
-                "   .long   %s\n\n", tac->target->text,
-                tac->target->text,
-                tac->target->text,mySizeOf(tac->target),
-                tac->target->text,
-                tac->target->text);
-                break;
-      
-            case TAC_VETORDEC:
-                 fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
-                 break;
-
+           
             case TAC_LIT_SEQ:
                  fprintf(stderr,"TAC(TAC_LITSEQ,%s,null,null)\n",tac->target->text);
                  break;
-
-
 
 
             case TAC_MIN:
@@ -716,3 +706,133 @@ int mySizeOf(HASH_NODE* symbol){
             
     }
 }
+
+void generateDeclaratives(FILE * fout){
+    
+    int i;
+    HASH_NODE * node;
+    fprintf(fout,
+            ".data \n"
+            "__PoRcEnTo_D:\n"
+            "\t.string \"%%d\\12\\0\"\n");
+    
+
+    for(i=0;i<HASH_SIZE;i++)
+        for(node=Table[i];node;node=node->next)
+            switch(node->type){
+                //case SYMBOL_SCALAR:
+                case SYMBOL_LIT_INTEGER:
+                    fprintf(fout,
+                    "_%s:\n\t.value %s\n",
+                    node->text,
+                    node->text);
+                    break;
+
+                case SYMBOL_LIT_STRING:
+                    fprintf(fout,
+                    "_%s:\n\t.string%s\n",
+                    node->text,
+                    node->text);          
+                    break;
+
+
+                
+                case SYMBOL_LIT_CHAR:
+                    fprintf(fout,
+                    "_%s:\n\t.byte %s\n",
+                    node->text,
+                    node->text);
+                    break;
+
+   
+                case TAC_VARDEC:
+                    fprintf(fout,
+                    "   .globl  %s\n"        
+                    "   .data\n"
+                    "   .align 4\n"
+                    "   .type   %s, @object\n"
+                    "   .size   %s, %d\n"
+                    "%s:\n"
+                    "   .long   %s\n\n", tac->target->text,
+                    tac->target->text,
+                    tac->target->text,mySizeOf(tac->target),
+                    tac->target->text,
+                    tac->target->text);
+                break;
+  
+                case TAC_VETORDEC:
+                    fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
+                break;
+
+
+            }
+}
+
+//gera vardec e vetordec
+void generateASMVARDEC(FILE * fout,TAC* first){
+
+          TAC * tac=0;
+
+          if (!fout) return;
+
+          for(tac=first;tac;tac=tac->next){
+                switch(tac->type){
+    
+
+                    default: break;
+                }
+         }
+}
+
+void generateASMFUNDEC(FILE * fout,TAC* first){
+
+          TAC * tac=0;
+
+          if (!fout) return;
+
+          for(tac=first;tac;tac=tac->next){
+                switch(tac->type){
+    
+                   default: break;
+                }
+         }
+}
+
+//string com o formato para saida de numeros
+void generateASMPORCENTOD(FILE * fout){
+
+    if(!fout) return;
+
+    fprintf(fout,
+            ".LC_PORCENTOD:   "
+            "   .string \"%%d\"");
+            
+
+}
+
+//:
+void generateASMALOCASTRING(TAC * first,FILE * fout){
+
+	TAC * tac=0;
+    
+    if(!fout) return;
+    
+	for(tac=first;tac;tac=tac->next){
+		switch(tac->type){
+
+			
+			case TAC_OUTPUTSEQ: 
+                fprintf(fout,
+                        ".STRING_ALOCADA"//%s:" //target (scarryTemporary da string)
+                        ".string %s" //operando (valor) da string
+                        ,tac->target->text //ver se eh no target ou no op1
+                        ); 
+                        
+
+            break;
+            
+            default: break;
+
+        }
+    }
+}	

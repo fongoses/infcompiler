@@ -1,5 +1,21 @@
 	.file	"sumshort.c"
-	.comm	a,2,2
+	.globl	a
+	.data
+	.align 2
+	.type	a, @object
+	.size	a, 2
+a:
+	.value	5
+	.globl	vetor
+	.type	vetor, @object
+	.size	vetor, 12
+vetor:
+	.string	"Hello world"
+	.globl	ce
+	.type	ce, @object
+	.size	ce, 1
+ce:
+	.byte	19
 	.text
 	.globl	main
 	.type	main, @function

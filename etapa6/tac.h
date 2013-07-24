@@ -103,4 +103,12 @@ TAC* makeVetordec(TAC* son1, TAC* son2,HASH_NODE * symbol);
 void * setTargetLitSeq(TAC*first,HASH_NODE * target);
 TAC * makeFuncall(TAC * son0, HASH_NODE * symbol);
 TAC * makeOutput(TAC * son0, HASH_NODE * symbol);
+
+//Assembly
+void generateASM(TAC* first);
+void generateDeclaratives(FILE * fout);
+void generateASM_OTHERS(FILE * file, TAC * first);
+
 #endif
+
+
