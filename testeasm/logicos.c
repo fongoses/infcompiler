@@ -87,3 +87,8 @@
                     "\tcmpb\t%%al, %%dl\n"
                     "\tjle\t%s\n",tac->op1->text,tac->op2->text,tac->next->target->text);
                 break;
+
+            case TAC_JMP:
+                fprintf(fout,
+                "\tjmp\t%s\n",tac->target->text);
+                break;
