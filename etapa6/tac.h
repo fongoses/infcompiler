@@ -92,7 +92,6 @@ void print_tac_reverse(TAC *tac);
 // Protótipos do genco.c
 TAC *generateCode(ASTREE *node);
 TAC *makeBinop(TAC *treeSon0, TAC *treeSon1, int type);
-TAC *makeIfThen(TAC *son0, TAC *son1);
 TAC *makeFun(HASH_NODE *symbol, TAC * son1, TAC * son2, TAC *son3 );
 TAC *makeVetcall(TAC* son0, HASH_NODE *symbol );
 TAC *makeExpression(TAC * son0,HASH_NODE * symbol);
