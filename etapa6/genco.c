@@ -527,17 +527,17 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                 if(tac->target->decType == DATATYPE_WORD)
                     fprintf(fout,
                     "\tmovl\t$%s, %%eax\n"
-                    "\tmovl\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
+                    "\tmovl\t%%eax, %s+%d\n",tac->target->text,tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
                  
                 if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,
                     "\tmovb\t$%s, %%eax\n"
-                    "\tmovb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
+                    "\tmovb\t%%eax, %s+%d\n",tac->target->text,tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
                 
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,
                     "\tmovb\t$%s, %%eax"
-                    "\tmovb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
+                    "\tmovb\t%%eax, %s+%d\n",tac->target->text,tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
 
             break;
  
@@ -547,7 +547,8 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     "\tmovl\t%s, %%eax\n"
                     "\tmovl\t%s(,%%eax,%d), %%eax\n"
                     "\tmovl\t%%eax,%s\n", //move para scarryTemporary
-                    tac->op2->text,mySizeOf(tac->target),
+                    tac->op2->text,
+                    tac->target->text,mySizeOf(tac->target),
                     tac->target->text);       
                 break;
        
