@@ -1,7 +1,7 @@
 	.file	"vec_dec.c"
 
 ### Declaração de vetor: int v[10];
-	.comm	v,40,32  
+	.comm	v,40 
 ### Fim Declaração, 40 bytes, 32 bits cada posição pois é um vetor de inteiro
 
 	.text

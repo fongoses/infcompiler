@@ -6,17 +6,20 @@
 	.size	a, 2
 a:
 	.value	5
-	.globl	vetor
-	.type	vetor, @object
-	.size	vetor, 12
+	#.globl	vetor
+	#.type	vetor, @object
+	#.size	vetor, 12
 vetor:
-	.string	"Hello world"
-	.globl	ce
-	.type	ce, @object
-	.size	ce, 1
+	.string	"Hello world\12"
+	#.globl	ce
+	#.type	ce, @object
+	#.size	ce, 1
 ce:
 	.byte	19
-	.text
+	
+
+
+    .text
 	.globl	main
 	.type	main, @function
 main:
@@ -27,8 +30,12 @@ main:
 	.cfi_offset 5, -8
 	movl	%esp, %ebp
 	.cfi_def_cfa_register 5
+	andl	$-16, %esp
+	subl	$16, %esp
 	movw	$3, a
-	popl	%ebp
+	movl	$vetor, (%esp)
+	call	printf
+	leave
 	.cfi_restore 5
 	.cfi_def_cfa 4, 4
 	ret

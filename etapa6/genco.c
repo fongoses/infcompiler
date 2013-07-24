@@ -458,18 +458,16 @@ TAC * makeOutput(TAC* son0, HASH_NODE * symbol){
 //ASSEMBLER.
 void generateASM(TAC*first){
     FILE * fout;    
-	fout=fopen("assembly.asm","w+");
+	fout=fopen("assembly.s","w+");
 
     generateDeclaratives(fout);
-    //generateASMVARDEC(fout,first);
-    //generateASMALLOCSTRING(fout,first);
-    //generateASMPORCENTOD(fout); //impressao de inteiros
-    //generateASMOTHERS(fout,first);
+    generateASMVARDEC(fout,first); // 1ª varrida. Declaracao de variaveis e vetores
+    generateASM_OTHERS(fout,first); //2 ª varrida. Gera resto do codigo
     
 }
 
 
-//nao eh recursiva. //Serah quebrada em diversas funcoes.
+//nao eh recursiva..
 void generateASM_OTHERS(FILE * fout,TAC * first){
 
 	TAC * tac=0;   
@@ -482,7 +480,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                 "   .globl %s\n"
                 "   .type  %s, @function\n"
                 "%s:\n" //label da funcao
-                ".LFB%d\n"
+                ".LFB%d:\n"
                 "   .cfi_startproc\n"
                 "   pushl   %%ebp\n"                                                   
                 "   .cfi_def_cfa_offset 8\n"
@@ -745,26 +743,7 @@ void generateDeclaratives(FILE * fout){
                     break;
 
    
-                case TAC_VARDEC:
-                    fprintf(fout,
-                    "   .globl  %s\n"        
-                    "   .data\n"
-                    "   .align 4\n"
-                    "   .type   %s, @object\n"
-                    "   .size   %s, %d\n"
-                    "%s:\n"
-                    "   .long   %s\n\n", tac->target->text,
-                    tac->target->text,
-                    tac->target->text,mySizeOf(tac->target),
-                    tac->target->text,
-                    tac->target->text);
-                break;
-  
-                case TAC_VETORDEC:
-                    fprintf(stderr,"TAC(TAC_VETORDEC,%s,null,null)\n",tac->target->text);
-                break;
-
-
+                
             }
 }
 
@@ -772,45 +751,71 @@ void generateDeclaratives(FILE * fout){
 void generateASMVARDEC(FILE * fout,TAC* first){
 
           TAC * tac=0;
-
+          TAC * tempTac = 0;
+          int i;
           if (!fout) return;
 
           for(tac=first;tac;tac=tac->next){
                 switch(tac->type){
-    
+                    case TAC_VARDEC:
+                        fprintf(fout,
+                        "\n   .globl  %s\n"        
+                        "   .data\n"
+                        "   .align 4\n"
+                        "   .type   %s, @object\n"
+                        "   .size   %s, %d\n"
+                        "%s:\n"
+                        "   .long   %s\n", tac->target->text,
+                        tac->target->text,
+                        tac->target->text,mySizeOf(tac->target),
+                        tac->target->text,
+                        (!strcmp(tac->op1->text,"TRUE"))?"1":((!strcmp(tac->op1->text,"FALSE"))?"0":tac->target->text));
+                    break;
+      
+                    case TAC_VETORDEC:
+                        if(tac->prev)
+                            if(tac->prev->prev)
+                                if(tac->prev->prev->type == TAC_LIT_SEQ){ //Esta inicializado!{
+                            
+                                    tempTac = tac->prev->prev;
+                                        fprintf(fout,
+                                            "\t.type\t%s, @object\n"
+                                            "\t.size\t%s, %d\n"
+                                            "%s:\n",tac->target->text,
+                                            tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text),tac->target->text);
+                                        
+                                
+                                    for(i=0;i<atoi(tac->op1->text);i++) tempTac = tempTac->prev;
+                                    for(i=0;i<atoi(tac->op1->text);i++){        
+                                        tempTac=tempTac->next;
+                                        if(mySizeOf(tac->target)==4) {                                        
+                                            fprintf(fout,
+                                            "\t.long\t%s\n",tempTac->op1->text);
+                                        }else{
+                                            fprintf(fout,
+                                             "\t.byte\t%s\n",tempTac->op1->text);
+                                        }
+                                        
+                                    }
+                                break;
+                                }
+                            
+                        
+                        fprintf(fout,
+                        "\t.comm %s,%d",tac->target->text,atoi(tac->op1->text)*mySizeOf(tac->target));
+
+                        break;
+                            
+
 
                     default: break;
                 }
          }
 }
 
-void generateASMFUNDEC(FILE * fout,TAC* first){
 
-          TAC * tac=0;
 
-          if (!fout) return;
 
-          for(tac=first;tac;tac=tac->next){
-                switch(tac->type){
-    
-                   default: break;
-                }
-         }
-}
-
-//string com o formato para saida de numeros
-void generateASMPORCENTOD(FILE * fout){
-
-    if(!fout) return;
-
-    fprintf(fout,
-            ".LC_PORCENTOD:   "
-            "   .string \"%%d\"");
-            
-
-}
-
-//:
 void generateASMALOCASTRING(TAC * first,FILE * fout){
 
 	TAC * tac=0;

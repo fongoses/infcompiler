@@ -107,6 +107,7 @@ TAC * makeOutput(TAC * son0, HASH_NODE * symbol);
 //Assembly
 void generateASM(TAC* first);
 void generateDeclaratives(FILE * fout);
+void generateASMVARDEC(FILE * fout, TAC* first);
 void generateASM_OTHERS(FILE * file, TAC * first);
 
 #endif
