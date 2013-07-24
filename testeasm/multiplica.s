@@ -134,6 +134,13 @@ main:
 	sarl	$31, %edx
 	idivl	44(%esp)
 	movl	%eax, c
+	movl	c, %eax
+	movl	b, %ecx
+	movl	%ecx, 44(%esp)
+	movl	%eax, %edx
+	sarl	$31, %edx
+	idivl	44(%esp)
+	movl	%eax, a
 .L9:
 	movzbl	x, %eax
 	movsbl	%al, %eax
@@ -176,5 +183,5 @@ main:
 	.cfi_endproc
 .LFE0:
 	.size	main, .-main
-	.ident	"GCC: (Ubuntu/Linaro 4.7.3-1ubuntu1) 4.7.3"
+	.ident	"GCC: (Debian 4.7.2-5) 4.7.2"
 	.section	.note.GNU-stack,"",@progbits

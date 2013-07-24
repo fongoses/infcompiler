@@ -5,5 +5,7 @@ word main(){
 
    output "Digite um valor:\n"; 
    input a;
-   output "Soma com 9\n",a+b,"\nSaindo..\n";   
+   output "Produto com 9\n",a*b,"\nSaindo..\n";   
+   //output "Divisao por 9\n",a/b,"\nSaindo..\n";   
+   output "Subtracao por 9\n",a-b,"\nSaindo..\n";   
 }

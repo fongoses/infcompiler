@@ -1,0 +1,15 @@
+word a: 10;
+word b: 9;
+
+word main(){
+
+   output "Digite um valor maior que 9:\n"; 
+   input a;
+   
+   if(a>9) then
+        output "Voce ganhou!"
+   else
+        output "Voce perdeu! Seu valor eh menor que 9";
+
+   
+}

@@ -535,7 +535,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                 if(tac->target->decType == DATATYPE_BYTE)
                     fprintf(fout,
                     "\tmovb\t$_%s, %%eax\n"
-                    "\tmovb\t%%eax, %_s+%d\n",tac->target->text,tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
+                    "\tmovb\t%%eax, _%s+%d\n",tac->target->text,tac->target->text,mySizeOf(tac->target)*atoi(tac->op1->text));
                 
                 if(tac->target->decType == DATATYPE_BOOL)
                     fprintf(fout,
@@ -558,7 +558,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
            
 
 			case TAC_ADD: 	
-                    fprintf(fout, 
+                fprintf(fout, 
                     "\tmovl\t_%s, %%edx\n"
                     "\tmovl\t_%s, %%eax\n"
                     "\taddl\t%%edx, %%eax\n"
@@ -566,7 +566,39 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                     tac->op2->text,
                     tac->target->text);
 
-	        break;
+	            break;
+            
+            case TAC_MIN:
+                fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t%%edx, %%ecx\n"
+                    "\tsubl\t%%eax, %%ecx\n"
+                    "\tmovl\t%%ecx, %%eax\n"
+                    "\tmovl\t%%eax, _%s\n",tac->op1->text,tac->op2->text,tac->target->text);
+                break;
+
+            case TAC_MUL:
+               fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\timull\t%%edx, %%eax\n"
+                    "\tmovl\t%%eax, _%s\n",tac->op1->text,tac->op2->text,tac->target->text);
+               break;
+
+            case TAC_DIV:
+                fprintf(fout,
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tmovl\t_%s, %%ecx\n"
+                    "\tmovl\t%%ecx, 44(%%esp)\n"
+                    "\tmovl\t%%eax, %%edx\n"
+                    "\tsarl\t$31, %%edx\n"
+                    "\tidivl\t44(%%esp)\n"
+                    "\tmovl\t%%eax, _%s\n",tac->op1->text,tac->op2->text,tac->target->text);
+
+                break;
+
+
 
             case TAC_INPUT:                
                 if(tac->target->decType == DATATYPE_WORD)
@@ -646,93 +678,82 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                  }
 							
 			break;
-        
-                   
-            case TAC_MIN:
-                fprintf(stderr,"TAC(TAC_MIN,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
-
-            case TAC_MUL:
-                fprintf(stderr,"TAC(TAC_MUL,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
-
-            case TAC_DIV:
-                fprintf(stderr,"TAC(TAC_DIV,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
-
+       
             case TAC_LE:
-                fprintf(stderr,"TAC(TAC_LE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);        
-                break;
-
+              fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tcmpl\t%%eax, %%edx\n"
+                    "\tjg\t_%s\n",tac->op1->text,tac->op2->text,tac->next->target->text);
+              break;
 
             case TAC_GE:
-                fprintf(stderr,"TAC(TAC_GE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
-                break;
+               fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tcmpl\t%%eax, %%edx\n"
+                    "\tjl\t_%s\n",tac->op1->text,tac->op2->text,tac->next->target->text);
+               break;
 
             case TAC_EQ:
-                fprintf(stderr,"TAC(TAC_EQ,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
+                fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tcmpl\t%%eax, %%edx\n"
+                    "\tjne\t_%s\n",tac->op1->text,tac->op2->text,tac->next->target->text);
                 break;
 
             case TAC_NE:
-                fprintf(stderr,"TAC(TAC_NE,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
+                fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tcmpl\t%%eax, %%edx\n"
+                    "\tje\t_%s\n",tac->op1->text,tac->op2->text,tac->next->target->text);
+                 break;
+
+             case TAC_L:
+                fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tcmpl\t%%eax, %%edx\n"
+                    "\tjge\t_%s\n",tac->op1->text,tac->op2->text,tac->next->target->text);
                 break;
 
+            case TAC_G:
+                fprintf(fout,
+                    "\tmovl\t_%s, %%edx\n"
+                    "\tmovl\t_%s, %%eax\n"
+                    "\tcmpl\t%%eax, %%edx\n"
+                    "\tjle\t_%s\n",tac->op1->text,tac->op2->text,tac->next->target->text);
+                break;
 
-            case TAC_AND:
-                fprintf(stderr,"TAC(TAC_AND,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);        
+            case TAC_JMP:
+                fprintf(fout,
+                "\tjmp\t_%s\n",tac->target->text);
+                break;
+                   
+           case TAC_AND:
+                //fprintf(stderr,"TAC(TAC_AND,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);        
                 break;
 
 
              case TAC_OR:
-                fprintf(stderr,"TAC(TAC_OR,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);          
+                //fprintf(stderr,"TAC(TAC_OR,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);          
                 break;
 
-             case TAC_L:
-                fprintf(stderr,"TAC(TAC_L,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
-                break;
-
-            case TAC_G:
-                fprintf(stderr,"TAC(TAC_G,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         
-                break;
-        
-    /*
-            case TAC_NOT:
-                fprintf(stderr,"TAC(TAC_NOT,%s,%s,0)\n",tac->target->text,tac->op1->text);
-                break;
-    */
-            case TAC_SYMBOL:
+           case TAC_SYMBOL:
                 fprintf(stderr,"TAC(TAC_SYMBOL,%s,null,null)\n",tac->target->text);
                 break;
 
-            case TAC_LIT_INT:
-                fprintf(stderr,"TAC(TAC_LIT_INT,%s,null,null)\n",tac->target->text);
-                break;
-     
-      
-            case TAC_LIT_STRING:
-                fprintf(stderr,"TAC(TAC_LIT_STRING,%s,null,null)\n",tac->target->text);
-                break;
-
-            case TAC_LIT_FALSE:
-                fprintf(stderr,"TAC(TAC_LIT_FALSE,%s,null,null)\n",tac->target->text);
-                break;
-
-            case TAC_LIT_TRUE:
-                fprintf(stderr,"TAC(TAC_LIT_TRUE,%s,null,null)\n",tac->target->text);
-                break;
-
-            case TAC_LIT_CHAR:
-                fprintf(stderr,"TAC(TAC_LIT_CHAR,%s,null,null)\n",tac->target->text);
-                break;
-
-            case TAC_UMIN:
+           case TAC_UMIN:
                 fprintf(stderr,"TAC(TAC_UMIN,%s,null,null)\n",tac->target->text);
                 break;
 
-            
-            case TAC_JMP:
-                fprintf(stderr,"TAC(TAC_JMP,%s,null,null)\n",tac->target->text);
-                break;
-     
+         
+    
             case TAC_JFALSE:
-                fprintf(stderr,"TAC(TAC_JFALSE,%s,null,null)\n",tac->target->text);
+                //tratado pelos relacionais 
+                
                 break;       
              
             case TAC_PARAM:
@@ -848,7 +869,7 @@ void generateDeclaratives(FILE * fout){
                     node->text);
                     break;
  
-                
+                default: break; 
             }
             
 }

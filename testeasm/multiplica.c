@@ -32,6 +32,7 @@ multiplica_print:
 
 divide_int:
     c = a / b;
+    a = c / b;
 
 divide_byte:
     z = x / y;
