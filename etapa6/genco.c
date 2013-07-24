@@ -504,12 +504,48 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
             break;                    
 
 			case TAC_MOV:
-                fprintf(fout,            
-                "movl    %s, %%eax"
-                "movl    %%eax, %s",tac->op1->text,tac->target->text);
- 
+                if(tac->target->decType == DATATYPE_WORD)
+                    fprintf(fout,            
+                    "movl    %s, %%eax"
+                    "movl    %%eax, %s",tac->op1->text,tac->target->text);
+                
+                 if(tac->target->decType == DATATYPE_BYTE)
+                    fprintf(fout,            
+                    "movb    %s, %%eax"
+                    "movb    %%eax, %s",tac->op1->text,tac->target->text);
+
+                if(tac->target->decType == DATATYPE_BOOL)
+                    fprintf(fout,            
+                    "movb    %s, %%eax"
+                    "movb    %%eax, %s",tac->op1->text,tac->target->text);
+
             
             break;
+            
+            case TAC_VETMOV:
+                if(tac->target->decType == DATATYPE_WORD)
+                    fprintf(fout,
+                    "movl\t$_%s, %%eax"
+                    "movl\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text)*atoi(tac->op1->text));
+                 
+                if(tac->target->decType == DATATYPE_BYTE)
+                    fprintf(fout,
+                    "movb\t$_%s, %%eax"
+                    "movb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text)*atoi(tac->op1->text));
+                
+                if(tac->target->decType == DATATYPE_BOOL)
+                    fprintf(fout,
+                    "movb\t$_%s, %%eax"
+                    "movb\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text)*atoi(tac->op1->text));
+
+            break;
+ 
+           case TAC_VETCALL:
+                 fprintf(stderr,"TAC(TAC_VETCALL,%s,null,null)\n",tac->target->text);
+                 break;
+       
+           
+
 			case TAC_ADD: 	
 				fprintf(fout,"  SOMA\n"/* movl    a, %%eax\n"
         				"addl    $2, %%eax"
@@ -585,16 +621,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
 							
 			break;
         
-            case TAC_VETMOV:
-                    fprintf(fout,
-                    "movl\t$_%s, %%eax"
-                    "movl\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text));
- 
-                    break;
-        
-            break;             
-           
-       
+                   
             case TAC_MIN:
                 fprintf(stderr,"TAC(TAC_MIN,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
 
@@ -694,9 +721,6 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                  fprintf(stderr,"TAC(TAC_ARG,%s,null,null)\n",tac->target->text);
                  break;
      
-            case TAC_VETCALL:
-                 fprintf(stderr,"TAC(TAC_VETCALL,%s,null,null)\n",tac->target->text);
-                 break;
            
             case TAC_FUNCALL:
                  fprintf(stderr,"TAC(TAC_FUNCALL,%s,%s,null)\n",tac->target->text,tac->op1?tac->op1->text:0);
