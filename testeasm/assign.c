@@ -1,4 +1,5 @@
-int a;
+int a=3;
+int b=7;
 int main(){
-    a=1;
+    a=b;
 }

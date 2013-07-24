@@ -7,10 +7,12 @@ _1:
 	.value 1
 _2:
 	.value 2
+_5:
+	.value 5
+_6:
+	.value 6
 _9:
 	.value 9
-_"resultado de f(g(k, j)):":
-	.string"resultado de f(g(k, j)):"
 _10:
 	.value 10
 _20:
@@ -33,6 +35,14 @@ _90:
 	.value 90
 _'a':
 	.byte 'a'
+_"string 4":
+	.string"string 4"
+_"string 3":
+	.string"string 3"
+_"string 2":
+	.string"string 2"
+_"string 1":
+	.string"string 1"
 
    .globl  a
    .data
@@ -69,22 +79,6 @@ x:
    .size   i, 4
 i:
    .long   i
-
-   .globl  k
-   .data
-   .align 4
-   .type   k, @object
-   .size   k, 4
-k:
-   .long   k
-
-   .globl  j
-   .data
-   .align 4
-   .type   j, @object
-   .size   j, 4
-j:
-   .long   j
    .globl f
    .type  f, @function
 f:
@@ -102,9 +96,9 @@ f:
    .cfi_endproc
 .LFE0:
    .size   f, .-f
-   .globl g
-   .type  g, @function
-g:
+   .globl main
+   .type  main, @function
+main:
 .LFB1:
    .cfi_startproc
    pushl   %ebp
@@ -112,6 +106,24 @@ g:
    .cfi_offset 5, -8
    movl    %esp, %ebp
    .cfi_def_cfa_register 5
+  OUTPUT
+  SOMA
+  OUTPUT
+  SOMA
+  OUTPUT
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
+  SOMA
   SOMA
    popl    %ebp
    .cfi_restore 5
@@ -119,26 +131,4 @@ g:
    ret
    .cfi_endproc
 .LFE1:
-   .size   g, .-g
-   .globl main
-   .type  main, @function
-main:
-.LFB2:
-   .cfi_startproc
-   pushl   %ebp
-   .cfi_def_cfa_offset 8
-   .cfi_offset 5, -8
-   movl    %esp, %ebp
-   .cfi_def_cfa_register 5
-  OUTPUT
-  SOMA
-  OUTPUT
-  SOMA
-  OUTPUT
-   popl    %ebp
-   .cfi_restore 5
-   .cfi_def_cfa 4, 4
-   ret
-   .cfi_endproc
-.LFE2:
    .size   main, .-main

@@ -1,5 +1,17 @@
 	.file	"assign.c"
-	.comm	a,4,4
+	.globl	a
+	.data
+	.align 4
+	.type	a, @object
+	.size	a, 4
+a:
+	.long	3
+	.globl	b
+	.align 4
+	.type	b, @object
+	.size	b, 4
+b:
+	.long	7
 	.text
 	.globl	main
 	.type	main, @function
@@ -11,7 +23,8 @@ main:
 	.cfi_offset 5, -8
 	movl	%esp, %ebp
 	.cfi_def_cfa_register 5
-	movl	$1, a
+	movl	b, %eax
+	movl	%eax, a
 	popl	%ebp
 	.cfi_restore 5
 	.cfi_def_cfa 4, 4

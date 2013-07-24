@@ -17,12 +17,7 @@ b:
 	.size	c, 4
 c:
 	.long	23
-	.globl	d
-	.align 4
-	.type	d, @object
-	.size	d, 4
-d:
-	.long	25
+	.comm	d,34,32
 	.section	.rodata
 .LC0:
 	.string	"%d"
@@ -77,6 +72,10 @@ funcao:
 	.cfi_endproc
 .LFE1:
 	.size	funcao, .-funcao
+	.section	.rodata
+.LC2:
+	.string	"%s"
+	.text
 	.globl	outrafuncao
 	.type	outrafuncao, @function
 outrafuncao:
@@ -89,7 +88,7 @@ outrafuncao:
 	.cfi_def_cfa_register 5
 	subl	$24, %esp
 	movl	$d, 4(%esp)
-	movl	$.LC0, (%esp)
+	movl	$.LC2, (%esp)
 	call	scanf
 	leave
 	.cfi_restore 5

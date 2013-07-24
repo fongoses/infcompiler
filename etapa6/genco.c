@@ -503,29 +503,98 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                 labelCount++;
             break;                    
 
-			case TAC_MOV: break;
+			case TAC_MOV:
+                fprintf(fout,            
+                "movl    %s, %%eax"
+                "movl    %%eax, %s",tac->op1->text,tac->target->text);
+ 
+            
+            break;
 			case TAC_ADD: 	
 				fprintf(fout,"  SOMA\n"/* movl    a, %%eax\n"
         				"addl    $2, %%eax"
         				"movl    %%eax, a"*/);
 			
 			break;
-			case TAC_OUTPUT: 
-				//printf
-				fprintf(fout,"  OUTPUT\n"/*movl    a, %%eax\n"
-        			"movl    %%eax, 4(%%esp)\n"
-        			"movl    $.LC0, (%%esp)\n"
-        				"call    printf\n"*/);
 
-				
+            case TAC_INPUT:                
+                if(tac->target->decType == DATATYPE_WORD)
+                    fprintf(fout,
+                    "$-16, %%esp\n"
+                    "subl\t$16, %%esp\n"
+                    "movl\t$_%s, 4(%%esp)\n"
+                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
+                    "call\tscanf",tac->target->text);
+                   
+                if(tac->target->decType == DATATYPE_BYTE)
+                    fprintf(fout,
+                    "$-16, %%esp\n"
+                    "subl\t$16, %%esp\n"
+                    "movl\t$_%s, 1(%%esp)\n"
+                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
+                    "call\tscanf",tac->target->text); 
+                
+                if(tac->target->decType == DATATYPE_BOOL)
+                    fprintf(fout,
+                    "$-16, %%esp\n"
+                    "subl\t$16, %%esp\n"
+                    "movl\t$_%s, 1(%%esp)\n"
+                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
+                    "call\tscanf",tac->target->text); 
+
+                if(tac->target->decType == DATATYPE_STRING)
+                    fprintf(fout,
+                    "$-16, %%esp\n"
+                    "subl\t$16, %%esp\n"
+                    "movl\t$_%s, 4(%%esp)\n"
+                    "movl\t$__PoRcEnTo_S, (%%esp)\n"
+                    "call\tscanf",tac->target->text);       
+             break;
+                
+
+			case TAC_OUTPUT:
+                if(tac->target->decType == DATATYPE_WORD)
+                    fprintf(fout,
+                    "movl\t$_%s, 4(%%eax)\n"
+                    "movl\t%%eax, 4(%%esp)\n"
+                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
+                    "call\tprintf",tac->target->text);
+ 
+
+                if(tac->target->decType == DATATYPE_BYTE)
+                    fprintf(fout,
+                    "movl\t$_%s, 4(%%eax)\n"
+                    "movl\t%%eax, 4(%%esp)\n"
+                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
+                    "call\tprintf",tac->target->text);
+ 
+                if(tac->target->decType == DATATYPE_BOOL)
+                    fprintf(fout,
+                    "movl\t$_%s, 4(%%eax)\n"
+                    "movl\t%%eax, 4(%%esp)\n"
+                    "movl\t$__PoRcEnTo_D, (%%esp)\n"
+                    "call\tprintf",tac->target->text);
+ 
+                if(tac->target->decType == DATATYPE_STRING)
+                    fprintf(fout,
+                    "$-16, %%esp"
+                    "subl\t$16, %%esp\n"
+                    "movl\t$_%s, 1(%%esp)\n"
+                    "movl\t$__PoRcEnTo_S, (%%esp)\n"
+                    "call\tscanf",tac->target->text); 
+							
 			break;
-            
+        
+            case TAC_VETMOV:
+                    fprintf(fout,
+                    "movl\t$_%s, %%eax"
+                    "movl\t%%eax, %s+%d\n",tac->target->text,mySizeOf(tac->target->text));
+ 
+                    break;
+        
+            break;             
            
-            case TAC_LIT_SEQ:
-                 fprintf(stderr,"TAC(TAC_LITSEQ,%s,null,null)\n",tac->target->text);
-                 break;
-
-
+       
             case TAC_MIN:
                 fprintf(stderr,"TAC(TAC_MIN,%s,%s,%s)\n",tac->target->text,tac->op1->text,tac->op2->text);         break;
 
@@ -583,18 +652,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                 fprintf(stderr,"TAC(TAC_LIT_INT,%s,null,null)\n",tac->target->text);
                 break;
      
-            case TAC_TWORD:
-                fprintf(stderr,"TAC(TAC_TWORD,null,null,null)\n");
-                break;
-            
-            case TAC_TBYTE:
-                fprintf(stderr,"TAC(TAC_TBYTE,null,null,null)\n");
-                break;   
-
-            case TAC_TBOOL:
-                fprintf(stderr,"TAC(TAC_TBOOL,null,null,null)\n");
-                break;      
-       
+      
             case TAC_LIT_STRING:
                 fprintf(stderr,"TAC(TAC_LIT_STRING,%s,null,null)\n",tac->target->text);
                 break;
@@ -652,18 +710,6 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                  fprintf(stderr,"TAC(TAC_PTRVALUE,%s,%s,null)\n",tac->target->text,tac->op1->text);
                  break;
 
-            case TAC_INPUT:
-                 fprintf(stderr,"TAC(TAC_INPUT,%s,null,null)\n",tac->target->text);
-                 break;
-
-            case TAC_BEGINEXP:
-                 fprintf(stderr,"TAC(TAC_BEGINEXP,%s,null,null)\n",tac->target->text);
-                 break;
-
-            case TAC_ENDEXP:
-                 fprintf(stderr,"TAC(TAC_ENDEXP,%s,null,null)\n",tac->target->text);
-                 break;
-
             case TAC_RETURN:
                  fprintf(stderr,"TAC(TAC_RETURN,%s,null,null)\n",tac->target->text);
                  break;
@@ -682,7 +728,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
 int mySizeOf(HASH_NODE* symbol){
 
     if(!symbol) {
-        return DATATYPE_INVALID;
+        return 0;
     }
 
         //fprintf(stderr,"Tipo da declaracao: %d\n",symbol->decType);
@@ -700,7 +746,7 @@ int mySizeOf(HASH_NODE* symbol){
             return 1;
             break;
 
-        default: return DATATYPE_INVALID;
+        default: return 0;
             
     }
 }
@@ -713,6 +759,10 @@ void generateDeclaratives(FILE * fout){
             ".data \n"
             "__PoRcEnTo_D:\n"
             "\t.string \"%%d\\12\\0\"\n");
+    
+    fprintf(fout,
+            "__PoRcEnTo_S:\n"
+            "\t.string \"%%s\\12\\0\"\n");
     
 
     for(i=0;i<HASH_SIZE;i++)
@@ -732,8 +782,6 @@ void generateDeclaratives(FILE * fout){
                     node->text,
                     node->text);          
                     break;
-
-
                 
                 case SYMBOL_LIT_CHAR:
                     fprintf(fout,
@@ -759,13 +807,13 @@ void generateASMVARDEC(FILE * fout,TAC* first){
                 switch(tac->type){
                     case TAC_VARDEC:
                         fprintf(fout,
-                        "\n   .globl  %s\n"        
-                        "   .data\n"
-                        "   .align 4\n"
-                        "   .type   %s, @object\n"
-                        "   .size   %s, %d\n"
+                        "\n\t.globl  %s\n"        
+                        "\t.data\n"
+                        "\t.align 4\n"
+                        "\t.type\t%s, @object\n"
+                        "\t.size\t%s, %d\n"
                         "%s:\n"
-                        "   .long   %s\n", tac->target->text,
+                        "\t.long\t%s\n", tac->target->text,
                         tac->target->text,
                         tac->target->text,mySizeOf(tac->target),
                         tac->target->text,
