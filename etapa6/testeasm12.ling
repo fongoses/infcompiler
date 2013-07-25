@@ -5,11 +5,11 @@ word main(){
 
    output "Digite um valor maior que 9:\n"; 
    input a;
-   
+   output "Seu valor eh ",a,"\n";   
    if(a>9) then
-        output "Voce ganhou!"
+        output "Voce ganhou!\n"
    else
-        output "Voce perdeu! Seu valor eh menor que 9";
+        output "Voce perdeu! Seu valor eh menor igual que 9\n";
 
    
 }

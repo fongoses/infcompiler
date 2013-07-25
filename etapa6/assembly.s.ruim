@@ -5,22 +5,22 @@
 	.string "%s"
 ___ScarryTeMpORaRy0:
 	.value 0
-_0:
-	.long 0
-_1:
-	.long 1
 _9:
-	.long 9
+	.value 9
+__Digite_um_valor_maior_que_9___:
+	.string "Digite um valor maior que 9:\n"
 ___ScarryTeMpORaRy3:
 	.value 0
-__Inicio_____:
-	.string "Inicio...\n"
+__Voce_perdeu__Seu_valor_eh_menor_que_9__:
+	.string "Voce perdeu! Seu valor eh menor que 9\n"
+_10:
+	.value 10
 ___ScarryTeMpORaRy2:
 	.value 0
+__Voce_ganhou___:
+	.string "Voce ganhou!\n"
 ___ScarryTeMpORaRy1:
 	.value 0
-____:
-	.string "\n"
 
 	.globl  _a
 	.data
@@ -28,7 +28,15 @@ ____:
 	.type	_a, @object
 	.size	_a, 4
 _a:
-	.long	0
+	.long	10
+
+	.globl  _b
+	.data
+	.align 4
+	.type	_b, @object
+	.size	_b, 4
+_b:
+	.long	9
 	.text
 	.globl main
 	.type  main, @function
@@ -42,26 +50,23 @@ main:
  	.cfi_def_cfa_register 5
 	andl    $-16, %esp
 	subl    $16, %esp
-	movl	$__Inicio_____, (%esp)
+	movl	$__Digite_um_valor_maior_que_9___, (%esp)
 	call	printf
-___label0:
+	andl	$-16, %esp
+	subl	$16, %esp
+	movl	$_a, 4(%esp)
+	movl	$.PoRcEnToD, (%esp)
+	call	scanf
 	movl	_a, %edx
 	movl	_9, %eax
 	cmpl	%eax, %edx
-	jge	___label1
-	movl	_a, %eax
-	movl	%eax, 4(%esp)
-	movl	$.PoRcEnToD, (%esp)
+	jle	___label0
+	movl	$__Voce_ganhou___, (%esp)
 	call	printf
-	movl	$____, (%esp)
+	jmp	___label1
+___label0:
+	movl	$__Voce_perdeu__Seu_valor_eh_menor_que_9__, (%esp)
 	call	printf
-	movl	_a, %edx
-	movl	_1, %eax
-	addl	%edx, %eax
-	movl	%eax, ___ScarryTeMpORaRy3
-	movl	___ScarryTeMpORaRy3, %eax
-	movl	%eax, _a
-	jmp	___label0
 ___label1:
 	leave
 	.cfi_restore 5

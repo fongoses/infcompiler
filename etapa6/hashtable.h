@@ -35,7 +35,7 @@ typedef struct hash_node {
 #define DATATYPE_TEMP 13
 #define DATATYPE_INVALID -1
 
-#define DECTYPE_LABEL 13 //11/06
+#define DECTYPE_LABEL 14 //11/06
 HASH_NODE * makeTemp(void);
 HASH_NODE * makeLabel(void);
 void hashInit();

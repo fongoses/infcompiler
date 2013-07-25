@@ -786,7 +786,7 @@ void generateASM_OTHERS(FILE * fout,TAC * first){
                  break;
      
             case TAC_LABEL:
-                 fprintf(stderr,"TAC(TAC_LABEL,%s,null,null)\n",tac->target->text);
+                 fprintf(fout,"_%s:\n",tac->target->text);
                  break;
                       
 			default: break;
@@ -842,7 +842,7 @@ void generateDeclaratives(FILE * fout){
                 //case SYMBOL_SCALAR:
                 case SYMBOL_LIT_INTEGER:
                     fprintf(fout,
-                    "_%s:\n\t.value %s\n",
+                    "_%s:\n\t.long %s\n",
                     node->text,
                     node->text);
                     break;
@@ -869,7 +869,6 @@ void generateDeclaratives(FILE * fout){
                     node->text);
                     break;
  
-                default: break; 
             }
             
 }

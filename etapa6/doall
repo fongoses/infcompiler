@@ -1,6 +1,6 @@
 #!/bin/bash
 make clean
-tar cvzf etapa6.tgz hashtable.c hashtable.h scanner.l yacc.y astree.h astree.c main.c genco.c tac.c tac.h Makefile genco.c tac.c tac.h testeasm8.ling testeasm10.ling testeasm11.ling 
+tar cvzf etapa6.tgz hashtable.c hashtable.h scanner.l yacc.y astree.h astree.c main.c genco.c tac.c tac.h Makefile genco.c tac.c tac.h testeasm8.ling testeasm10.ling testeasm11.ling testeasm12.ling testeasm13.ling 
 #para o scp abaixo funcionar automaticamente, eh necessario utilizar
 # autenticacao por chave do ssh
 echo "Realizando o upload para o servidor html do inf..."
